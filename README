@@ -1,0 +1,13 @@
+btcwatch
+
+ABOUT
+	btcwatch is a program that will allow its users to view the current
+	exchange rate of the popular cryptocurrency Bitcoin. It is distributed with
+	a library "btcapi" that gets a json string and parses it with jansson to
+	get information which at the moment only consists of 'result', 'buy', and
+	'sell' (with more to be added later on). In the future it will be a lot
+	better.
+
+DEPENDENCIES
+	libcurl
+	jansson

@@ -1,0 +1,71 @@
+CC="gcc";
+CFLAGS="-Wall -Wextra -Wpedantic -std=gnu99 -march=native -O3";
+
+import sys
+
+def err(err):
+	sys.stderr.write("scons: error: " + err + "\n");
+	exit(1);
+
+def header_err(header):
+	sys.stderr.write("scons: error: header file ");
+	sys.stderr.write(header);
+	sys.stderr.write(" not found\n");
+	exit(1);
+
+def lib_err(lib):
+	sys.stderr.write("scons: error: library ");
+	sys.stderr.write(lib);
+	sys.stderr.write(" not found\n");
+	exit(1);
+
+env = Environment(
+	CC = CC,
+	CCFLAGS = CFLAGS
+);
+
+conf = Configure(env);
+
+if not conf.CheckCC():
+	err("working C compiler not found");
+	sys.exit(1);
+
+if not conf.CheckHeader("curl/curl.h"):
+	header_err("curl.h");
+
+if not conf.CheckHeader("jansson.h"):
+	header_err("jansson.h");
+
+if not conf.CheckHeader("stdbool.h"):
+	header_err("stdbool.h");
+
+if not conf.CheckHeader("stdio.h"):
+	header_err("stdio.h");
+
+if not conf.CheckHeader("stdlib.h"):
+	header_err("stdlib.h");
+
+if not conf.CheckHeader("string.h"):
+	header_err("string.h");
+
+# libcheck
+
+if not conf.CheckLib("curl"):
+	lib_err("curl");
+
+if not conf.CheckLib("jansson"):
+	lib_err("jansson");
+
+if not conf.CheckLib("libc"):
+	lib_err("libc");
+
+env.ParseConfig("pkg-config libcurl --cflags --libs");
+env.ParseConfig("pkg-config jansson --cflags --libs");
+
+btcapi = env.Library("src/btcapi.c");
+
+btcwatch = env.Program(
+	source  = "src/main.c",
+	LIBS    = ["btcapi", "curl", "jansson"],
+	LIBPATH = "src/"
+);
