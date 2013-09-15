@@ -1,0 +1,3 @@
+To build and install btcwatch, run:
+	scons
+	sudo scons install

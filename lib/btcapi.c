@@ -1,11 +1,3 @@
-#include <curl/curl.h>			// curl_easy_init, curl_easy_perform, curl_easy_setopt, CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION,CURL
-#include <jansson.h>			// json_error_t, json_loads, json_object_get, json_string_value,json_t
-#include <stdbool.h>			// bool, false, true
-#include <stdio.h>				// fprintf
-#include <string.h>				// atof, strcmp
-
-#include "include/btcapi.h"		// get_api, parse_json, rates_t
-
 /*
 	Copyright (C) 2013 Marco Scannadinari
 
@@ -25,22 +17,31 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <curl/curl.h>				// curl_easy_init, curl_easy_perform, curl_easy_setopt, CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION,CURL
+#include <jansson.h>				// json_error_t, json_loads, json_object_get, json_string_value,json_t
+#include <stdbool.h>				// bool, false, true
+#include <stdio.h>					// fprintf
+#include <string.h>					// atof, strcmp
+
+#include "../include/btcapi.h"		// get_api, parse_json, rates_t
+#include "../include/errutils.h"	// ERR
+
 char *get_api(const char *const url, const char *const prog_name) {
-	char* json;
-	CURL* handle;
+	CURL *handle;
+	char *json;
 	CURLcode result;
 
 	handle = curl_easy_init();
 	json = malloc(sizeof (char) * 768);
 
 	if(!handle) {
-		BTCAPI_PRINT_ERR(prog_name, "unable to initialise libcurl session");
+		ERR(prog_name, "unable to initialise libcurl session");
 
 		return NULL;
 	}
 
 	if(!json) {
-		BTCAPI_PRINT_ERR(prog_name, "unable to allocate memory");
+		ERR(prog_name, "unable to allocate memory");
 
 		return NULL;
 	}

@@ -1,9 +1,3 @@
-#define URL_API "https://data.mtgox.com/api/2/BTCUSD/money/ticker_fast"
-
-#include <stdio.h>				// printf
-
-#include "include/btcapi.h"		// rates_t, get_api, parse_json
-
 /*
 	Copyright (C) 2013 Marco Scannadinari
 
@@ -23,16 +17,42 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define URL_API "https://data.mtgox.com/api/2/BTCUSD/money/ticker_fast"
+
+#include <stdio.h>						// printf
+#include <getopt.h>						// getopt
+
+#include "../include/btcapi.h"			// rates_t, get_api, parse_json
+#include "../include/cmdlineutils.h"	// help
+#include "../include/errutils.h"		// ERR
+
 int main(int argc, char** argv) {
-	char* api;
+	char *api;
+	int opt;
+	char optstring[] = "?h";
 	rates_t rates;
+
+	while((opt = getopt(argc, argv, optstring)) != -1) {
+		switch(opt) {
+			case '?': case 'h':
+				help(argv[0], "h");
+				break;
+			default:
+				fprintf(
+					stderr,
+					"%s: error: no such option: %c\n",
+					argv[0],
+					opt
+				);
+		}
+	}
 
 	api = get_api(URL_API, argv[0]);
 	rates = parse_json(api, argv[0]);
 
 	printf(
 		"result: %s\nbuy: %f\nsell: %f\n",
-		(rates.result) ? "success" : "failure",
+		rates.result ? "success" : "failure",
 		rates.buy,
 		rates.sell
 	);

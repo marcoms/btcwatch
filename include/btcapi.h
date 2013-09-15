@@ -1,11 +1,3 @@
-#ifndef BTCAPI_H
-#define BTCAPI_H
-
-#define BTCAPI_PRINT_ERR(prog_name, err) fprintf(stderr, "%s: error: %s\n", prog_name, err)
-
-#include <stdbool.h>	// bool
-#include <stdlib.h>		// size_t
-
 /*
 	Copyright (C) 2013 Marco Scannadinari
 
@@ -25,10 +17,16 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef BTCAPI_H
+#define BTCAPI_H
+
+#include <stdbool.h>	// bool
+#include <stdlib.h>		// size_t
+
 // struct containing current exchange information
 typedef struct rates {
-	bool result;
 	float buy;
+	bool result;
 	float sell;
 } rates_t;
 
