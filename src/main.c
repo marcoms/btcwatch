@@ -22,9 +22,9 @@
 #include <stdio.h>						// printf
 #include <getopt.h>						// getopt
 
-#include "../include/btcapi.h"			// rates_t, get_api, parse_json
-#include "../include/cmdlineutils.h"	// help
-#include "../include/errutils.h"		// ERR
+#include "include/btcapi.h"			// rates_t, get_api, parse_json
+#include "include/cmdlineutils.h"	// help
+#include "include/errutils.h"		// ERR
 
 int main(int argc, char** argv) {
 	char *api;

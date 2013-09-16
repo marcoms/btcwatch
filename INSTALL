@@ -1,3 +1,4 @@
 To build and install btcwatch, run:
-	scons
-	sudo scons install
+	./configure
+	make
+	sudo cp btcwatch /usr/bin/  # sorry :) will implement make install soon

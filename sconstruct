@@ -21,7 +21,7 @@ CFLAGS="-Wall -Wextra -Wpedantic -std=gnu99 -march=native -O3";
 import sys;
 import os;
 
-if not GetOption("clean"):  # !(scons -c)
+if(not GetOption("clean")):  # !(scons -c)
 	def sprint(string):
 		print("scons: " + string);
 
@@ -46,69 +46,74 @@ env = Environment(
 	CCFLAGS = CFLAGS
 );
 
-if not GetOption("clean"):
+# this means we are either configuring, installing, or building
+if(not GetOption("clean")):
 	sprint("CC: " + CC);
 	sprint("CFLAGS: " + CFLAGS);
 
-	conf = Configure(env);
+	# if "configure" in scons' arguments then run configure script
+	if("configure" in COMMAND_LINE_TARGETS):
+		conf = Configure(env);
 
-	# check C compiler
+		# check C compiler
 
-	if not conf.CheckCC():
-		err("working C compiler not found");
-		sys.exit(1);
+		if(not conf.CheckCC()):
+			err("working C compiler not found");
+			sys.exit(1);
 
-	# check headers
+		# check headers
 
-	if not conf.CheckHeader("curl/curl.h"):
-		header_err("curl.h");
+		if(not conf.CheckHeader("curl/curl.h")):
+			header_err("curl.h");
 
-	if not conf.CheckHeader("jansson.h"):
-		header_err("jansson.h");
+		if(not conf.CheckHeader("jansson.h")):
+			header_err("jansson.h");
 
-	if not conf.CheckHeader("stdbool.h"):
-		header_err("stdbool.h");
+		if(not conf.CheckHeader("stdbool.h")):
+			header_err("stdbool.h");
 
-	if not conf.CheckHeader("stdio.h"):
-		header_err("stdio.h");
+		if(not conf.CheckHeader("stdio.h")):
+			header_err("stdio.h");
 
-	if not conf.CheckHeader("stdlib.h"):
-		header_err("stdlib.h");
+		if(not conf.CheckHeader("stdlib.h")):
+			header_err("stdlib.h");
 
-	if not conf.CheckHeader("string.h"):
-		header_err("string.h");
+		if(not conf.CheckHeader("string.h")):
+			header_err("string.h");
 
-	# check libs
+		# check libs
 
-	if not conf.CheckLib("curl"):
-		lib_err("curl");
+		if(not conf.CheckLib("curl")):
+			lib_err("curl");
 
-	if not conf.CheckLib("jansson"):
-		lib_err("jansson");
+		if(not conf.CheckLib("jansson")):
+			lib_err("jansson");
 
-	if not conf.CheckLib("libc"):
-		lib_err("libc");
+		if(not conf.CheckLib("libc")):
+			lib_err("libc");
 
-	env = conf.Finish();
+		env = conf.Finish();
 
-	# process flags needed by libraries
+	
+	else:
+		# process flags needed by libraries
 
-	env.ParseConfig("pkg-config libcurl --cflags --libs");
-	env.ParseConfig("pkg-config jansson --cflags --libs");
+		env.ParseConfig("pkg-config libcurl --cflags --libs");
+		env.ParseConfig("pkg-config jansson --cflags --libs");
 
-	# append user-defined environment variables
+		# append user-defined environment variables
 
-	if "CC" in os.environ:
-		sprint("using custom compiler: \"" + os.environ["CC"] + "\"");
-		env.Replace(CC = os.environ["CC"]);
+		if("CC" in os.environ):
+			sprint("using custom compiler: \"" + os.environ["CC"] + "\"");
+			env.Replace(CC = os.environ["CC"]);
 
-	if "CFLAGS" in os.environ:
-		sprint("appending custom CFLAGS: \"" + os.environ["CFLAGS"] + "\"");
-		env.Append(CFLAGS = os.environ["CFLAGS"]);
+		if("CFLAGS" in os.environ):
+			sprint("appending custom CFLAGS: \"" + os.environ["CFLAGS"] + "\"");
+			env.Append(CFLAGS = os.environ["CFLAGS"]);
 
-	if "LDFLAGS" in os.environ:
-		sprint("appending custom LDFLAGS: \"" + os.environ["LDFLAGS"] + "\"");
-		env.Append(LDFLAGS = os.environ["LDFLAGS"]);
+		if("LDFLAGS" in os.environ):
+			sprint("appending custom LDFLAGS: \"" + os.environ["LDFLAGS"] + "\"");
+			env.Append(LDFLAGS = os.environ["LDFLAGS"]);
 
 btcapi = env.Library("lib/btcapi.c");
 cmdlineutils = env.Library("lib/cmdlineutils.c");
@@ -120,5 +125,4 @@ btcwatch = env.Program(
 	LIBPATH = "lib/"
 );
 
-if not GetOption("clean"):
-	env.Alias("install", env.Install("/usr/bin/", btcwatch));
+env.Alias("install", env.Install("/usr/bin/", btcwatch));
