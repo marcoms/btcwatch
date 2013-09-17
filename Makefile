@@ -9,7 +9,7 @@ INDENT=@echo -n "  "
 ENDL=@echo
 
 MCC=$(CC)
-MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu99 -march=native -O3
+MCFLAGS=-Wall -Wextra -pedantic -std=gnu99 -march=native -O3
 MCFLAGS+=$(CFLAGS)
 
 # contents of src/ dir
