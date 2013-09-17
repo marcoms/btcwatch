@@ -22,6 +22,8 @@ libwpre=$(addprefix $(libdir)/, $(addprefix lib, btcapi cmdlineutils))
 # all Makefile-generated files without {suf,pre}fixes
 all=$(src) $(lib)
 
+allc=$(addsuffix .c, $(all))
+
 # all Makefile-generated files with .o extension
 allo=$(addsuffix .o, $(all))
 
@@ -31,21 +33,25 @@ alla=$(addsuffix .a, $(libwpre))
 curlflags=$(shell pkg-config libcurl --cflags --libs)
 janssonflags=$(shell pkg-config jansson --cflags --libs)
 
-all:
-	$(CC) -o$(libdir)/btcapi.o $(libdir)/btcapi.c -c $(CFLAGS)
-	ar rc $(libdir)/libbtcapi.a $(libdir)/btcapi.o
-	ranlib $(libdir)/libbtcapi.a
-	@echo
-	
-	$(CC) -o$(libdir)/cmdlineutils.o $(libdir)/cmdlineutils.c -c $(CFLAGS)
-	ar rc $(libdir)/libcmdlineutils.a $(libdir)/cmdlineutils.o
-	ranlib $(libdir)/libcmdlineutils.a
-	@echo
-	
-	$(CC) -o $(srcdir)/main.o $(srcdir)/main.c -c $(CFLAGS)
-	@echo
-	
-	$(CC) -o btcwatch $(srcdir)/main.o -Lsrc/lib -lbtcapi -lcmdlineutils $(curlflags) $(janssonflags)
+all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a
+	$(CC) -obtcwatch -L$(libdir)/ -lbtcapi -lcmdlineutils $(curlflags) $(janssonflags) $<
+
+src/main.o: src/main.c
+	$(CC) -c $(CFLAGS) -o$@ $^
+
+src/lib/btcapi.o: src/lib/btcapi.c
+	$(CC) -c $(CFLAGS) -o$@ $^
+
+src/lib/libbtcapi.a: src/lib/btcapi.o
+	ar rcu $@ $^
+	ranlib $@
+
+src/lib/cmdlineutils.o: src/lib/cmdlineutils.c
+	$(CC) -c $(CFLAGS) -o$@ $^
+
+src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
+	ar rcu $@ $^
+	ranlib $@
 
 clean:
 	$(foreach i, $(all), rm -rf $(i)${\n})
