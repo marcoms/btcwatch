@@ -3,21 +3,20 @@ define \n
 
 endef
 
-CC=gcc
-CFLAGS=-Wall -Wextra -Wpedantic -std=gnu99 -march=native -O3
+BOLD="\033[1m"
+RESET="\033[0m"
+INDENT=@echo -n "  "
+ENDL=@echo
 
-srcdir=src
-libdir=src/lib
-includedir=src/include
+MCC=$(CC)
+MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu99 -march=native -O3
+MCFLAGS+=$(CFLAGS)
 
 # contents of src/ dir
-src=$(srcdir)/main
+src=src/main
 
 # contents of lib/ dir
-lib=$(addprefix $(libdir)/, btcapi cmdlineutils)
-
-# contents of lib/ dir with "lib" prefix
-libwpre=$(addprefix $(libdir)/, $(addprefix lib, btcapi cmdlineutils))
+lib=$(addprefix	src/lib/, btcapi cmdlineutils)
 
 # all Makefile-generated files without {suf,pre}fixes
 all=$(src) $(lib)
@@ -28,36 +27,68 @@ allc=$(addsuffix .c, $(all))
 allo=$(addsuffix .o, $(all))
 
 # all Makefile-generated files with .a extension and "lib" prefix
-alla=$(addsuffix .a, $(libwpre))
+alla=$(addprefix src/lib/, $(addsuffix .a, libbtcapi libcmdlineutils))
 
 curlflags=$(shell pkg-config libcurl --cflags --libs)
 janssonflags=$(shell pkg-config jansson --cflags --libs)
 
 all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a
-	$(CC) -obtcwatch -L$(libdir)/ -lbtcapi -lcmdlineutils $(curlflags) $(janssonflags) $<
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils $(curlflags) $(janssonflags)
+	$(ENDL)
 
 src/main.o: src/main.c
-	$(CC) -c $(CFLAGS) -o$@ $^
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -o$@ $^ -c $(MCFLAGS)
+	$(ENDL)
 
 src/lib/btcapi.o: src/lib/btcapi.c
-	$(CC) -c $(CFLAGS) -o$@ $^
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -o$@ $^ -c $(MCFLAGS)
+	$(ENDL)
 
 src/lib/libbtcapi.a: src/lib/btcapi.o
-	ar rcu $@ $^
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	ar rc $@ $^
+	$(INDENT)
 	ranlib $@
+	$(ENDL)
 
 src/lib/cmdlineutils.o: src/lib/cmdlineutils.c
-	$(CC) -c $(CFLAGS) -o$@ $^
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -o$@ $^ -c $(MCFLAGS)
+	$(ENDL)
 
 src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
-	ar rcu $@ $^
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	ar rc $@ $^
+	$(INDENT)
 	ranlib $@
+	$(ENDL)
+
+install: all
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	install -s -m777 btcwatch /usr/bin/
+	$(ENDL)
+
+uninstall:
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	rm /usr/bin/btcwatch
+	$(ENDL)
 
 clean:
-	$(foreach i, $(all), rm -rf $(i)${\n})
-	@echo
-	
-	$(foreach i, $(alla), rm -rf $(i)${\n})
-	@echo
-	
-	$(foreach i, $(allo), rm -rf $(i)${\n})
+	@echo -e $(BOLD)$@$(RESET)
+	$(foreach i, $(all), $(INDENT) ${\n} rm -rf $(i) ${\n})  @# this works somehow
+	$(foreach i, $(alla), $(INDENT) ${\n} rm -rf $(i) ${\n})
+	$(foreach i, $(allo), $(INDENT) ${\n} rm -rf $(i) ${\n})
+	$(INDENT)
+	rm -rf btcwatch
+	$(ENDL)
