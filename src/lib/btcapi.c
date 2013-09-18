@@ -17,11 +17,27 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <curl/curl.h>				// curl_easy_init, curl_easy_perform, curl_easy_setopt, CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION,CURL
-#include <jansson.h>				// json_error_t, json_loads, json_object_get, json_string_value,json_t
-#include <stdbool.h>				// bool, false, true
+#include "../../config.h"
+
+#if HAVE_LIBCURL
+	#include <curl/curl.h>			// curl_easy_init, curl_easy_perform, curl_easy_setopt, CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION,CURL
+#else
+	#error libcurl not found
+#endif
+
+#if HAVE_LIBJANSSON
+	#include <jansson.h>			// json_error_t, json_loads, json_object_get, json_string_value,json_t
+#else
+	#error libjansson not found
+#endif
+
+#if HAVE_LIBC
+	#include <stdbool.h>			// bool, false, true
 #include <stdio.h>					// fprintf
-#include <string.h>					// atof, strcmp
+	#include <string.h>				// atof, strcmp
+#else
+#error libc not found
+#endif
 
 #include "../include/btcapi.h"		// get_api, parse_json, rates_t
 #include "../include/errutils.h"	// ERR

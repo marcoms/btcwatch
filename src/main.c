@@ -19,8 +19,14 @@
 
 #define URL_API "https://data.mtgox.com/api/2/BTCUSD/money/ticker_fast"
 
-#include <stdio.h>						// printf
-#include <getopt.h>						// getopt
+#include "../config.h"
+
+#if HAVE_LIBC
+	#include <stdio.h>				// printf
+	#include <getopt.h>				// getopt
+#else
+	#error libc not found
+#endif
 
 #include "include/btcapi.h"			// rates_t, get_api, parse_json
 #include "include/cmdlineutils.h"	// help
@@ -29,14 +35,19 @@
 int main(int argc, char** argv) {
 	char *api;
 	int opt;
-	char optstring[] = "?h";
+	char optstring[] = "?hv";
 	rates_t rates;
 
 	while((opt = getopt(argc, argv, optstring)) != -1) {
 		switch(opt) {
 			case '?': case 'h':
-				help(argv[0], "h");
+				help(argv[0], optstring);
 				break;
+
+			case 'v':
+				version(argv[0], "0.0.1");
+				break;
+
 			default:
 				fprintf(
 					stderr,

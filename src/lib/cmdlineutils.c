@@ -17,8 +17,14 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>		// exit
-#include <stdio.h>		// printf
+#include "../../config.h"
+
+#if HAVE_LIBC
+	#include <stdlib.h>		// exit
+	#include <stdio.h>		// printf
+#else
+	#error libc not found
+#endif
 
 #include "../include/cmdlineutils.h"
 
@@ -27,6 +33,12 @@ void help(char *prog_name, char *optstring) {
 	printf("get Bitcoin trade information from MtGox\n\n");
 	printf("    -?, -h    --help    print this help\n\n");
 	printf("report bugs to <marco@scannadinari.co.uk> or https://github.com/marcoms/btcwatch/issues\n");
+
+	exit(EXIT_SUCCESS);
+}
+
+void version(char *prog_name, char *version) {
+	printf("%s %s\n", prog_name, version);
 
 	exit(EXIT_SUCCESS);
 }

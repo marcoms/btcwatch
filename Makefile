@@ -6,49 +6,66 @@ endef
 BOLD="\033[1m"
 RESET="\033[0m"
 INDENT=@echo -n "  "
-ENDL=@echo
+NEWL=@echo
 
-MCC=$(CC)
+ifdef $(CC)
+	MCC=$(CC)
+else
+	MCC=gcc
+endif
 MCFLAGS=-Wall -Wextra -pedantic -std=gnu99 -march=native -O3
 MCFLAGS+=$(CFLAGS)
+PREFIX=$(shell cat prefix.txt)
 
 # contents of src/ dir
-src=src/main
+SRC=src/main
 
 # contents of lib/ dir
-lib=$(addprefix	src/lib/, btcapi cmdlineutils)
+LIB=$(addprefix	src/lib/, btcapi cmdlineutils)
 
 # all Makefile-generated files without {suf,pre}fixes
-all=$(src) $(lib)
+ALL=$(SRC) $(LIB)
 
-allc=$(addsuffix .c, $(all))
+ALLC=$(addsuffix .c, $(ALL))
 
 # all Makefile-generated files with .o extension
-allo=$(addsuffix .o, $(all))
+ALLO=$(addsuffix .o, $(ALL))
 
 # all Makefile-generated files with .a extension and "lib" prefix
-alla=$(addprefix src/lib/, $(addsuffix .a, libbtcapi libcmdlineutils))
+ALLA=$(addprefix src/lib/, $(addsuffix .a, libbtcapi libcmdlineutils))
 
-curlflags=$(shell pkg-config libcurl --cflags --libs)
-janssonflags=$(shell pkg-config jansson --cflags --libs)
+CURLFLAGS=$(shell pkg-config libcurl --cflags --libs)
+JANSSONFLAGS=$(shell pkg-config jansson --cflags --libs)
 
 all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils $(curlflags) $(janssonflags)
-	$(ENDL)
+	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils $(CURLFLAGS) $(JANSSONFLAGS)
+	$(NEWL)
+
+debug: src/main_debug.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi -lcmdlineutils $(CURLFLAGS) $(JANSSONFLAGS)
+	$(NEWL)
 
 src/main.o: src/main.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
 	$(MCC) -o$@ $^ -c $(MCFLAGS)
-	$(ENDL)
+	$(NEWL)
+
+src/main_debug.o: src/main.c
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -o$@ $^ -c $(MCFLAGS) -DDEBUG -DCC="\"$(MCC)\"" -DCFLAGS="\"$(MCFLAGS)\""
+	$(NEWL)
 
 src/lib/btcapi.o: src/lib/btcapi.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
 	$(MCC) -o$@ $^ -c $(MCFLAGS)
-	$(ENDL)
+	$(NEWL)
 
 src/lib/libbtcapi.a: src/lib/btcapi.o
 	@echo -e $(BOLD)$@$(RESET)
@@ -56,13 +73,13 @@ src/lib/libbtcapi.a: src/lib/btcapi.o
 	ar rc $@ $^
 	$(INDENT)
 	ranlib $@
-	$(ENDL)
+	$(NEWL)
 
 src/lib/cmdlineutils.o: src/lib/cmdlineutils.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
 	$(MCC) -o$@ $^ -c $(MCFLAGS)
-	$(ENDL)
+	$(NEWL)
 
 src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
 	@echo -e $(BOLD)$@$(RESET)
@@ -70,25 +87,47 @@ src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
 	ar rc $@ $^
 	$(INDENT)
 	ranlib $@
-	$(ENDL)
+	$(NEWL)
 
 install: all
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	install -s -m777 btcwatch /usr/bin/
-	$(ENDL)
+	@mkdir $(PREFIX)/bin/
+	$(INDENT)
+	install -m777 btcwatch $(PREFIX)/bin/
+	$(NEWL)
+
+install-strip: all
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	@mkdir $(PREFIX)/bin/
+	$(INDENT)
+	install -s -m777 btcwatch $(PREFIX)/bin/
+	$(NEWL)
 
 uninstall:
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	rm /usr/bin/btcwatch
-	$(ENDL)
+	rm -rf $(PREFIX)/bin/btcwatch
+	$(NEWL)
 
 clean:
 	@echo -e $(BOLD)$@$(RESET)
-	$(foreach i, $(all), $(INDENT) ${\n} rm -rf $(i) ${\n})  @# this works somehow
-	$(foreach i, $(alla), $(INDENT) ${\n} rm -rf $(i) ${\n})
-	$(foreach i, $(allo), $(INDENT) ${\n} rm -rf $(i) ${\n})
+	$(foreach i, $(ALL), $(INDENT) ${\n} rm -rf $(i) ${\n})  @# this works somehow
+	$(foreach i, $(ALLA), $(INDENT) ${\n} rm -rf $(i) ${\n})
+	$(foreach i, $(ALLO), $(INDENT) ${\n} rm -rf $(i) ${\n})
 	$(INDENT)
 	rm -rf btcwatch
-	$(ENDL)
+	$(NEWL)
+
+distclean: clean
+	@echo -e $(BOLD)$@$(RESET)
+	$(foreach i, $(wildcard config.*), $(INDENT) ${\n} rm -rf $(i) ${\n})
+	$(INDENT)
+	rm -rf autom4te.cache
+	$(INDENT)
+	rm -rf prefix.txt
+	$(INDENT)
+	rm -rf btcwatch
+	$(NEWL)
+

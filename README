@@ -8,3 +8,10 @@ DEPENDENCIES
 
 libcurl
 jansson
+
+INSTALLING
+
+To build and install btcwatch, run:
+	$ ./configure
+	$ make
+	# make install
