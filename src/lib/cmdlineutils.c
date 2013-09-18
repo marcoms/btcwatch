@@ -31,8 +31,10 @@
 void help(char *prog_name, char *optstring) {
 	printf("usage: %s -%s\n", prog_name, optstring);
 	printf("get Bitcoin trade information from MtGox\n\n");
-	printf("    -?, -h    --help    print this help\n\n");
-	printf("report bugs to <marco@scannadinari.co.uk> or https://github.com/marcoms/btcwatch/issues\n");
+	printf("    -?, -h    --help     print this help\n");
+	printf("    -v        --version  print version number\n");
+	printf("\n");
+	printf("report bugs to <marco@scannadinari.co.uk>\n");
 
 	exit(EXIT_SUCCESS);
 }
