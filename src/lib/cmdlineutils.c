@@ -28,18 +28,23 @@
 
 #include "../include/cmdlineutils.h"
 
-void help(char *prog_name, char *optstring) {
+noreturn void help(const char *const prog_name, const char *const optstring) {
 	printf("usage: %s -%s\n", prog_name, optstring);
 	printf("get Bitcoin trade information from MtGox\n\n");
-	printf("    -?, -h    --help     print this help\n");
-	printf("    -v        --version  print version number\n");
+	printf("    -?, -h [topic]  --help[=topic]       print this help\n");
+	printf("    -b              --buy                print buy price\n");
+	//printf("    -c currency     --currency=currency  set conversion currency\n");
+	printf("    -p              --ping               check for a successful JSON response\n");
+	printf("    -s              --sell               print sell price\n");
+	printf("    -v              --version            print version number\n");
 	printf("\n");
+//	printf("see '%s --help topics' for a list of topics\n", prog_name);
 	printf("report bugs to <marco@scannadinari.co.uk>\n");
 
 	exit(EXIT_SUCCESS);
 }
 
-void version(char *prog_name, char *version) {
+noreturn void version(const char *const prog_name, const char *const version) {
 	printf("%s %s\n", prog_name, version);
 
 	exit(EXIT_SUCCESS);

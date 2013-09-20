@@ -13,7 +13,7 @@ ifdef $(CC)
 else
 	MCC=gcc
 endif
-MCFLAGS=-Wall -Wextra -pedantic -std=gnu99 -march=native -O3
+MCFLAGS=-Wall -Wextra -pedantic -std=gnu11 -march=native -O3
 MCFLAGS+=$(CFLAGS)
 PREFIX=$(shell cat prefix.txt)
 

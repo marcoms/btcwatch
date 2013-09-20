@@ -3492,6 +3492,14 @@ fi
 done
 
 
+ac_fn_c_check_header_mongrel "$LINENO" "assert.h" "ac_cv_header_assert_h" "$ac_includes_default"
+if test "x$ac_cv_header_assert_h" = xyes; then :
+
+else
+  echo "  ./configure: error: assert.h not found"; exit 1
+fi
+
+
 ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
 if test "x$ac_cv_header_stdlib_h" = xyes; then :
 

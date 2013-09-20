@@ -31,7 +31,7 @@ typedef struct rates {
 } rates_t;
 
 // uses libcURL to access a Bitcoin API, calls write_data, then returns a JSON string
-char* get_api(const char *const url, const char *const prog_name);
+char *get_api(const char *const url, const char *const prog_name);
 
 // uses jansson to parse the JSON string and returns a rates_t containing exchange information
 rates_t parse_json(const char *const json, const char *const prog_name);

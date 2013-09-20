@@ -22,7 +22,9 @@
 #include "../config.h"
 
 #if HAVE_LIBC
+	#include <assert.h>				// assert
 	#include <stdio.h>				// printf
+	#include <string.h>				// strcmp
 	#include <getopt.h>				// getopt
 #else
 	#error libc not found
@@ -34,39 +36,131 @@
 
 int main(int argc, char** argv) {
 	char *api;
-	int opt;
-	char optstring[] = "?hv";
+	/*char currency[] = "USD";
+	char *currency_arg = NULL;
+	char currencies[][3 + 1] = {
+		"AUD",
+		"CAD",
+		"CHF",
+		"CNY",
+		"CZK",
+		"DKK",
+		"EUR",
+		"GBP",       will implement soon!
+		"HKD",
+		"JPY",
+		"NOK",
+		"PLN",
+		"RUB",
+		"SEK",
+		"SGD",
+		"THB",
+		"USD"
+	};*/
+
+	bool got_api = false;
+	int opt;						// current getopt option
+	char optstring[] = "?bchpsv";	// string of valid options
 	rates_t rates;
 
 	while((opt = getopt(argc, argv, optstring)) != -1) {
 		switch(opt) {
 			case '?': case 'h':
 				help(argv[0], optstring);
+
+				break;
+
+			case 'b':
+				if(!got_api) {
+					api = get_api(URL_API, argv[0]);
+					rates = parse_json(api, argv[0]);
+
+					got_api = true;
+				}
+
+				if(rates.result) {
+					printf("%f\n", rates.buy);
+				} else {
+					ERR(argv[0], "couldn't get a successful JSON string");
+					exit(EXIT_FAILURE);
+				}
+
+				break;
+
+			//case 'c':
+				// printf("HI");
+
+				/*currency_arg = optarg;
+
+				printf("%s\n", currency_arg);
+
+				for(unsigned short int i = 0; i < sizeof currencies / sizeof currencies[0]; ++i) {
+					if(strcmp(currency_arg, currencies[i])) {
+						ERR(argv[0], "invalid currency");
+						exit(EXIT_FAILURE);
+					}
+				}
+*/
+				//break;
+
+			case 'p':
+				if(!got_api) {
+					api = get_api(URL_API, argv[0]);
+					rates = parse_json(api, argv[0]);
+
+					got_api = true;
+				}
+
+				if(rates.result) {
+					printf("success\n");
+				} else {
+					ERR(argv[0], "couldn't get a successful JSON string");
+					exit(EXIT_FAILURE);
+				}
+
+				break;
+
+			case 's':
+				if(!got_api) {
+					api = get_api(URL_API, argv[0]);
+					rates = parse_json(api, argv[0]);
+
+					got_api = true;
+				}
+
+				if(rates.result) {
+					printf("%f\n", rates.sell);
+				} else {
+					ERR(argv[0], "couldn't get a successful JSON string");
+					exit(EXIT_FAILURE);
+				}
+
 				break;
 
 			case 'v':
 				version(argv[0], "0.0.1");
+
 				break;
 
 			default:
-				fprintf(
-					stderr,
-					"%s: error: no such option: %c\n",
-					argv[0],
-					opt
-				);
+				assert(true == false);
+
+				break;  // just in case
 		}
 	}
 
-	api = get_api(URL_API, argv[0]);
-	rates = parse_json(api, argv[0]);
+	if(argc == 1) {
+		api = get_api(URL_API, argv[0]);
+		rates = parse_json(api, argv[0]);
 
-	printf(
-		"result: %s\nbuy: %f\nsell: %f\n",
-		rates.result ? "success" : "failure",
-		rates.buy,
-		rates.sell
-	);
+		if(rates.result) {
+			printf("success\n");
+		} else {
+			ERR(argv[0], "couldn't get a successful JSON string");
+			exit(EXIT_FAILURE);
+		}
+	}
+		
 
 	return 0;
 }

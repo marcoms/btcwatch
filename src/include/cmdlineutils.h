@@ -20,7 +20,12 @@
 #ifndef CMDLINEUTILS_H
 #define CMDLINEUTILS_H
 
+#define noreturn _Noreturn
+
 // prints usage info and options
-void help(char *prog_name, char *optstring);
+noreturn void help(const char *const prog_name, const char *const optstring);
+
+// prints version number
+noreturn void version(const char *const prog_name, const char *const version);
 
 #endif
