@@ -3500,11 +3500,27 @@ else
 fi
 
 
+ac_fn_c_check_header_mongrel "$LINENO" "ctype.h" "ac_cv_header_ctype_h" "$ac_includes_default"
+if test "x$ac_cv_header_ctype_h" = xyes; then :
+
+else
+  echo "  ./configure: error: ctype.h not found"; exit 1
+fi
+
+
 ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
 if test "x$ac_cv_header_stdlib_h" = xyes; then :
 
 else
   echo "  ./configure: error: stdlib.h not found"; exit 1
+fi
+
+
+ac_fn_c_check_header_mongrel "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
+if test "x$ac_cv_header_stdint_h" = xyes; then :
+
+else
+  echo "  ./configure: error: stdint.h not found"; exit 1
 fi
 
 
