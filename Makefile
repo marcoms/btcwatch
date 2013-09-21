@@ -8,13 +8,21 @@ RESET="\033[0m"
 INDENT=@echo -n "  "
 NEWL=@echo
 
+BTCWATCH_VERSION=0.0.1
+
 ifdef $(CC)
 	MCC=$(CC)
 else
 	MCC=gcc
 endif
-MCFLAGS=-Wall -Wextra -pedantic -std=gnu11 -march=native -O3
-MCFLAGS+=$(CFLAGS)
+
+MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
+ifdef $(CFLAGS)
+	MCFLAGS+=$(CFLAGS)
+endif
+
+MCFLAGS_DEBUG=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
+
 PREFIX=$(shell cat prefix.txt)
 
 # contents of src/ dir
@@ -58,7 +66,7 @@ src/main.o: src/main.c
 src/main_debug.o: src/main.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -o$@ $^ -c $(MCFLAGS) -DDEBUG -DCC="\"$(MCC)\"" -DCFLAGS="\"$(MCFLAGS)\""
+	$(MCC) -o$@ $^ -c $(MCFLAGS_DEBUG) -DDEBUG -DCC="\"$(MCC)\"" -DCFLAGS="\"$(MCFLAGS_DEBUG)\""
 	$(NEWL)
 
 src/lib/btcapi.o: src/lib/btcapi.c

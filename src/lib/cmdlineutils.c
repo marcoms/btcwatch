@@ -20,8 +20,8 @@
 #include "../../config.h"
 
 #if HAVE_LIBC
-	#include <stdlib.h>		// exit
-	#include <stdio.h>		// printf
+	#include <stdlib.h>		// exit(), EXIT_SUCCESS
+	#include <stdio.h>		// printf()
 #else
 	#error libc not found
 #endif
@@ -29,17 +29,23 @@
 #include "../include/cmdlineutils.h"
 
 noreturn void help(const char *const prog_name, const char *const optstring) {
-	printf("usage: %s -%s\n", prog_name, optstring);
-	printf("get Bitcoin trade information from MtGox\n\n");
-	printf("    -?, -h [topic]  --help[=topic]       print this help\n");
-	printf("    -b              --buy                print buy price\n");
-	//printf("    -c currency     --currency=currency  set conversion currency\n");
-	printf("    -p              --ping               check for a successful JSON response\n");
-	printf("    -s              --sell               print sell price\n");
-	printf("    -v              --version            print version number\n");
-	printf("\n");
-//	printf("see '%s --help topics' for a list of topics\n", prog_name);
-	printf("report bugs to <marco@scannadinari.co.uk>\n");
+	printf(
+		"usage: %s -%s\n"
+		"get Bitcoin trade information\n"
+		"\n"
+		"options:\n"
+		"  -?, -h         print this help\n"
+		"  -V             increase verbosity\n"
+		"  -b             print buy price\n"
+		"  -c currency    set conversion currency\n"
+		"  -p             check for a successful JSON response\n"
+		"  -s             print sell price\n"
+		"  -v             print version number\n"
+		"\n"
+		"report bugs to <marco@scannadinari.co.uk>\n",
+		prog_name,
+		optstring
+	);
 
 	exit(EXIT_SUCCESS);
 }
