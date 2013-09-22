@@ -25,14 +25,14 @@
 	#include <assert.h>				// assert()
 	#include <ctype.h>				// toupper()
 	#include <stdio.h>				// printf()
-	#include <stdint.h>				// uint_fast_8
+	#include <stdint.h>				// uint_fast8_t
 	#include <string.h>				// strcmp()
 	#include <getopt.h>				// getopt()
 #else
 	#error libc not found
 #endif
 
-#include "include/btcapi.h"			// rates_t, get_api(), parse_json()
+#include "include/btcapi.h"			// rates_t, get_json(), parse_json()
 #include "include/cmdlineutils.h"	// help()
 #include "include/errutils.h"		// ERR()
 
@@ -84,13 +84,14 @@ int main(int argc, char** argv) {
 				break;
 
 			case 'V':
-				verbose = true;
+				version(argv[0], BTCWATCH_VERSION);
+
 				break;
 
 			case 'b':
 				// checks whether API was already processed - saves a lot of time
 				if(!got_api) {
-					api = get_api(api_url, argv[0]);
+					api = get_json(api_url, argv[0]);
 					rates = parse_json(api, argv[0]);
 
 					got_api = true;
@@ -172,7 +173,7 @@ int main(int argc, char** argv) {
 			case 'p':
 				//
 				if(!got_api) {
-					api = get_api(api_url, argv[0]);
+					api = get_json(api_url, argv[0]);
 					rates = parse_json(api, argv[0]);
 
 					got_api = true;
@@ -191,7 +192,7 @@ int main(int argc, char** argv) {
 			case 's':
 				//
 				if(!got_api) {
-					api = get_api(api_url, argv[0]);
+					api = get_json(api_url, argv[0]);
 					rates = parse_json(api, argv[0]);
 
 					got_api = true;
@@ -217,8 +218,7 @@ int main(int argc, char** argv) {
 				break;
 
 			case 'v':
-				version(argv[0], BTCWATCH_VERSION);
-
+				verbose = true;
 				break;
 
 			default:
@@ -231,7 +231,7 @@ int main(int argc, char** argv) {
 	if(argc == 1) {
 		verbose = true;
 
-		api = get_api(api_url, argv[0]);
+		api = get_json(api_url, argv[0]);
 		rates = parse_json(api, argv[0]);
 
 		if(rates.result) {

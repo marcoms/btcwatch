@@ -20,7 +20,7 @@
 #include "../../config.h"
 
 #if HAVE_LIBCURL
-	#include <curl/curl.h>			// curl_easy_init(), curl_easy_perform(), curl_easy_setopt9), CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION
+	#include <curl/curl.h>			// curl_easy_init(), curl_easy_perform(), curl_easy_setopt(), CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION
 #else
 	#error libcurl not found
 #endif
@@ -35,15 +35,15 @@
 	#include <stdbool.h>			// bool, false, true
 	#include <stdio.h>				// fprintf()
 	#include <stdlib.h>				// exit(), EXIT_FAILURE
-	#include <string.h>				// atof, strcmp()
+	#include <string.h>				// atof(), strcmp()
 #else
 	#error libc not found
 #endif
 
-#include "../include/btcapi.h"		// get_api(), parse_json(), rates_t
+#include "../include/btcapi.h"		// get_json(), parse_json(), rates_t
 #include "../include/errutils.h"	// ERR()
 
-char *get_api(const char *const url, const char *const prog_name) {
+char *get_json(const char *const url, const char *const prog_name) {
 	CURL *handle;
 	char *json;
 	CURLcode result;

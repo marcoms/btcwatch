@@ -35,12 +35,12 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 		"\n"
 		"options:\n"
 		"  -?, -h         print this help\n"
-		"  -V             increase verbosity\n"
+		"  -V             print version number\n"
 		"  -b             print buy price\n"
 		"  -c currency    set conversion currency\n"
 		"  -p             check for a successful JSON response\n"
 		"  -s             print sell price\n"
-		"  -v             print version number\n"
+		"  -v             increase verbosity\n"
 		"\n"
 		"report bugs to <marco@scannadinari.co.uk>\n",
 		prog_name,
