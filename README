@@ -35,7 +35,7 @@ INSTALLING
 
 	$ make debug
 
-3) Depending on your preference, you may install btcwatch (as root) normally, or as a stripped binary (although the latter will be counter-intuative on a debug build):
+3) Depending on your preference, you may install btcwatch (as root) normally, or as a stripped binary (although the latter will only strip the normal build, for obvious reasons):
 
 	# make install
 

@@ -19,37 +19,36 @@
 
 #include "../../config.h"
 
-#if HAVE_LIBCURL
-	#include <curl/curl.h>			// curl_easy_init(), curl_easy_perform(), curl_easy_setopt(), CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION
-#else
-	#error libcurl not found
-#endif
+#include <curl/curl.h>			// curl_easy_init(), curl_easy_perform(), curl_easy_setopt(), CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION
+#include <jansson.h>			// json_error_t, json_loads(), json_object_get(), json_string_value(), json_t
+#include <stdbool.h>			// bool, false, true
+#include <stdio.h>				// fprintf()
+#include <stdlib.h>				// exit(), EXIT_FAILURE
+#include <string.h>				// atof(), strcmp()
 
-#if HAVE_LIBJANSSON
-	#include <jansson.h>			// json_error_t, json_loads(), json_object_get(), json_string_value(), json_t
-#else
-	#error libjansson not found
-#endif
-
-#if HAVE_LIBC
-	#include <stdbool.h>			// bool, false, true
-	#include <stdio.h>				// fprintf()
-	#include <stdlib.h>				// exit(), EXIT_FAILURE
-	#include <string.h>				// atof(), strcmp()
-#else
-	#error libc not found
-#endif
-
-#include "../include/btcapi.h"		// get_json(), parse_json(), rates_t
-#include "../include/errutils.h"	// ERR()
+#include "../include/btcapi.h"	// get_json(), parse_json(), rates_t
+#include "../include/debug.h"	// DBG()
+#include "../include/err.h"		// ERR()
 
 char *get_json(const char *const url, const char *const prog_name) {
-	CURL *handle;
-	char *json;
+	#if DEBUG
+	DBG("curl_easy_init()");
+	#endif
+
+	CURL *handle = curl_easy_init();
+
+	#if DEBUG
+	DBG("malloc()");
+	#endif
+
+	char *json = malloc(sizeof (char) * 1600);  // JSON string returned by URL
 	CURLcode result;
 
-	handle = curl_easy_init();
-	json = malloc(sizeof (char) * 768);
+	#if DEBUG
+	DBG("curl_global_init()");
+	#endif
+
+	curl_global_init(CURL_GLOBAL_ALL);
 
 	if(!handle) {
 		ERR(prog_name, "unable to initialise libcurl session");
@@ -63,35 +62,47 @@ char *get_json(const char *const url, const char *const prog_name) {
 		exit(EXIT_FAILURE);
 	}
 
+	#if DEBUG
+	DBG("curl_easy_setopt()");
+	#endif
+
 	curl_easy_setopt(
 		handle,
 		CURLOPT_URL,
 		url
 	);
 
+	#if DEBUG
+	DBG("curl_easy_setopt()");
+	#endif
+
+	// sets the function to call
 	curl_easy_setopt(
 		handle,
 		CURLOPT_WRITEFUNCTION,
 		write_data
 	);
 
+	#if DEBUG
+	DBG("curl_easy_setopt()");
+	#endif
+
+	// sets the data to be given to the function
 	curl_easy_setopt(
 		handle,
 		CURLOPT_WRITEDATA,
 		json
 	);
 
+	#if DEBUG
+	DBG("curl_easy_perform()");
+	#endif
+
+	// performs the request, stores result
 	result = curl_easy_perform(handle);
 
 	if(result != CURLE_OK) {
-		fprintf(
-			stderr,
-			"%s: error: unable to perform cURL request - \"%s\" (%d)\n",
-			prog_name,
-			curl_easy_strerror(result),
-			result
-		);
-
+		ERR(prog_name, curl_easy_strerror(result));
 		exit(EXIT_FAILURE);
 	}
 
@@ -103,37 +114,66 @@ rates_t parse_json(const char *const json, const char *const prog_name) {
 	json_t *data;
 	json_error_t error;
 	rates_t json_rates;
-	json_t *root;
-	json_t *sell;
 
-	root = json_loads(
+	#if DEBUG
+	DBG("json_loads()");
+	#endif
+
+	json_t *root = json_loads(
 		json,
 		0,
 		&error
 	);
 
-	if(!root) {
-		fprintf(
-			stderr,
-			"%s: error: on line %d: \"%s\"\n",
-			prog_name,
-			error.line,
-			error.text
-		);
+	json_t *sell;
 
+	if(!root) {
+		ERR(prog_name, error.text);
 		exit(EXIT_FAILURE);
 	}
 
+	#if DEBUG
+	DBG("json_object_get()");
+	DBG("json_string_value()");
+	DBG("strcmp()");
+	#endif
+
 	json_rates.result = strcmp(json_string_value(json_object_get(root, "result")), "success") ? false : true;
+
+	#if DEBUG
+	DBG("json_object_get()");
+	#endif
 
 	data = json_object_get(root, "data");
 
+	#if DEBUG
+	DBG("json_object_get()");
+	#endif
+
 	buy = json_object_get(data, "buy");
+
+	#if DEBUG
+	DBG("json_object_get()");
+	#endif
 
 	sell = json_object_get(data, "sell");
 
+	#if DEBUG
+	DBG("json_object_get()");
+	DBG("json_string_value()");
+	DBG("atof()");
+	#endif
+
+	// stores the buy value as a float
 	json_rates.buy = atof(json_string_value(json_object_get(buy, "value")));
 
+	#if DEBUG
+	DBG("json_object_get()");
+	DBG("json_string_value()");
+	DBG("atof()");
+	#endif
+
+	// ^
 	json_rates.sell = atof(json_string_value(json_object_get(sell, "value")));
 
 	return json_rates;
@@ -145,7 +185,11 @@ size_t write_data(
 	size_t nmemb,
 	void *userdata
 ) {
+	#if DEBUG
+	DBG("strcpy()");
+	#endif
+
 	strcpy(userdata, buffer);
 
-	return (size * nmemb);
+	return (size * nmemb);  // needed for libcURL verification
 }

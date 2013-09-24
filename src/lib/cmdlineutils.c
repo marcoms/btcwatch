@@ -19,28 +19,29 @@
 
 #include "../../config.h"
 
-#if HAVE_LIBC
-	#include <stdlib.h>		// exit(), EXIT_SUCCESS
-	#include <stdio.h>		// printf()
-#else
-	#error libc not found
-#endif
+#include <stdlib.h>						// exit(), EXIT_SUCCESS
+#include <stdio.h>						// printf()
 
-#include "../include/cmdlineutils.h"
+#include "../include/cmdlineutils.h"	// help(), version()
+#include "../include/debug.h"			// DBG()
 
 noreturn void help(const char *const prog_name, const char *const optstring) {
+	#if DEBUG
+	DBG("help()");
+	#endif
+
 	printf(
 		"usage: %s -%s\n"
 		"get Bitcoin trade information\n"
 		"\n"
 		"options:\n"
-		"  -?, -h         print this help\n"
-		"  -V             print version number\n"
-		"  -b             print buy price\n"
-		"  -c currency    set conversion currency\n"
-		"  -p             check for a successful JSON response\n"
-		"  -s             print sell price\n"
-		"  -v             increase verbosity\n"
+		"  -?, -h         --help                 print this help\n"
+		"  -V             --version              print version number\n"
+		"  -b             --buy                  print buy price\n"
+		"  -c currency    --currency=currency    set conversion currency\n"
+		"  -p             --ping                 check for a successful JSON response\n"
+		"  -s             --sell                 print sell price\n"
+		"  -v             --verbose              increase verbosity\n"
 		"\n"
 		"report bugs to <marco@scannadinari.co.uk>\n",
 		prog_name,
@@ -51,7 +52,23 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 }
 
 noreturn void version(const char *const prog_name, const char *const version) {
-	printf("%s %s\n", prog_name, version);
+	#if DEBUG
+	DBG("version()");
+	#endif
+
+	printf(
+		"%s %s\n",
+		prog_name,
+		version
+	);
+
+	#if DEBUG
+	printf(
+		"compiled with %s %s (excluding macros)\n",
+		CC,
+		CFLAGS
+	);
+	#endif
 
 	exit(EXIT_SUCCESS);
 }

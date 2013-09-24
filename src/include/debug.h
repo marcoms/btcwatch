@@ -17,10 +17,10 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERRUTILS_H
-#define ERRUTILS_H
+#ifndef DEBUG_H
+#define DEBUG_H
 
-#define ERR(prog_name, err) fprintf(stderr, "%s: error: %s\n", prog_name, err);
+#define DBG(debug) printf("DEBUG: %s\n", debug)
 
 #include <stdio.h>
 

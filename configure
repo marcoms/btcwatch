@@ -626,9 +626,6 @@ LIBOBJS
 EGREP
 GREP
 CPP
-PKGCONFIG
-AR
-RANLIB
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -2817,280 +2814,237 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_RANLIB+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /" >&5
+$as_echo_n "checking for /... " >&6; }
+if ${ac_cv_file__+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$RANLIB"; then
-  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/"; then
+  ac_cv_file__=yes
 else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
+  ac_cv_file__=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__" >&5
+$as_echo "$ac_cv_file__" >&6; }
+if test "x$ac_cv_file__" = xyes; then :
 
-fi
-fi
-RANLIB=$ac_cv_prog_RANLIB
-if test -n "$RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $RANLIB" >&5
-$as_echo "$RANLIB" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  echo "  ./configure: error: cannot find /"; exit 1
 fi
 
-
-fi
-if test -z "$ac_cv_prog_RANLIB"; then
-  ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_RANLIB+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ./" >&5
+$as_echo_n "checking for ./... " >&6; }
+if ${ac_cv_file___+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$ac_ct_RANLIB"; then
-  ac_cv_prog_ac_ct_RANLIB="$ac_ct_RANLIB" # Let the user override the test.
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "./"; then
+  ac_cv_file___=yes
 else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
+  ac_cv_file___=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file___" >&5
+$as_echo "$ac_cv_file___" >&6; }
+if test "x$ac_cv_file___" = xyes; then :
 
-fi
-fi
-ac_ct_RANLIB=$ac_cv_prog_ac_ct_RANLIB
-if test -n "$ac_ct_RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_RANLIB" >&5
-$as_echo "$ac_ct_RANLIB" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  echo "  ./configure: error: cannot find ./"; exit 1
 fi
 
-  if test "x$ac_ct_RANLIB" = x; then
-    RANLIB=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    RANLIB=$ac_ct_RANLIB
-  fi
-else
-  RANLIB="$ac_cv_prog_RANLIB"
-fi
-
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ar", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ar; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_AR+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/" >&5
+$as_echo_n "checking for src/... " >&6; }
+if ${ac_cv_file_src_+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$AR"; then
-  ac_cv_prog_AR="$AR" # Let the user override the test.
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/"; then
+  ac_cv_file_src_=yes
 else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_AR="${ac_tool_prefix}ar"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
+  ac_cv_file_src_=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_" >&5
+$as_echo "$ac_cv_file_src_" >&6; }
+if test "x$ac_cv_file_src_" = xyes; then :
 
-fi
-fi
-AR=$ac_cv_prog_AR
-if test -n "$AR"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AR" >&5
-$as_echo "$AR" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  echo "  ./configure: error: cannot find src/"; exit 1
 fi
 
-
-fi
-if test -z "$ac_cv_prog_AR"; then
-  ac_ct_AR=$AR
-  # Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_AR+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/" >&5
+$as_echo_n "checking for src/include/... " >&6; }
+if ${ac_cv_file_src_include_+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$ac_ct_AR"; then
-  ac_cv_prog_ac_ct_AR="$ac_ct_AR" # Let the user override the test.
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/include/"; then
+  ac_cv_file_src_include_=yes
 else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_AR="ar"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
+  ac_cv_file_src_include_=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_" >&5
+$as_echo "$ac_cv_file_src_include_" >&6; }
+if test "x$ac_cv_file_src_include_" = xyes; then :
 
-fi
-fi
-ac_ct_AR=$ac_cv_prog_ac_ct_AR
-if test -n "$ac_ct_AR"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_AR" >&5
-$as_echo "$ac_ct_AR" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  echo "  ./configure: error: cannot find src/include/"; exit 1
 fi
 
-  if test "x$ac_ct_AR" = x; then
-    AR=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    AR=$ac_ct_AR
-  fi
-else
-  AR="$ac_cv_prog_AR"
-fi
-
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_PKGCONFIG+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/" >&5
+$as_echo_n "checking for src/lib/... " >&6; }
+if ${ac_cv_file_src_lib_+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$PKGCONFIG"; then
-  ac_cv_prog_PKGCONFIG="$PKGCONFIG" # Let the user override the test.
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/lib/"; then
+  ac_cv_file_src_lib_=yes
 else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_PKGCONFIG="${ac_tool_prefix}pkg-config"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
+  ac_cv_file_src_lib_=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_lib_" >&5
+$as_echo "$ac_cv_file_src_lib_" >&6; }
+if test "x$ac_cv_file_src_lib_" = xyes; then :
 
-fi
-fi
-PKGCONFIG=$ac_cv_prog_PKGCONFIG
-if test -n "$PKGCONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKGCONFIG" >&5
-$as_echo "$PKGCONFIG" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  echo "  ./configure: error: cannot find src/lib/"; exit 1
 fi
 
 
-fi
-if test -z "$ac_cv_prog_PKGCONFIG"; then
-  ac_ct_PKGCONFIG=$PKGCONFIG
-  # Extract the first word of "pkg-config", so it can be a program name with args.
-set dummy pkg-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_PKGCONFIG+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/btcapi.h" >&5
+$as_echo_n "checking for src/include/btcapi.h... " >&6; }
+if ${ac_cv_file_src_include_btcapi_h+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$ac_ct_PKGCONFIG"; then
-  ac_cv_prog_ac_ct_PKGCONFIG="$ac_ct_PKGCONFIG" # Let the user override the test.
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/include/btcapi.h"; then
+  ac_cv_file_src_include_btcapi_h=yes
 else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_PKGCONFIG="pkg-config"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
+  ac_cv_file_src_include_btcapi_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_btcapi_h" >&5
+$as_echo "$ac_cv_file_src_include_btcapi_h" >&6; }
+if test "x$ac_cv_file_src_include_btcapi_h" = xyes; then :
 
-fi
-fi
-ac_ct_PKGCONFIG=$ac_cv_prog_ac_ct_PKGCONFIG
-if test -n "$ac_ct_PKGCONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_PKGCONFIG" >&5
-$as_echo "$ac_ct_PKGCONFIG" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  echo "  ./configure: error: cannot find src/include/btcapi.h"; exit 1
 fi
 
-  if test "x$ac_ct_PKGCONFIG" = x; then
-    PKGCONFIG=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    PKGCONFIG=$ac_ct_PKGCONFIG
-  fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/cmdlineutils.h" >&5
+$as_echo_n "checking for src/include/cmdlineutils.h... " >&6; }
+if ${ac_cv_file_src_include_cmdlineutils_h+:} false; then :
+  $as_echo_n "(cached) " >&6
 else
-  PKGCONFIG="$ac_cv_prog_PKGCONFIG"
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/include/cmdlineutils.h"; then
+  ac_cv_file_src_include_cmdlineutils_h=yes
+else
+  ac_cv_file_src_include_cmdlineutils_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_cmdlineutils_h" >&5
+$as_echo "$ac_cv_file_src_include_cmdlineutils_h" >&6; }
+if test "x$ac_cv_file_src_include_cmdlineutils_h" = xyes; then :
+
+else
+  echo "  ./configure: error: cannot find src/include/cmdlineutils.h"; exit 1
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/err.h" >&5
+$as_echo_n "checking for src/include/err.h... " >&6; }
+if ${ac_cv_file_src_include_err_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/include/err.h"; then
+  ac_cv_file_src_include_err_h=yes
+else
+  ac_cv_file_src_include_err_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_err_h" >&5
+$as_echo "$ac_cv_file_src_include_err_h" >&6; }
+if test "x$ac_cv_file_src_include_err_h" = xyes; then :
+
+else
+  echo "  ./configure: error: cannot find src/include/err.h"; exit 1
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/main.c" >&5
+$as_echo_n "checking for src/main.c... " >&6; }
+if ${ac_cv_file_src_main_c+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/main.c"; then
+  ac_cv_file_src_main_c=yes
+else
+  ac_cv_file_src_main_c=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_main_c" >&5
+$as_echo "$ac_cv_file_src_main_c" >&6; }
+if test "x$ac_cv_file_src_main_c" = xyes; then :
+
+else
+  echo "  ./configure: error: cannot find src/main.c"; exit 1
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/btcapi.c" >&5
+$as_echo_n "checking for src/lib/btcapi.c... " >&6; }
+if ${ac_cv_file_src_lib_btcapi_c+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/lib/btcapi.c"; then
+  ac_cv_file_src_lib_btcapi_c=yes
+else
+  ac_cv_file_src_lib_btcapi_c=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_lib_btcapi_c" >&5
+$as_echo "$ac_cv_file_src_lib_btcapi_c" >&6; }
+if test "x$ac_cv_file_src_lib_btcapi_c" = xyes; then :
+
+else
+  echo "  ./configure: error: cannot find src/lib/btcapi.c"; exit 1
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/cmdlineutils.c" >&5
+$as_echo_n "checking for src/lib/cmdlineutils.c... " >&6; }
+if ${ac_cv_file_src_lib_cmdlineutils_c+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "src/lib/cmdlineutils.c"; then
+  ac_cv_file_src_lib_cmdlineutils_c=yes
+else
+  ac_cv_file_src_lib_cmdlineutils_c=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_lib_cmdlineutils_c" >&5
+$as_echo "$ac_cv_file_src_lib_cmdlineutils_c" >&6; }
+if test "x$ac_cv_file_src_lib_cmdlineutils_c" = xyes; then :
+
+else
+  echo "  ./configure: error: cannot find src/lib/cmdlineutils.c"; exit 1
 fi
 
 
@@ -3496,7 +3450,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "assert.h" "ac_cv_header_assert_h" "$ac_i
 if test "x$ac_cv_header_assert_h" = xyes; then :
 
 else
-  echo "  ./configure: error: assert.h not found"; exit 1
+  echo "  ./configure: error: cannot find assert.h"; exit 1
 fi
 
 
@@ -3504,7 +3458,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "ctype.h" "ac_cv_header_ctype_h" "$ac_inc
 if test "x$ac_cv_header_ctype_h" = xyes; then :
 
 else
-  echo "  ./configure: error: ctype.h not found"; exit 1
+  echo "  ./configure: error: cannot find ctype.h"; exit 1
 fi
 
 
@@ -3512,7 +3466,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_i
 if test "x$ac_cv_header_stdlib_h" = xyes; then :
 
 else
-  echo "  ./configure: error: stdlib.h not found"; exit 1
+  echo "  ./configure: error: cannot find stdlib.h"; exit 1
 fi
 
 
@@ -3520,7 +3474,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_i
 if test "x$ac_cv_header_stdint_h" = xyes; then :
 
 else
-  echo "  ./configure: error: stdint.h not found"; exit 1
+  echo "  ./configure: error: cannot find stdint.h"; exit 1
 fi
 
 
@@ -3528,7 +3482,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdio.h" "ac_cv_header_stdio_h" "$ac_inc
 if test "x$ac_cv_header_stdio_h" = xyes; then :
 
 else
-  echo "  ./configure: error: stdio.h not found"; exit 1
+  echo "  ./configure: error: cannot find stdio.h"; exit 1
 fi
 
 
@@ -3536,7 +3490,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdbool.h" "ac_cv_header_stdbool_h" "$ac
 if test "x$ac_cv_header_stdbool_h" = xyes; then :
 
 else
-  echo "  ./configure: error: stdio.h not found"; exit 1
+  echo "  ./configure: error: cannot find stdio.h"; exit 1
 fi
 
 
@@ -3544,7 +3498,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "curl/curl.h" "ac_cv_header_curl_curl_h" 
 if test "x$ac_cv_header_curl_curl_h" = xyes; then :
 
 else
-  echo "  ./configure: error: curl/curl.h not found"; exit 1
+  echo "  ./configure: error: cannot find curl/curl.h"; exit 1
 fi
 
 
@@ -3552,7 +3506,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "getopt.h" "ac_cv_header_getopt_h" "$ac_i
 if test "x$ac_cv_header_getopt_h" = xyes; then :
 
 else
-  echo "  ./configure: error: getopt.h not found"; exit 1
+  echo "  ./configure: error: cannot find getopt.h"; exit 1
 fi
 
 
@@ -3560,7 +3514,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "jansson.h" "ac_cv_header_jansson_h" "$ac
 if test "x$ac_cv_header_jansson_h" = xyes; then :
 
 else
-  echo "  ./configure: error: jansson.h not found"; exit 1
+  echo "  ./configure: error: cannot find jansson.h"; exit 1
 fi
 
 
@@ -3568,7 +3522,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "string.h" "ac_cv_header_string_h" "$ac_i
 if test "x$ac_cv_header_string_h" = xyes; then :
 
 else
-  echo "  ./configure: error: string.h not found"; exit 1
+  echo "  ./configure: error: cannot find string.h"; exit 1
 fi
 
 
@@ -3617,7 +3571,7 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 else
-  echo "  ./configure: error: libc not found"; exit 1
+  echo "  ./configure: error: cannot find libc"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for curl_easy_init in -lcurl" >&5
@@ -3664,7 +3618,7 @@ _ACEOF
   LIBS="-lcurl $LIBS"
 
 else
-  echo "  ./configure: error: libcurl not found"; exit 1
+  echo "  ./configure: error: cannot find libcurl"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for json_loads in -ljansson" >&5
@@ -3711,7 +3665,7 @@ _ACEOF
   LIBS="-ljansson $LIBS"
 
 else
-  echo "  ./configure: error: libjansson not found"; exit 1
+  echo "  ./configure: error: cannot find libjansson"; exit 1
 fi
 
 
@@ -4444,8 +4398,8 @@ fi
 
 
 echo
-echo "prefix: $prefix"
-echo
+echo "prefix:   $prefix"
 
 echo $prefix > prefix.txt
+
 cp confdefs.h config.h
