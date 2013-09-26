@@ -21,9 +21,22 @@
 #define DEBUG_H
 
 #include <stdarg.h>
-
-inline int debug(const char *const format, ...);
-
 #include <stdio.h>
+
+static inline int debug(const char *const format, ...) {
+	va_list args;
+	int nchars;
+
+	va_start(args, format);
+
+	nchars = printf("DEBUG: ");
+	nchars += vprintf(format, args);
+
+	putchar('\n');
+
+	va_end(args);
+
+	return nchars;
+}
 
 #endif

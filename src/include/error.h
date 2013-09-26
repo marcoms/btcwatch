@@ -22,6 +22,20 @@
 
 #include <stdarg.h>
 
-inline int error(const char *const prog_name, const char *const format, ...);
+static inline int error(const char *const prog_name, const char *const format, ...) {
+	va_list args;
+	int nchars;
+
+	va_start(args, format);
+
+	nchars = printf("%s: error: ", prog_name);
+	nchars += vfprintf(stderr, format, args);
+
+	putchar('\n');
+
+	va_end(args);
+
+	return nchars;
+}
 
 #endif

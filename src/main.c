@@ -73,7 +73,6 @@ PS The open source "Source Code Pro" by Adobe is a brilliant monospaced
 font!
 */
 
-#define API_URL_CURRENCY_POS 32
 #define OPTSTRING "?Vbc:hpsv"
 
 #include "../config.h"
@@ -92,29 +91,7 @@ font!
 
 int main(int argc, char** argv) {
 	char *api;
-	char api_url[] = "https://data.mtgox.com/api/2/BTCUSD/money/ticker_fast";
-	const char currencies[][3 + 1] = {
-		"AUD",
-		"CAD",
-		"CHF",
-		"CNY",
-		"CZK",
-		"DKK",
-		"EUR",
-		"GBP",
-		"HKD",
-		"JPY",
-		"NOK",
-		"PLN",
-		"RUB",
-		"SEK",
-		"SGD",
-		"THB",
-		"USD"
-	};
-
 	char currency[] = "USD";
-	char currency_arg[3 + 1];
 	bool got_api = false;
 	const struct option long_options[] = {
 		{
@@ -175,7 +152,6 @@ int main(int argc, char** argv) {
 		.sell = 0.0f
 	};
 
-	bool valid_currency = false;
 	bool verbose = false;
 
 	#if DEBUG
@@ -225,7 +201,7 @@ int main(int argc, char** argv) {
 					debug("get_json()");
 					#endif
 
-					api = get_json(api_url, argv[0]);
+					api = get_json(currency, argv[0]);
 
 					#if DEBUG
 					debug("get_json()");
@@ -238,11 +214,7 @@ int main(int argc, char** argv) {
 
 				if(rates.result) {
 					if(verbose) {
-						printf(
-							"buy: %f %s\n",
-							rates.buy,
-							currency
-						);
+						printf("buy: %f %s\n", rates.buy, currency);
 
 					} else {
 						printf("%f\n", rates.buy);
@@ -260,64 +232,7 @@ int main(int argc, char** argv) {
 				debug("got option 'c'");
 				#endif
 
-				// a currency must be 3 characters long
-				if(strlen(optarg) != 3) {
-					if(verbose) {
-						error(argv[0], "invalid currency - must be three characters long");
-					} else {
-						error(argv[0], "invalid currency");
-					}
-
-					exit(EXIT_FAILURE);
-				}
-
-				#if DEBUG
-				debug("strncpy()");
-				#endif
-
-				// copies the next argument - the desired currency - to currency_arg
-				strncpy(currency_arg, optarg, (sizeof currency_arg / sizeof currency_arg[0]));
-
-				// converts each character excluding the NUL character to its uppercase equivelant
-				for(
-					uint_fast8_t i = 0;
-					i < ((sizeof currency_arg / sizeof currency_arg[0]) - 1);
-					++i  // increments i
-				) currency_arg[i] = toupper(currency_arg[i]);
-
-				// checks for a valid currency
-				for(
-					uint_fast8_t i = 0;
-					i < ((sizeof currencies / sizeof currencies[0]));
-					++i
-				) {
-					if(!strcmp(currency_arg, currencies[i])) {
-						valid_currency = true;
-						break;
-					}
-				}
-
-				if(!valid_currency) {
-					if(verbose) {
-						error(argv[0], "invalid currency: not supported by MtGox");
-					} else {
-						error(argv[0], "invalid currency");
-					}
-
-					exit(EXIT_FAILURE);
-				}
-
-				for(
-					uint_fast8_t i = API_URL_CURRENCY_POS, j = 0;
-					i < (API_URL_CURRENCY_POS + 3);
-					++i, ++j
-				) api_url[i] = currency_arg[j];
-
-				#if DEBUG
-				debug("strncpy()");
-				#endif
-
-				strncpy(currency, currency_arg, (sizeof currency / sizeof currency[0]));
+				strcpy(currency, optarg);
 
 				break;
 
@@ -332,7 +247,7 @@ int main(int argc, char** argv) {
 					debug("get_json()");
 					#endif
 
-					api = get_json(api_url, argv[0]);
+					api = get_json(currency, argv[0]);
 
 					#if DEBUG
 					debug("parse_json()");
@@ -365,7 +280,7 @@ int main(int argc, char** argv) {
 					debug("get_json()");
 					#endif
 
-					api = get_json(api_url, argv[0]);
+					api = get_json(currency, argv[0]);
 
 					#if DEBUG
 					debug("parse_json()");
@@ -414,7 +329,7 @@ int main(int argc, char** argv) {
 		debug("get_json()");
 		#endif
 
-		api = get_json(api_url, argv[0]);
+		api = get_json(currency, argv[0]);
 
 		#if DEBUG
 		debug("parse_json()");

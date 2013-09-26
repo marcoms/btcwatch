@@ -31,14 +31,14 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 	#endif
 
 	printf(
-		"usage: %s -%s\n"
+		"usage: %s -[%s]\n"
 		"get Bitcoin trade information\n"
 		"\n"
 		"options:\n"
 		"  -?, -h         --help                 print this help\n"
 		"  -V             --version              print version number\n"
 		"  -b             --buy                  print buy price\n"
-		"  -c currency    --currency=currency    set conversion currency\n"
+		"  -c CURRENCY    --currency=CURRENCY    set conversion currency\n"
 		"  -p             --ping                 check for a successful JSON response\n"
 		"  -s             --sell                 print sell price\n"
 		"  -v             --verbose              increase verbosity\n"
@@ -56,18 +56,10 @@ noreturn void version(const char *const prog_name, const char *const version) {
 	debug("version()");
 	#endif
 
-	printf(
-		"%s %s\n",
-		prog_name,
-		version
-	);
+	printf("%s %s\n", prog_name, version);
 
 	#if DEBUG
-	printf(
-		"compiled with %s %s (excluding macros)\n",
-		CC,
-		CFLAGS
-	);
+	printf("compiled with %s %s (excluding macros)\n", CC, CFLAGS);
 	#endif
 
 	exit(EXIT_SUCCESS);

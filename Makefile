@@ -16,7 +16,7 @@ else
 	MCC=gcc
 endif
 
-MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DDEBUG=0
+MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -finline-functions -DDEBUG=0
 ifdef $(CFLAGS)
 	MCFLAGS+=$(CFLAGS)
 endif
@@ -29,7 +29,7 @@ PREFIX=$(shell cat prefix.txt)
 SRC=$(addprefix src/, main main_debug)
 
 # contents of lib/ dir
-LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug debug error)
+LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug)
 
 # all Makefile-generated files without {suf,pre}fixes
 ALL=$(SRC) $(LIB)
@@ -45,16 +45,16 @@ ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug 
 CURLFLAGS=$(shell pkg-config libcurl --cflags --libs)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags --libs)
 
-all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a src/lib/libdebug.a src/lib/liberror.a
+all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils -lerror $(CURLFLAGS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils $(CURLFLAGS) $(JANSSONFLAGS)
 	$(NEWL)
 
-debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a src/lib/libdebug.a src/lib/liberror.a
+debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi_debug -lcmdlineutils_debug -ldebug -lerror $(CURLFLAGS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi_debug -lcmdlineutils_debug $(CURLFLAGS) $(JANSSONFLAGS)
 	$(NEWL)
 
 src/main.o: src/main.c
@@ -118,34 +118,6 @@ src/lib/cmdlineutils_debug.o: src/lib/cmdlineutils.c
 	$(NEWL)
 
 src/lib/libcmdlineutils_debug.a: src/lib/cmdlineutils_debug.o
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	ar rc $@ $<
-	$(INDENT)
-	ranlib $@
-	$(NEWL)
-
-src/lib/debug.o: src/lib/debug.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	$(MCC) -o$@ $< -c $(MCFLAGS)
-	$(NEWL)
-
-src/lib/libdebug.a: src/lib/debug.o
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	ar rc $@ $<
-	$(INDENT)
-	ranlib $@
-	$(NEWL)
-
-src/lib/error.o: src/lib/error.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	$(MCC) -o$@ $< -c $(MCFLAGS)
-	$(NEWL)
-
-src/lib/liberror.a: src/lib/error.o
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
 	ar rc $@ $<
