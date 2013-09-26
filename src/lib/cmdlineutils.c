@@ -27,7 +27,7 @@
 
 noreturn void help(const char *const prog_name, const char *const optstring) {
 	#if DEBUG
-	DBG("help()");
+	debug("help()");
 	#endif
 
 	printf(
@@ -53,7 +53,7 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 
 noreturn void version(const char *const prog_name, const char *const version) {
 	#if DEBUG
-	DBG("version()");
+	debug("version()");
 	#endif
 
 	printf(

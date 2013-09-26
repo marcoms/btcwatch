@@ -17,11 +17,22 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERRUTILS_H
-#define ERRUTILS_H
-
-#define ERR(prog_name, error) fprintf(stderr, "%s: error: %s\n", prog_name, error);
-
 #include <stdio.h>
 
-#endif
+#include "../include/error.h"
+
+inline int error(const char *const prog_name, const char *const format, ...) {
+	va_list args;
+	int nchars;
+
+	va_start(args, format);
+
+	nchars = printf("%s: error: ", prog_name);
+	nchars += vfprintf(stderr, format, args);
+
+	putchar('\n');
+
+	va_end(args);
+
+	return nchars;
+}

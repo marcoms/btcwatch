@@ -17,13 +17,11 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef ERRUTILS_H
+#define ERRUTILS_H
 
 #include <stdarg.h>
 
-inline int debug(const char *const format, ...);
-
-#include <stdio.h>
+inline int error(const char *const prog_name, const char *const format, ...);
 
 #endif

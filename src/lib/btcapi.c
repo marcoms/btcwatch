@@ -27,43 +27,43 @@
 #include <string.h>				// atof(), strcmp()
 
 #include "../include/btcapi.h"	// get_json(), parse_json(), rates_t
-#include "../include/debug.h"	// DBG()
-#include "../include/err.h"		// ERR()
+#include "../include/debug.h"	// debug()
+#include "../include/error.h"	// error()
 
 char *get_json(const char *const url, const char *const prog_name) {
 	#if DEBUG
-	DBG("curl_easy_init()");
+	debug("curl_easy_init()");
 	#endif
 
 	CURL *handle = curl_easy_init();
 
 	#if DEBUG
-	DBG("malloc()");
+	debug("malloc()");
 	#endif
 
 	char *json = malloc(sizeof (char) * 1600);  // JSON string returned by URL
 	CURLcode result;
 
 	#if DEBUG
-	DBG("curl_global_init()");
+	debug("curl_global_init()");
 	#endif
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
 	if(!handle) {
-		ERR(prog_name, "unable to initialise libcurl session");
+		error(prog_name, "unable to initialise libcurl session");
 
 		exit(EXIT_FAILURE);
 	}
 
 	if(!json) {
-		ERR(prog_name, "unable to allocate memory");
+		error(prog_name, "unable to allocate memory");
 
 		exit(EXIT_FAILURE);
 	}
 
 	#if DEBUG
-	DBG("curl_easy_setopt()");
+	debug("curl_easy_setopt()");
 	#endif
 
 	curl_easy_setopt(
@@ -73,7 +73,7 @@ char *get_json(const char *const url, const char *const prog_name) {
 	);
 
 	#if DEBUG
-	DBG("curl_easy_setopt()");
+	debug("curl_easy_setopt()");
 	#endif
 
 	// sets the function to call
@@ -84,7 +84,7 @@ char *get_json(const char *const url, const char *const prog_name) {
 	);
 
 	#if DEBUG
-	DBG("curl_easy_setopt()");
+	debug("curl_easy_setopt()");
 	#endif
 
 	// sets the data to be given to the function
@@ -95,14 +95,14 @@ char *get_json(const char *const url, const char *const prog_name) {
 	);
 
 	#if DEBUG
-	DBG("curl_easy_perform()");
+	debug("curl_easy_perform()");
 	#endif
 
 	// performs the request, stores result
 	result = curl_easy_perform(handle);
 
 	if(result != CURLE_OK) {
-		ERR(prog_name, curl_easy_strerror(result));
+		error(prog_name, curl_easy_strerror(result));
 		exit(EXIT_FAILURE);
 	}
 
@@ -112,65 +112,65 @@ char *get_json(const char *const url, const char *const prog_name) {
 rates_t parse_json(const char *const json, const char *const prog_name) {
 	json_t *buy;
 	json_t *data;
-	json_error_t error;
+	json_error_t json_error;
 	rates_t json_rates;
 
 	#if DEBUG
-	DBG("json_loads()");
+	debug("json_loads()");
 	#endif
 
 	json_t *root = json_loads(
 		json,
 		0,
-		&error
+		&json_error
 	);
 
 	json_t *sell;
 
 	if(!root) {
-		ERR(prog_name, error.text);
+		error(prog_name, json_error.text);
 		exit(EXIT_FAILURE);
 	}
 
 	#if DEBUG
-	DBG("json_object_get()");
-	DBG("json_string_value()");
-	DBG("strcmp()");
+	debug("json_object_get()");
+	debug("json_string_value()");
+	debug("strcmp()");
 	#endif
 
 	json_rates.result = strcmp(json_string_value(json_object_get(root, "result")), "success") ? false : true;
 
 	#if DEBUG
-	DBG("json_object_get()");
+	debug("json_object_get()");
 	#endif
 
 	data = json_object_get(root, "data");
 
 	#if DEBUG
-	DBG("json_object_get()");
+	debug("json_object_get()");
 	#endif
 
 	buy = json_object_get(data, "buy");
 
 	#if DEBUG
-	DBG("json_object_get()");
+	debug("json_object_get()");
 	#endif
 
 	sell = json_object_get(data, "sell");
 
 	#if DEBUG
-	DBG("json_object_get()");
-	DBG("json_string_value()");
-	DBG("atof()");
+	debug("json_object_get()");
+	debug("json_string_value()");
+	debug("atof()");
 	#endif
 
 	// stores the buy value as a float
 	json_rates.buy = atof(json_string_value(json_object_get(buy, "value")));
 
 	#if DEBUG
-	DBG("json_object_get()");
-	DBG("json_string_value()");
-	DBG("atof()");
+	debug("json_object_get()");
+	debug("json_string_value()");
+	debug("atof()");
 	#endif
 
 	// ^
@@ -186,7 +186,7 @@ size_t write_data(
 	void *userdata
 ) {
 	#if DEBUG
-	DBG("strcpy()");
+	debug("strcpy()");
 	#endif
 
 	strcpy(userdata, buffer);

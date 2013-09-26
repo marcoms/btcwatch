@@ -29,7 +29,7 @@ PREFIX=$(shell cat prefix.txt)
 SRC=$(addprefix src/, main main_debug)
 
 # contents of lib/ dir
-LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug)
+LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug debug error)
 
 # all Makefile-generated files without {suf,pre}fixes
 ALL=$(SRC) $(LIB)
@@ -40,45 +40,45 @@ ALLC=$(addsuffix .c, $(ALL))
 ALLO=$(addsuffix .o, $(ALL))
 
 # all Makefile-generated files with .a extension and "lib" prefix
-ALLA=$(addprefix src/lib/, $(addsuffix .a, libbtcapi libbtcapi_debug libcmdlineutils libcmdlineutils_debug))
+ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug cmdlineutils cmdlineutils_debug debug error)))
 
 CURLFLAGS=$(shell pkg-config libcurl --cflags --libs)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags --libs)
 
-all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a
+all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a src/lib/libdebug.a src/lib/liberror.a
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils $(CURLFLAGS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils -lerror $(CURLFLAGS) $(JANSSONFLAGS)
 	$(NEWL)
 
-debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a
+debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a src/lib/libdebug.a src/lib/liberror.a
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi_debug -lcmdlineutils_debug $(CURLFLAGS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi_debug -lcmdlineutils_debug -ldebug -lerror $(CURLFLAGS) $(JANSSONFLAGS)
 	$(NEWL)
 
 src/main.o: src/main.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -o$@ $^ -c $(MCFLAGS) -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
+	$(MCC) -o$@ $< -c $(MCFLAGS) -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
 	$(NEWL)
 
 src/main_debug.o: src/main.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -o$@ $^ -c $(MCFLAGS_DEBUG) -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
+	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG) -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
 	$(NEWL)
 
 src/lib/btcapi.o: src/lib/btcapi.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -o$@ $^ -c $(MCFLAGS)
+	$(MCC) -o$@ $< -c $(MCFLAGS)
 	$(NEWL)
 
 src/lib/libbtcapi.a: src/lib/btcapi.o
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	ar rc $@ $^
+	ar rc $@ $<
 	$(INDENT)
 	ranlib $@
 	$(NEWL)
@@ -86,13 +86,13 @@ src/lib/libbtcapi.a: src/lib/btcapi.o
 src/lib/btcapi_debug.o: src/lib/btcapi.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -o$@ $^ -c $(MCFLAGS_DEBUG)
+	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG)
 	$(NEWL)
 
 src/lib/libbtcapi_debug.a: src/lib/btcapi_debug.o
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	ar rc $@ $^
+	ar rc $@ $<
 	$(INDENT)
 	ranlib $@
 	$(NEWL)
@@ -100,13 +100,13 @@ src/lib/libbtcapi_debug.a: src/lib/btcapi_debug.o
 src/lib/cmdlineutils.o: src/lib/cmdlineutils.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -o$@ $^ -c $(MCFLAGS)
+	$(MCC) -o$@ $< -c $(MCFLAGS)
 	$(NEWL)
 
 src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	ar rc $@ $^
+	ar rc $@ $<
 	$(INDENT)
 	ranlib $@
 	$(NEWL)
@@ -114,13 +114,41 @@ src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
 src/lib/cmdlineutils_debug.o: src/lib/cmdlineutils.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -o $@ $^ -c $(MCFLAGS_DEBUG)
+	$(MCC) -o $@ $< -c $(MCFLAGS_DEBUG)
 	$(NEWL)
 
 src/lib/libcmdlineutils_debug.a: src/lib/cmdlineutils_debug.o
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	ar rc $@ $^
+	ar rc $@ $<
+	$(INDENT)
+	ranlib $@
+	$(NEWL)
+
+src/lib/debug.o: src/lib/debug.c
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -o$@ $< -c $(MCFLAGS)
+	$(NEWL)
+
+src/lib/libdebug.a: src/lib/debug.o
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	ar rc $@ $<
+	$(INDENT)
+	ranlib $@
+	$(NEWL)
+
+src/lib/error.o: src/lib/error.c
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	$(MCC) -o$@ $< -c $(MCFLAGS)
+	$(NEWL)
+
+src/lib/liberror.a: src/lib/error.o
+	@echo -e $(BOLD)$@$(RESET)
+	$(INDENT)
+	ar rc $@ $<
 	$(INDENT)
 	ranlib $@
 	$(NEWL)

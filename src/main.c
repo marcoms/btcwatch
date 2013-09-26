@@ -87,8 +87,8 @@ font!
 
 #include "include/btcapi.h"			// rates_t, get_json(), parse_json()
 #include "include/cmdlineutils.h"	// help()
-#include "include/debug.h"			// DBG()
-#include "include/err.h"			// ERR()
+#include "include/debug.h"			// debug()
+#include "include/error.h"			// error()
 
 int main(int argc, char** argv) {
 	char *api;
@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
 	bool verbose = false;
 
 	#if DEBUG
-	DBG("getopt_long()");
+	debug("getopt_long()");
 	#endif
 
 	while((opt = getopt_long(
@@ -192,7 +192,11 @@ int main(int argc, char** argv) {
 		switch(opt) {
 			case '?': case 'h':
 				#if DEBUG
-				DBG("got option 'h'");
+				debug("got option 'h'");
+				#endif
+
+				#if DEBUG
+				debug("help()");
 				#endif
 
 				help(argv[0], OPTSTRING);
@@ -200,7 +204,11 @@ int main(int argc, char** argv) {
 
 			case 'V':
 				#if DEBUG
-				DBG("got option 'V'");
+				debug("got option 'V'");
+				#endif
+
+				#if DEBUG
+				debug("version()");
 				#endif
 
 				version(argv[0], BTCWATCH_VERSION);
@@ -208,12 +216,21 @@ int main(int argc, char** argv) {
 
 			case 'b':
 				#if DEBUG
-				DBG("got option 'b'");
+				debug("got option 'b'");
 				#endif
 
 				// checks whether API was already processed - saves a lot of time
 				if(!got_api) {
+					#if DEBUG
+					debug("get_json()");
+					#endif
+
 					api = get_json(api_url, argv[0]);
+
+					#if DEBUG
+					debug("get_json()");
+					#endif
+
 					rates = parse_json(api, argv[0]);
 
 					got_api = true;
@@ -232,7 +249,7 @@ int main(int argc, char** argv) {
 					}
 
 				} else {
-					ERR(argv[0], "couldn't get a successful JSON string");
+					error(argv[0], "couldn't get a successful JSON string");
 					exit(EXIT_FAILURE);
 				}
 
@@ -240,19 +257,23 @@ int main(int argc, char** argv) {
 
 			case 'c':
 				#if DEBUG
-				DBG("got option 'c'");
+				debug("got option 'c'");
 				#endif
 
 				// a currency must be 3 characters long
 				if(strlen(optarg) != 3) {
 					if(verbose) {
-						ERR(argv[0], "invalid currency - must be three characters long");
+						error(argv[0], "invalid currency - must be three characters long");
 					} else {
-						ERR(argv[0], "invalid currency");
+						error(argv[0], "invalid currency");
 					}
 
 					exit(EXIT_FAILURE);
 				}
+
+				#if DEBUG
+				debug("strncpy()");
+				#endif
 
 				// copies the next argument - the desired currency - to currency_arg
 				strncpy(currency_arg, optarg, (sizeof currency_arg / sizeof currency_arg[0]));
@@ -278,9 +299,9 @@ int main(int argc, char** argv) {
 
 				if(!valid_currency) {
 					if(verbose) {
-						ERR(argv[0], "invalid currency: not supported by MtGox");
+						error(argv[0], "invalid currency: not supported by MtGox");
 					} else {
-						ERR(argv[0], "invalid currency");
+						error(argv[0], "invalid currency");
 					}
 
 					exit(EXIT_FAILURE);
@@ -292,18 +313,31 @@ int main(int argc, char** argv) {
 					++i, ++j
 				) api_url[i] = currency_arg[j];
 
+				#if DEBUG
+				debug("strncpy()");
+				#endif
+
 				strncpy(currency, currency_arg, (sizeof currency / sizeof currency[0]));
 
 				break;
 
 			case 'p':
 				#if DEBUG
-				DBG("got option 'p'");
+				debug("got option 'p'");
 				#endif
 
 				// ^
 				if(!got_api) {
+					#if DEBUG
+					debug("get_json()");
+					#endif
+
 					api = get_json(api_url, argv[0]);
+
+					#if DEBUG
+					debug("parse_json()");
+					#endif
+
 					rates = parse_json(api, argv[0]);
 
 					got_api = true;
@@ -313,7 +347,7 @@ int main(int argc, char** argv) {
 					if(verbose) printf("result: ");
 					printf("success\n");
 				} else {
-					ERR(argv[0], "couldn't get a successful JSON string");
+					error(argv[0], "couldn't get a successful JSON string");
 					exit(EXIT_FAILURE);
 				}
 
@@ -321,12 +355,22 @@ int main(int argc, char** argv) {
 
 			case 's':
 				#if DEBUG
-				DBG("got option 's'");
+				debug("got option 's'");
 				#endif
 
 				// ^
 				if(!got_api) {
+
+					#if DEBUG
+					debug("get_json()");
+					#endif
+
 					api = get_json(api_url, argv[0]);
+
+					#if DEBUG
+					debug("parse_json()");
+					#endif
+
 					rates = parse_json(api, argv[0]);
 
 					got_api = true;
@@ -345,7 +389,7 @@ int main(int argc, char** argv) {
 					}
 
 				} else {
-					ERR(argv[0], "couldn't get a successful JSON string");
+					error(argv[0], "couldn't get a successful JSON string");
 					exit(EXIT_FAILURE);
 				}
 
@@ -353,7 +397,7 @@ int main(int argc, char** argv) {
 
 			case 'v':
 				#if DEBUG
-				DBG("got option 'v'");
+				debug("got option 'v'");
 				#endif
 
 				verbose = true;
@@ -367,13 +411,13 @@ int main(int argc, char** argv) {
 
 	if(argc == 1) {
 		#if DEBUG
-		DBG("get_json()");
+		debug("get_json()");
 		#endif
 
 		api = get_json(api_url, argv[0]);
 
 		#if DEBUG
-		DBG("parse_json()");
+		debug("parse_json()");
 		#endif
 
 		rates = parse_json(api, argv[0]);
@@ -390,7 +434,7 @@ int main(int argc, char** argv) {
 			);
 
 		} else {
-			ERR(argv[0], "couldn't get a successful JSON string");
+			error(argv[0], "couldn't get a successful JSON string");
 			exit(EXIT_FAILURE);
 		}
 	}

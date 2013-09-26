@@ -13,7 +13,8 @@ AC_CHECK_FILE([src/lib/], [], [errnf([src/lib/])])
 
 AC_CHECK_FILE([src/include/btcapi.h], [], [errnf([src/include/btcapi.h])])
 AC_CHECK_FILE([src/include/cmdlineutils.h], [], [errnf([src/include/cmdlineutils.h])])
-AC_CHECK_FILE([src/include/err.h], [], [errnf([src/include/err.h])])
+AC_CHECK_FILE([src/include/error.h], [], [errnf([src/include/error.h])])
+AC_CHECK_FILE([src/include/debug.h], [], [errnf([src/include/debug.h])])
 
 AC_CHECK_FILE([src/main.c], [], [errnf([src/main.c])])
 AC_CHECK_FILE([src/lib/btcapi.c], [], [errnf([src/lib/btcapi.c])])
