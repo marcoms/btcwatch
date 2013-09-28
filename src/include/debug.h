@@ -23,7 +23,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-static inline int debug(const char *const format, ...) {
+inline int debug(const char *const format, ...) {
 	va_list args;
 	int nchars;
 

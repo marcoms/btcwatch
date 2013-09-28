@@ -46,15 +46,6 @@ A block of code that is already documented previously with a comment, is
 marked with a one-line comment designator and a carat (^), using the rules
 specified above:
 
-	printf("Hello, world!\n");  // prints "Hello, world!", and a new line
-
-	// initialises the string and prints it out
-	char *string = malloc(sizeof (char) * strlen("Hello, world!"));
-	strcpy(string, "Hello, world!");
-	printf("%s\n", string);
-
-	...
-
 	printf("Hello, world!\n");  // ^
 
 	...
@@ -64,13 +55,9 @@ specified above:
 	strcpy(string, "Hello, world!");
 	printf("%s\n", string);
 
-Variables are initialised (yes, this was written in the UK), not declared then
-assigned.
+Variables are initialised, not declared then assigned.
 
 Happy hacking!
-
-PS The open source "Source Code Pro" by Adobe is a brilliant monospaced
-font!
 */
 
 #define OPTSTRING "?Vbc:hpsv"
@@ -86,10 +73,13 @@ font!
 
 #include "include/btcapi.h"			// rates_t, get_json(), parse_json()
 #include "include/cmdlineutils.h"	// help()
-#include "include/debug.h"			// debug()
+#if DEBUG
+	#include "include/debug.h"		// debug()
+#endif
+
 #include "include/error.h"			// error()
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 	char *api;
 	char currency[] = "USD";
 	bool got_api = false;

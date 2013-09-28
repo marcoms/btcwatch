@@ -17,12 +17,13 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERRUTILS_H
-#define ERRUTILS_H
+#ifndef ERROR_H
+#define ERROR_H
 
 #include <stdarg.h>
+#include <stdio.h>
 
-static inline int error(const char *const prog_name, const char *const format, ...) {
+inline int error(const char *const prog_name, const char *const format, ...) {
 	va_list args;
 	int nchars;
 
