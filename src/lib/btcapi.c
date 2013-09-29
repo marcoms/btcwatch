@@ -21,18 +21,50 @@
 
 #include "../../config.h"
 
-#include <curl/curl.h>			// curl_easy_init(), curl_easy_perform(), curl_easy_setopt(), CURLcode, CURLE_OK, CURLOPT_URL, CURLOPT_WRITEDATA, CURLOPT_WRITEFUNCTION
+#include <curl/curl.h>
 #include <ctype.h>
-#include <jansson.h>			// json_error_t, json_loads(), json_object_get(), json_string_value(), json_t
-#include <stdbool.h>			// bool, false, true
-#include <stdio.h>				// fprintf()
+#include <jansson.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>				// exit(), EXIT_FAILURE
-#include <string.h>				// atof(), strcmp()
+#include <stdlib.h>
+#include <string.h>
 
-#include "../include/btcapi.h"	// get_json(), parse_json(), rates_t
-#include "../include/debug.h"	// debug()
-#include "../include/error.h"	// error()
+#include "../include/btcapi.h"
+#include "../include/debug.h"
+#include "../include/error.h"
+
+bool got_mtgox_rates = false;
+rates_t mtgox_rates = {
+	.buy = 0.0f,
+	.result = false,
+	.sell = 0.0f
+};
+
+float buy(char *const currency, const char *const prog_name) {
+	char *mtgox_json;
+
+	if(!got_mtgox_rates) {
+		#if DEBUG
+		debug(__FILE__, __LINE__, "get_json()");
+		#endif
+
+		mtgox_json = get_json(currency, prog_name); // g
+
+		#if DEBUG
+		debug(__FILE__, __LINE__, "parse_json()");
+		#endif
+
+		mtgox_rates = parse_json(mtgox_json, prog_name);
+		got_mtgox_rates = true;
+	}
+
+	#if DEBUG
+	debug(__FILE__, __LINE__, "mtgox_rates: b%f r%d s%f", mtgox_rates.buy, mtgox_rates.result, mtgox_rates.sell);
+	#endif
+
+	return mtgox_rates.buy;
+}
 
 char *get_json(char *const currency, const char *const prog_name) {
 	char api_url[] = "https://data.mtgox.com/api/2/BTCUSD/money/ticker_fast";
@@ -55,18 +87,21 @@ char *get_json(char *const currency, const char *const prog_name) {
 		"THB",
 		"USD"
 	};
+	char mod_currency[3 + 1];
 
 	#if DEBUG
-	debug("curl_easy_init()");
+	debug(__FILE__, __LINE__, "curl_easy_init()");
 	#endif
 
 	CURL *handle = curl_easy_init();
+	curl_global_init(CURL_GLOBAL_ALL);
 
 	#if DEBUG
-	debug("malloc()");
+	debug(__FILE__, __LINE__, "malloc()");
 	#endif
 
 	char *json = malloc(sizeof (char) * 1600);  // JSON string returned by URL
+
 	CURLcode result;
 	bool valid_currency;
 
@@ -81,7 +116,7 @@ char *get_json(char *const currency, const char *const prog_name) {
 		uint_fast8_t i = 0;
 		i < ((sizeof currency / sizeof currency[0]) - 1);
 		++i
-	) currency[i] = toupper(currency[i]);
+	) mod_currency[i] = toupper(currency[i]);
 
 	// validation
 	for(
@@ -89,7 +124,7 @@ char *get_json(char *const currency, const char *const prog_name) {
 		i < ((sizeof currencies / sizeof currencies[0]));
 		++i
 	) {
-		if(strcmp(currency, currencies[i]) == 0) {
+		if(strcmp(mod_currency, currencies[i]) == 0) {
 			valid_currency = true;
 			break;
 		}
@@ -104,14 +139,16 @@ char *get_json(char *const currency, const char *const prog_name) {
 		uint_fast8_t i = API_URL_CURRENCY_POS, j = 0;
 		i < (API_URL_CURRENCY_POS + 3);
 		++i, ++j
-	) api_url[i] = currency[j];
+	) {
+		api_url[i] = mod_currency[j];
+	}
 
 	#if DEBUG
-	debug("strncpy()");
+	debug(__FILE__, __LINE__, "strncpy()");
 	#endif
 
 	#if DEBUG
-	debug("curl_global_init()");
+	debug(__FILE__, __LINE__, "curl_global_init()");
 	#endif
 
 	curl_global_init(CURL_GLOBAL_ALL);
@@ -127,27 +164,27 @@ char *get_json(char *const currency, const char *const prog_name) {
 	}
 
 	#if DEBUG
-	debug("curl_easy_setopt()");
+	debug(__FILE__, __LINE__, "curl_easy_setopt()");
 	#endif
 
 	curl_easy_setopt(handle, CURLOPT_URL, api_url);
 
 	#if DEBUG
-	debug("curl_easy_setopt()");
+	debug(__FILE__, __LINE__, "curl_easy_setopt()");
 	#endif
 
 	// sets the function to call
 	curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data);
 
 	#if DEBUG
-	debug("curl_easy_setopt()");
+	debug(__FILE__, __LINE__, "curl_easy_setopt()");
 	#endif
 
 	// sets the data to be given to the function
 	curl_easy_setopt(handle, CURLOPT_WRITEDATA, json);
 
 	#if DEBUG
-	debug("curl_easy_perform()");
+	debug(__FILE__, __LINE__, "curl_easy_perform()");
 	#endif
 
 	// performs the request, stores result
@@ -168,7 +205,7 @@ rates_t parse_json(const char *const json, const char *const prog_name) {
 	rates_t json_rates;
 
 	#if DEBUG
-	debug("json_loads()");
+	debug(__FILE__, __LINE__, "json_loads()");
 	#endif
 
 	json_t *root = json_loads(json, 0, &json_error);
@@ -181,50 +218,104 @@ rates_t parse_json(const char *const json, const char *const prog_name) {
 	}
 
 	#if DEBUG
-	debug("json_object_get()");
-	debug("json_string_value()");
-	debug("strcmp()");
+	debug(__FILE__, __LINE__, "json_object_get()");
+	debug(__FILE__, __LINE__, "json_string_value()");
+	debug(__FILE__, __LINE__, "strcmp()");
 	#endif
 
 	json_rates.result = strcmp(json_string_value(json_object_get(root, "result")), "success") ? false : true;
 
 	#if DEBUG
-	debug("json_object_get()");
+	debug(__FILE__, __LINE__, "json_object_get()");
 	#endif
 
 	data = json_object_get(root, "data");
 
 	#if DEBUG
-	debug("json_object_get()");
+	debug(__FILE__, __LINE__, "json_object_get()");
 	#endif
 
 	buy = json_object_get(data, "buy");
 
 	#if DEBUG
-	debug("json_object_get()");
+	debug(__FILE__, __LINE__, "json_object_get()");
 	#endif
 
 	sell = json_object_get(data, "sell");
 
 	#if DEBUG
-	debug("json_object_get()");
-	debug("json_string_value()");
-	debug("atof()");
+	debug(__FILE__, __LINE__, "json_object_get()");
+	debug(__FILE__, __LINE__, "json_string_value()");
+	debug(__FILE__, __LINE__, "atof()");
 	#endif
 
 	// stores the buy value as a float
 	json_rates.buy = atof(json_string_value(json_object_get(buy, "value")));
 
+	debug(__FILE__, __LINE__, "buy %f", json_rates.buy);
+
 	#if DEBUG
-	debug("json_object_get()");
-	debug("json_string_value()");
-	debug("atof()");
+	debug(__FILE__, __LINE__, "json_object_get()");
+	debug(__FILE__, __LINE__, "json_string_value()");
+	debug(__FILE__, __LINE__, "atof()");
 	#endif
 
 	// ^
 	json_rates.sell = atof(json_string_value(json_object_get(sell, "value")));
 
+	debug(__FILE__, __LINE__, "sell %f", json_rates.sell);
+
 	return json_rates;
+}
+
+bool ping(char *const prog_name) {
+	char *mtgox_json;
+
+	if(!got_mtgox_rates) {
+		#if DEBUG
+		debug(__FILE__, __LINE__, "get_json()");
+		#endif
+
+		mtgox_json = get_json("USD", prog_name); // g
+
+		#if DEBUG
+		debug(__FILE__, __LINE__, "parse_json()");
+		#endif
+
+		mtgox_rates = parse_json(mtgox_json, prog_name);
+		got_mtgox_rates = true;
+	}
+
+	#if DEBUG
+	debug(__FILE__, __LINE__, "mtgox_rates: b%f r%d s%f", mtgox_rates.buy, mtgox_rates.result, mtgox_rates.sell);
+	#endif
+
+	return mtgox_rates.result;
+}
+
+float sell(char *const currency, const char *const prog_name) {
+	char *mtgox_json;
+
+	if(!got_mtgox_rates) {
+		#if DEBUG
+		debug(__FILE__, __LINE__, "get_json()");
+		#endif
+
+		mtgox_json = get_json(currency, prog_name); // g
+
+		#if DEBUG
+		debug(__FILE__, __LINE__, "parse_json()");
+		#endif
+
+		mtgox_rates = parse_json(mtgox_json, prog_name);
+		got_mtgox_rates = true;
+	}
+
+	#if DEBUG
+	debug(__FILE__, __LINE__, "mtgox_rates: b%f r%d s%f", mtgox_rates.buy, mtgox_rates.result, mtgox_rates.sell);
+	#endif
+
+	return mtgox_rates.sell;
 }
 
 size_t write_data(
@@ -234,10 +325,10 @@ size_t write_data(
 	void *userdata
 ) {
 	#if DEBUG
-	debug("strcpy()");
+	debug(__FILE__, __LINE__, "strcpy()");
 	#endif
 
 	strcpy(userdata, buffer);
 
-	return (size * nmemb);  // needed for libcURL verification
+	return (size * nmemb);  // needed for libcURL
 }

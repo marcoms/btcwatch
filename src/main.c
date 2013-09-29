@@ -60,29 +60,25 @@ Variables are initialised, not declared then assigned.
 Happy hacking!
 */
 
-#define OPTSTRING "?Vbc:hpsv"
+#define OPTSTRING "?Vbac:hpsv"
 
 #include "../config.h"
 
-#include <assert.h>					// assert()
-#include <ctype.h>					// toupper()
-#include <stdio.h>					// printf()
-#include <stdint.h>					// uint_fast8_t
-#include <string.h>					// strcmp()
-#include <getopt.h>					// getopt()
+#include <assert.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <getopt.h>
 
-#include "include/btcapi.h"			// rates_t, get_json(), parse_json()
-#include "include/cmdlineutils.h"	// help()
-#if DEBUG
-	#include "include/debug.h"		// debug()
-#endif
+#include "include/btcapi.h"
+#include "include/cmdlineutils.h"
+#include "include/debug.h"
 
-#include "include/error.h"			// error()
+#include "include/error.h"
 
 int main(int argc, char **argv) {
-	char *api;
 	char currency[] = "USD";
-	bool got_api = false;
 	const struct option long_options[] = {
 		{
 			.name = "help",
@@ -96,6 +92,13 @@ int main(int argc, char **argv) {
 			.has_arg = no_argument,
 			.flag = NULL,
 			.val = 'V'
+		},
+
+		{
+			.name = "all",
+			.has_arg = no_argument,
+			.flag = NULL,
+			.val = 'a'
 		},
 
 		{
@@ -136,16 +139,11 @@ int main(int argc, char **argv) {
 
 	int long_options_i = 0;
 	int opt;  // current getopt option
-	rates_t rates = {
-		.buy = 0.0f,
-		.result = false,
-		.sell = 0.0f
-	};
-
+	char *const pn = argv[0];
 	bool verbose = false;
 
 	#if DEBUG
-	debug("getopt_long()");
+	debug(__FILE__, __LINE__, "getopt_long()");
 	#endif
 
 	while((opt = getopt_long(
@@ -158,60 +156,75 @@ int main(int argc, char **argv) {
 		switch(opt) {
 			case '?': case 'h':
 				#if DEBUG
-				debug("got option 'h'");
+				debug(__FILE__, __LINE__, "got option 'h'");
 				#endif
 
 				#if DEBUG
-				debug("help()");
+				debug(__FILE__, __LINE__, "help()");
 				#endif
 
-				help(argv[0], OPTSTRING);
+				help(pn, OPTSTRING);
 				break;
 
 			case 'V':
 				#if DEBUG
-				debug("got option 'V'");
+				debug(__FILE__, __LINE__, "got option 'V'");
 				#endif
 
 				#if DEBUG
-				debug("version()");
+				debug(__FILE__, __LINE__, "version()");
 				#endif
 
-				version(argv[0], BTCWATCH_VERSION);
+				version(pn, BTCWATCH_VERSION);
 				break;
+
+			case 'a':
+				#if DEBUG
+				debug(__FILE__, __LINE__, "got option 'a'");
+				#endif
+
+				if(ping(pn)) {
+					if(verbose) {
+						printf(
+							"result: success\n"
+							"buy: %f %s\n"
+							"sell: %f %s\n",
+							buy(currency, pn),
+							currency,
+							sell(currency, pn),
+							currency
+						);
+
+					} else {
+						printf(
+							"success"
+							"%f\n"
+							"%f\n",
+							buy(currency, pn),
+							sell(currency, pn)
+						);
+
+					}
+				} else {
+					error(pn, "couldn't get a successful JSON string");
+					exit(EXIT_FAILURE);
+				}
 
 			case 'b':
 				#if DEBUG
-				debug("got option 'b'");
+				debug(__FILE__, __LINE__, "got option 'b'");
 				#endif
 
-				// checks whether API was already processed - saves a lot of time
-				if(!got_api) {
-					#if DEBUG
-					debug("get_json()");
-					#endif
-
-					api = get_json(currency, argv[0]);
-
-					#if DEBUG
-					debug("get_json()");
-					#endif
-
-					rates = parse_json(api, argv[0]);
-
-					got_api = true;
-				}
-
-				if(rates.result) {
+				if(ping(pn)) {
 					if(verbose) {
-						printf("buy: %f %s\n", rates.buy, currency);
+						printf("buy: %f %s\n", buy(currency, pn), currency);
 
 					} else {
-						printf("%f\n", rates.buy);
+						printf("%f\n", buy(currency, pn));
 					}
 
 				} else {
-					error(argv[0], "couldn't get a successful JSON string");
+					error(pn, "couldn't get a successful JSON string");
 					exit(EXIT_FAILURE);
 				}
 
@@ -219,7 +232,7 @@ int main(int argc, char **argv) {
 
 			case 'c':
 				#if DEBUG
-				debug("got option 'c'");
+				debug(__FILE__, __LINE__, "got option 'c'");
 				#endif
 
 				strcpy(currency, optarg);
@@ -228,31 +241,17 @@ int main(int argc, char **argv) {
 
 			case 'p':
 				#if DEBUG
-				debug("got option 'p'");
+				debug(__FILE__, __LINE__, "got option 'p'");
 				#endif
 
-				// ^
-				if(!got_api) {
-					#if DEBUG
-					debug("get_json()");
-					#endif
+				if(ping(pn)) {
+					if(verbose) {
+						printf("result: ");
+					}
 
-					api = get_json(currency, argv[0]);
-
-					#if DEBUG
-					debug("parse_json()");
-					#endif
-
-					rates = parse_json(api, argv[0]);
-
-					got_api = true;
-				}
-
-				if(rates.result) {
-					if(verbose) printf("result: ");
-					printf("success\n");
+					puts("success");
 				} else {
-					error(argv[0], "couldn't get a successful JSON string");
+					error(pn, "couldn't get a successful JSON string");
 					exit(EXIT_FAILURE);
 				}
 
@@ -260,41 +259,23 @@ int main(int argc, char **argv) {
 
 			case 's':
 				#if DEBUG
-				debug("got option 's'");
+				debug(__FILE__, __LINE__, "got option 's'");
 				#endif
 
-				// ^
-				if(!got_api) {
-
-					#if DEBUG
-					debug("get_json()");
-					#endif
-
-					api = get_json(currency, argv[0]);
-
-					#if DEBUG
-					debug("parse_json()");
-					#endif
-
-					rates = parse_json(api, argv[0]);
-
-					got_api = true;
-				}
-
-				if(rates.result) {
+				if(ping(pn)) {
 					if(verbose) {
 						printf(
 							"sell: %f %s\n",
-							rates.sell,
+							sell(currency, pn),
 							currency
 						);
 
 					} else {
-						printf("%f\n", rates.sell);
+						printf("%f\n", sell(currency, pn));
 					}
 
 				} else {
-					error(argv[0], "couldn't get a successful JSON string");
+					error(pn, "couldn't get a successful JSON string");
 					exit(EXIT_FAILURE);
 				}
 
@@ -302,7 +283,7 @@ int main(int argc, char **argv) {
 
 			case 'v':
 				#if DEBUG
-				debug("got option 'v'");
+				debug(__FILE__, __LINE__, "got option 'v'");
 				#endif
 
 				verbose = true;
@@ -315,31 +296,19 @@ int main(int argc, char **argv) {
 	}
 
 	if(argc == 1) {
-		#if DEBUG
-		debug("get_json()");
-		#endif
-
-		api = get_json(currency, argv[0]);
-
-		#if DEBUG
-		debug("parse_json()");
-		#endif
-
-		rates = parse_json(api, argv[0]);
-
-		if(rates.result) {
+		if(ping(pn)) {
 			printf(
 				"result: success\n"
 				"buy: %f %s\n"
 				"sell: %f %s\n",
-				rates.buy,
+				buy(currency, pn),
 				currency,
-				rates.sell,
+				sell(currency, pn),
 				currency
 			);
 
 		} else {
-			error(argv[0], "couldn't get a successful JSON string");
+			error(pn, "couldn't get a successful JSON string");
 			exit(EXIT_FAILURE);
 		}
 	}

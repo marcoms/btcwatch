@@ -17,14 +17,23 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEBUG_H
-#define DEBUG_H
+#include <stdarg.h>
+#include <stdio.h>
 
-void debug(
-	const char *const file,
-	const int line,
-	const char *const format,
-	...
-);
+#include "../include/error.h"
 
-#endif
+int error(const char *const prog_name, const char *const format, ...) {
+	va_list args;
+	int nchars;
+
+	va_start(args, format);
+
+	nchars = printf("%s: error: ", prog_name);
+	nchars += vfprintf(stderr, format, args);
+
+	putchar('\n');
+
+	va_end(args);
+
+	return nchars;
+}

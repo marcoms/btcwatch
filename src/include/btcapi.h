@@ -20,8 +20,8 @@
 #ifndef BTCAPI_H
 #define BTCAPI_H
 
-#include <stdbool.h>	// bool
-#include <stdlib.h>		// size_t
+#include <stdbool.h>
+#include <stdlib.h>
 
 // struct containing current exchange information
 typedef struct rates {
@@ -30,11 +30,19 @@ typedef struct rates {
 	float sell;
 } rates_t;
 
+extern bool got_mtgox_rates;
+extern rates_t mtgox_rates;
+
+float buy(char *const currency, const char *const prog_name);
+
 // uses libcURL to access a Bitcoin API, calls write_data, then returns a JSON string
 char *get_json(char *currency, const char *const prog_name);
 
 // uses jansson to parse the JSON string and returns a rates_t containing exchange information
 rates_t parse_json(const char *const json, const char *const prog_name);
+
+bool ping(char *const prog_name);
+float sell(char *const currency, const char *const prog_name);
 
 // libcURL callback function that copies the buffer to a local string
 size_t write_data(
