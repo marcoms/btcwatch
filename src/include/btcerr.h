@@ -17,23 +17,18 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdarg.h>
-#include <stdio.h>
+#ifndef BTCERR_H
+#define BTCERR_H
 
-#include "../include/error.h"
+#include <stdbool.h>
 
-int error(const char *const prog_name, const char *const format, ...) {
-	va_list args;
-	int nchars;
+// struct containing error information to be passed to functions in btcapi.h
+typedef struct {
+	bool err;
+	char errstr[64 + 1];
+} btcerr_t;
 
-	va_start(args, format);
+// prints the program name, ": error: ", and passes format and a variable amount of arguments to vfprintf
+void btcerr(const char *const prog_name, const char *const format, ...);
 
-	nchars = printf("%s: error: ", prog_name);
-	nchars += vfprintf(stderr, format, args);
-
-	putchar('\n');
-
-	va_end(args);
-
-	return nchars;
-}
+#endif

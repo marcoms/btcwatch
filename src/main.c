@@ -62,10 +62,9 @@ Happy hacking!
 
 #define OPTSTRING "?Vbac:hpsv"
 
-#include "../config.h"
-
 #include <assert.h>
 #include <ctype.h>
+#include <locale.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -73,13 +72,30 @@ Happy hacking!
 
 #include "include/btcapi.h"
 #include "include/cmdlineutils.h"
-#include "include/debug.h"
+#include "include/btcdbg.h"
+#include "include/btcerr.h"
 
-#include "include/error.h"
+/*
+btcapi.c
+
+rates_t btcrates = {
+	.got = false
+};
+*/
 
 int main(int argc, char **argv) {
-	char currency[] = "USD";
-	const struct option long_options[] = {
+	#if DEBUG
+	btcdbg(__FILE__, __LINE__, "main()");
+	#endif
+
+	btcerr_t api_err;	// error data structure
+	int longopt_i;		// index for referencing long_options[] - needed by getopt_long()
+	int opt;  		// current option
+	char *pn;  		// pointer to argv[0]
+	bool verbose;		// print verbose output?
+
+	char currcy[3 + 1] = "USD";
+	const struct option long_options[17] = {
 		{
 			.name = "help",
 			.has_arg = no_argument,
@@ -137,181 +153,223 @@ int main(int argc, char **argv) {
 		}
 	};
 
-	int long_options_i = 0;
-	int opt;  // current getopt option
-	char *const pn = argv[0];
-	bool verbose = false;
+	api_err.err = false;
+	pn = argv[0];
+	verbose = false;
 
-	#if DEBUG
-	debug(__FILE__, __LINE__, "getopt_long()");
-	#endif
+	setlocale(LC_ALL, "");  // sets the locale to the system's default
 
 	while((opt = getopt_long(
 		argc,
 		argv,
 		OPTSTRING,
 		long_options,
-		&long_options_i
+		&longopt_i
 	)) != -1) {
 		switch(opt) {
-			case '?': case 'h':
+			case '?': case 'h':  // print this help
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 'h'");
-				#endif
-
-				#if DEBUG
-				debug(__FILE__, __LINE__, "help()");
+				btcdbg(__FILE__, __LINE__, "got option 'h'");
 				#endif
 
 				help(pn, OPTSTRING);
 				break;
 
-			case 'V':
+			case 'V':  // print version number
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 'V'");
+				btcdbg(__FILE__, __LINE__, "got option 'V'");
 				#endif
 
-				#if DEBUG
-				debug(__FILE__, __LINE__, "version()");
-				#endif
-
-				version(pn, BTCWATCH_VERSION);
+				version(BTCWATCH_VERSION);
 				break;
 
-			case 'a':
+			case 'a':  // equivelant to -pbs
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 'a'");
+				btcdbg(__FILE__, __LINE__, "got option 'a'");
 				#endif
 
-				if(ping(pn)) {
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+
+				if(!api_err.err) {
 					if(verbose) {
-						printf(
-							"result: success\n"
-							"buy: %f %s\n"
-							"sell: %f %s\n",
-							buy(currency, pn),
-							currency,
-							sell(currency, pn),
-							currency
+						puts("result: success");
+
+						resetw();
+
+						wprintf(
+							L"buy: %S %f %s\n"
+							"sell: %S %f %s\n",
+							btcrates.currcy.sign,
+							btcrates.buy,
+							btcrates.currcy.name,
+							btcrates.currcy.sign,
+							btcrates.sell,
+							btcrates.currcy.name
 						);
+						
+						resetb();
 
 					} else {
+						puts("success");
 						printf(
-							"success"
 							"%f\n"
 							"%f\n",
-							buy(currency, pn),
-							sell(currency, pn)
+							btcrates.buy,
+							btcrates.sell
 						);
 
 					}
 				} else {
-					error(pn, "couldn't get a successful JSON string");
+					btcerr(pn, "%s", api_err.errstr);
 					exit(EXIT_FAILURE);
 				}
 
-			case 'b':
+				break;
+
+			case 'b':  // print buy price
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 'b'");
+				btcdbg(__FILE__, __LINE__, "got option 'b'");
 				#endif
 
-				if(ping(pn)) {
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+
+				if(!api_err.err) {
 					if(verbose) {
-						printf("buy: %f %s\n", buy(currency, pn), currency);
+						resetw();
+
+						wprintf(
+							L"buy: %S %f %s\n",
+							btcrates.currcy.sign,
+							btcrates.buy,
+							btcrates.currcy.name
+						);
+
+						resetb();
 
 					} else {
-						printf("%f\n", buy(currency, pn));
+						printf("%f\n", btcrates.buy);
 					}
 
 				} else {
-					error(pn, "couldn't get a successful JSON string");
+					btcerr(pn, "%s", api_err.errstr);
 					exit(EXIT_FAILURE);
 				}
 
 				break;
 
-			case 'c':
+			case 'c':  // set conversion currency
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 'c'");
+				btcdbg(__FILE__, __LINE__, "got option 'c'");
 				#endif
 
-				strcpy(currency, optarg);
+				#if DEBUG
+				btcdbg(__FILE__, __LINE__, "old currcy: \"%s\"", currcy);
+				#endif
+
+				strcpy(currcy, optarg);
+
+				#if DEBUG
+				btcdbg(__FILE__, __LINE__, "new currcy: \"%s\"", currcy);
+				#endif
 
 				break;
 
-			case 'p':
+			case 'p':  // check for a successful JSON response
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 'p'");
+				btcdbg(__FILE__, __LINE__, "got option 'p'");
 				#endif
 
-				if(ping(pn)) {
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+
+				if(!api_err.err) {
 					if(verbose) {
-						printf("result: ");
+						fputs("result: ", stdout);
 					}
 
 					puts("success");
 				} else {
-					error(pn, "couldn't get a successful JSON string");
-					exit(EXIT_FAILURE);
+					btcerr(pn, "%s", api_err.errstr);
+					return 0;
 				}
 
 				break;
 
-			case 's':
+			case 's':  // print sell price
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 's'");
+				btcdbg(__FILE__, __LINE__, "got option 's'");
 				#endif
 
-				if(ping(pn)) {
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+
+				if(!api_err.err) {
 					if(verbose) {
-						printf(
-							"sell: %f %s\n",
-							sell(currency, pn),
-							currency
+						resetw();
+
+						wprintf(
+							L"sell: %S %f %s\n",
+							btcrates.currcy.sign,
+							btcrates.sell,
+							btcrates.currcy.name
 						);
 
-					} else {
-						printf("%f\n", sell(currency, pn));
-					}
+						resetb();
 
+					} else {
+						printf("%f\n", btcrates.sell);
+					}
 				} else {
-					error(pn, "couldn't get a successful JSON string");
+					btcerr(pn, "%s", api_err.errstr);
 					exit(EXIT_FAILURE);
 				}
 
 				break;
 
-			case 'v':
+			case 'v':  // increase verbosity
 				#if DEBUG
-				debug(__FILE__, __LINE__, "got option 'v'");
+				btcdbg(__FILE__, __LINE__, "got option 'v'");
+				#endif
+
+				#if DEBUG
+				btcdbg(__FILE__, __LINE__, "verbose = true");
 				#endif
 
 				verbose = true;
 				break;
 
 			default:
-				assert(true == false);
+				exit(EXIT_FAILURE);
 				break;  // just in case
 		}
 	}
 
 	if(argc == 1) {
-		if(ping(pn)) {
-			printf(
-				"result: success\n"
-				"buy: %f %s\n"
-				"sell: %f %s\n",
-				buy(currency, pn),
-				currency,
-				sell(currency, pn),
-				currency
+		fill_rates(currcy, &api_err);
+
+		if(!api_err.err) {
+			puts("result: success");
+
+			resetw();
+
+			wprintf(
+				L"buy: %S %f %s\n"
+				"sell: %S %f %s\n",
+				btcrates.currcy.sign,
+				btcrates.buy,
+				btcrates.currcy.name,
+				btcrates.currcy.sign,
+				btcrates.sell,
+				btcrates.currcy.name
 			);
 
+			resetb();
+
 		} else {
-			error(pn, "couldn't get a successful JSON string");
+			btcerr(pn, "%s", api_err.errstr);
 			exit(EXIT_FAILURE);
 		}
 	}
+
+	fwide(stdout, -1);
 
 	return 0;
 }

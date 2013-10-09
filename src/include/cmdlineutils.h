@@ -25,7 +25,13 @@
 // prints usage info and options
 noreturn void help(const char *const prog_name, const char *const optstring);
 
+// sets stdout to be byte-oriented
+void resetb(void);
+
+// sets stdout to be wide-oriented
+void resetw(void);
+
 // prints version number
-noreturn void version(const char *const prog_name, const char *const version);
+noreturn void version(const char *const version);
 
 #endif

@@ -22,27 +22,34 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <wchar.h>
+
+#include "btcerr.h"
+
+typedef struct {
+	char name[3 + 1];
+	wchar_t sign[3 + 1];
+} currcy_t;
 
 // struct containing current exchange information
-typedef struct rates {
+typedef struct {
 	float buy;
+	currcy_t currcy;
+	bool got;
 	bool result;
 	float sell;
 } rates_t;
 
-extern bool got_mtgox_rates;
-extern rates_t mtgox_rates;
+extern rates_t btcrates;
 
-float buy(char *const currency, const char *const prog_name);
+// poplates the global btcrates struct
+int fill_rates(const char *const currency, btcerr_t *const api_err);
 
 // uses libcURL to access a Bitcoin API, calls write_data, then returns a JSON string
-char *get_json(char *currency, const char *const prog_name);
+char *get_json(const char *currency, btcerr_t *const api_err);
 
 // uses jansson to parse the JSON string and returns a rates_t containing exchange information
-rates_t parse_json(const char *const json, const char *const prog_name);
-
-bool ping(char *const prog_name);
-float sell(char *const currency, const char *const prog_name);
+int parse_json(const char *const json, btcerr_t *const api_err);
 
 // libcURL callback function that copies the buffer to a local string
 size_t write_data(

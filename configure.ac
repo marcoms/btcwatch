@@ -1,4 +1,4 @@
-AC_INIT([btcwatch], [0.0.1], [marco@scannadinari.co.uk])
+AC_INIT([btcwatch], [0.0.2], [marco@scannadinari.co.uk])
 
 define([errnf], [echo "  ./configure: error: cannot find $1"; exit 1])
 
@@ -13,8 +13,8 @@ AC_CHECK_FILE([src/lib/], [], [errnf([src/lib/])])
 
 AC_CHECK_FILE([src/include/btcapi.h], [], [errnf([src/include/btcapi.h])])
 AC_CHECK_FILE([src/include/cmdlineutils.h], [], [errnf([src/include/cmdlineutils.h])])
-AC_CHECK_FILE([src/include/error.h], [], [errnf([src/include/error.h])])
-AC_CHECK_FILE([src/include/debug.h], [], [errnf([src/include/debug.h])])
+AC_CHECK_FILE([src/include/btcerr.h], [], [errnf([src/include/btcerr.h])])
+AC_CHECK_FILE([src/include/btcdbg.h], [], [errnf([src/include/btcdbg.h])])
 
 AC_CHECK_FILE([src/main.c], [], [errnf([src/main.c])])
 AC_CHECK_FILE([src/lib/btcapi.c], [], [errnf([src/lib/btcapi.c])])
@@ -38,8 +38,8 @@ AC_CHECK_LIB([jansson], [json_loads], [], [errnf([libjansson])])
 AC_OUTPUT
 
 echo
-echo "prefix:   $prefix"
+echo "SUMMARY"
+echo "    prefix:   $prefix"
+echo
 
 echo $prefix > prefix.txt
-
-cp confdefs.h config.h

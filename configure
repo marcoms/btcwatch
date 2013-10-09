@@ -2962,46 +2962,46 @@ else
   echo "  ./configure: error: cannot find src/include/cmdlineutils.h"; exit 1
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/error.h" >&5
-$as_echo_n "checking for src/include/error.h... " >&6; }
-if ${ac_cv_file_src_include_error_h+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/btcerr.h" >&5
+$as_echo_n "checking for src/include/btcerr.h... " >&6; }
+if ${ac_cv_file_src_include_btcerr_h+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "src/include/error.h"; then
-  ac_cv_file_src_include_error_h=yes
+if test -r "src/include/btcerr.h"; then
+  ac_cv_file_src_include_btcerr_h=yes
 else
-  ac_cv_file_src_include_error_h=no
+  ac_cv_file_src_include_btcerr_h=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_error_h" >&5
-$as_echo "$ac_cv_file_src_include_error_h" >&6; }
-if test "x$ac_cv_file_src_include_error_h" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_btcerr_h" >&5
+$as_echo "$ac_cv_file_src_include_btcerr_h" >&6; }
+if test "x$ac_cv_file_src_include_btcerr_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/include/error.h"; exit 1
+  echo "  ./configure: error: cannot find src/include/btcerr.h"; exit 1
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/debug.h" >&5
-$as_echo_n "checking for src/include/debug.h... " >&6; }
-if ${ac_cv_file_src_include_debug_h+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/btcdbg.h" >&5
+$as_echo_n "checking for src/include/btcdbg.h... " >&6; }
+if ${ac_cv_file_src_include_btcdbg_h+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "src/include/debug.h"; then
-  ac_cv_file_src_include_debug_h=yes
+if test -r "src/include/btcdbg.h"; then
+  ac_cv_file_src_include_btcdbg_h=yes
 else
-  ac_cv_file_src_include_debug_h=no
+  ac_cv_file_src_include_btcdbg_h=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_debug_h" >&5
-$as_echo "$ac_cv_file_src_include_debug_h" >&6; }
-if test "x$ac_cv_file_src_include_debug_h" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_btcdbg_h" >&5
+$as_echo "$ac_cv_file_src_include_btcdbg_h" >&6; }
+if test "x$ac_cv_file_src_include_btcdbg_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/include/debug.h"; exit 1
+  echo "  ./configure: error: cannot find src/include/btcdbg.h"; exit 1
 fi
 
 
@@ -4419,8 +4419,8 @@ fi
 
 
 echo
-echo "prefix:   $prefix"
+echo "SUMMARY"
+echo "    prefix:   $prefix"
+echo
 
 echo $prefix > prefix.txt
-
-cp confdefs.h config.h

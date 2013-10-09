@@ -20,20 +20,19 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "../include/debug.h"
+#include "../include/btcerr.h"
 
-void debug(
-	const char *const file,
-	const int line,
-	const char *const format,
-	...
-) {
+void btcerr(const char *const prog_name, const char *const format, ...) {
+	#if DEBUG
+	debug(__FILE__, __LINE__, "error()");
+	#endif
+
 	va_list args;
 
 	va_start(args, format);
 
-	printf("DEBUG: %s:%d: ", file, line);
-	vprintf(format, args);
+	fprintf(stderr, "%s: error: ", prog_name);
+	vfprintf(stderr, format, args);
 
 	putchar('\n');
 

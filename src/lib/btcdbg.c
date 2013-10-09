@@ -17,14 +17,25 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEBUG_H
-#define DEBUG_H
+#include <stdarg.h>
+#include <stdio.h>
 
-void debug(
+#include "../include/btcdbg.h"
+
+void btcdbg(
 	const char *const file,
 	const int line,
 	const char *const format,
 	...
-);
+) {
+	va_list args;
 
-#endif
+	va_start(args, format);
+
+	printf("DEBUG: %s:%d: ", file, line);
+	vprintf(format, args);
+
+	putchar('\n');
+
+	va_end(args);
+}

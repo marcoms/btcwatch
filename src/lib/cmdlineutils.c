@@ -17,24 +17,23 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../config.h"
-
 #include <stdlib.h>
 #include <stdio.h>
+#include <wchar.h>
 
 #include "../include/cmdlineutils.h"
-#include "../include/debug.h"
+#include "../include/btcdbg.h"
 
 noreturn void help(const char *const prog_name, const char *const optstring) {
 	#if DEBUG
-	debug(__FILE__, __LINE__, "help()");
+	btcdbg(__FILE__, __LINE__, "help()");
 	#endif
 
-	printf("usage: %s -[%s]\n", prog_name, optstring);
+	printf("Usage: %s -[%s]\n", prog_name, optstring);
 	puts(
-		"get Bitcoin trade information\n"
+		"Get Bitcoin trade information\n"
 		"\n"
-		"options:\n"
+		"Options:\n"
 		"  -?, -h         --help                 print this help\n"
 		"  -V             --version              print version number\n"
 		"  -a             --all                  equivalent to -pbs\n"
@@ -44,21 +43,39 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 		"  -s             --sell                 print sell price\n"
 		"  -v             --verbose              increase verbosity\n"
 		"\n"
-		"report bugs to <marco@scannadinari.co.uk>"
+		"Report bugs to <marco@scannadinari.co.uk>\n"
+		"btcwatch home page: <https://github.com/marcoms/btcwatch/>"
 	);
 
 	exit(EXIT_SUCCESS);
 }
 
-noreturn void version(const char *const prog_name, const char *const version) {
+void resetb(void) {
+	freopen(NULL, "a", stdout);
+	fwide(stdout, -1);
+}
+
+void resetw(void) {
+	freopen(NULL, "a", stdout);
+	fwide(stdout, 1);
+}
+
+noreturn void version(const char *const version) {
 	#if DEBUG
-	debug(__FILE__, __LINE__, "version()");
+	btcdbg(__FILE__, __LINE__, "version()");
 	#endif
 
-	printf("%s %s\n", prog_name, version);
+	printf("btcwatch %s\n", version);
+	puts(
+		"Copyright (C) 2007 Free Software Foundation, Inc.\n"
+		"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+		"This is free software: you are free to change and redistribute it.\n"
+		"There is NO WARRANTY, to the extent permitted by law."
+	);
+	
 
 	#if DEBUG
-	debug(__FILE__, __LINE__, "compiled with %s %s (excluding macros)\n", CC, CFLAGS);
+	btcdbg(__FILE__, __LINE__, "compiled with %s %s on %s %s", CC, CFLAGS, __TIME__, __DATE__);
 	#endif
 
 	exit(EXIT_SUCCESS);

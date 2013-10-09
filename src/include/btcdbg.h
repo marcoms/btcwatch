@@ -17,9 +17,14 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef BTCDBG_H
+#define BTCDBG_H
 
-int error(const char *const prog_name, const char *const format, ...);
+void btcdbg(
+	const char *const file,
+	const int line,
+	const char *const format,
+	...
+);
 
 #endif

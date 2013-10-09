@@ -8,7 +8,7 @@ RESET="\033[0m"
 INDENT=@echo -n "  "
 NEWL=@echo
 
-BTCWATCH_VERSION=0.0.1
+BTCWATCH_VERSION=0.0.2
 
 ifdef $(CC)
 	MCC=$(CC)
@@ -16,12 +16,10 @@ else
 	MCC=gcc
 endif
 
-MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -finline-functions -DDEBUG=0
-ifdef $(CFLAGS)
-	MCFLAGS+=$(CFLAGS)
-endif
+MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DDEBUG=0 -D_GNU_SOURCE
+MCFLAGS+=$(CFLAGS)
 
-MCFLAGS_DEBUG=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g -DCC="\"$(MCC)\"" -DCFLAGS="\"-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g\"" -DDEBUG=1
+MCFLAGS_DEBUG=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g -DCC="\"$(MCC)\"" -DCFLAGS="\"-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g\"" -DDEBUG=1 -D_GNU_SOURCE
 
 PREFIX=$(shell cat prefix.txt)
 
@@ -29,7 +27,7 @@ PREFIX=$(shell cat prefix.txt)
 SRC=$(addprefix src/, main main_debug)
 
 # contents of lib/ dir
-LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug debug error)
+LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg btcerr)
 
 # all Makefile-generated files without {suf,pre}fixes
 ALL=$(SRC) $(LIB)
@@ -40,21 +38,23 @@ ALLC=$(addsuffix .c, $(ALL))
 ALLO=$(addsuffix .o, $(ALL))
 
 # all Makefile-generated files with .a extension and "lib" prefix
-ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug cmdlineutils cmdlineutils_debug debug error msg)))
+ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg btcerr msg)))
 
-CURLFLAGS=$(shell pkg-config libcurl --cflags --libs)
-JANSSONFLAGS=$(shell pkg-config jansson --cflags --libs)
+CURLLIBS=$(shell pkg-config libcurl --libs)
+JANSSONLIBS=$(shell pkg-config jansson --libs)
+CURLFLAGS=$(shell pkg-config libcurl --cflags)
+JANSSONFLAGS=$(shell pkg-config jansson --cflags)
 
 all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a src/lib/libmsg.a
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils -lmsg $(CURLFLAGS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils -lmsg $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
 	$(NEWL)
 
 debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a src/lib/libmsg.a
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
-	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi_debug -lcmdlineutils_debug -lmsg $(CURLFLAGS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi_debug -lcmdlineutils_debug -lmsg $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
 	$(NEWL)
 
 src/main.o: src/main.c
@@ -125,19 +125,19 @@ src/lib/libcmdlineutils_debug.a: src/lib/cmdlineutils_debug.o
 	ranlib $@
 	$(NEWL)
 
-src/lib/debug.o: src/lib/debug.c
+src/lib/btcerr.o: src/lib/btcerr.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
 	$(MCC) -o$@ $< -c $(MCFLAGS)
 	$(NEWL)
 
-src/lib/error.o: src/lib/cmdlineutils.c
+src/lib/btcdbg.o: src/lib/btcdbg.c
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
 	$(MCC) -o$@ $< -c $(MCFLAGS)
 	$(NEWL)
 
-src/lib/libmsg.a: src/lib/debug.o src/lib/error.o
+src/lib/libmsg.a: src/lib/btcdbg.o src/lib/btcerr.o
 	@echo -e $(BOLD)$@$(RESET)
 	$(INDENT)
 	ar rc $@ $^
@@ -183,7 +183,5 @@ distclean: clean
 	$(foreach i, $(wildcard config.*), $(INDENT) ${\n} rm -rf $(i) ${\n})
 	$(INDENT)
 	rm -rf autom4te.cache
-	$(INDENT)
-	rm -rf prefix.txt
 	$(NEWL)
 
