@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013 Marco Scannadinari
+	Copyright (C) 2013 Marco Scannadinari.
 
 	This file is part of btcwatch.
 
@@ -17,7 +17,7 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define API_URL_CURRCY_POS 32
+#define API_URL_CURRCY_POS 32  // position to insert currency
 
 #include <curl/curl.h>
 #include <ctype.h>
@@ -217,6 +217,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	#endif
 
 	// length check
+
 	if(strlen(currcy) != 3) {
 		#if DEBUG
 		btcdbg(__FILE__, __LINE__, "bad currency length");
@@ -229,19 +230,19 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	}
 
 	// case correction
+
 	for(
 		uint_fast8_t i = 0;
 		i < (sizeof mod_currcy[0] * sizeof mod_currcy);
 		++i
 	) mod_currcy[i] = toupper(mod_currcy[i]);
 
-	mod_currcy[strlen(mod_currcy) + 1] = '\0';
-
 	#if DEBUG
 	btcdbg(__FILE__, __LINE__, "mod_currcy \"%s\" strlen: %d", mod_currcy, strlen(mod_currcy));
 	#endif
 
 	// validation
+
 	for(
 		uint_fast8_t i = 0;
 		i < ((sizeof currencies / sizeof currencies[0]));
@@ -324,7 +325,6 @@ int parse_json(const char *const json, btcerr_t *const api_err) {
 	root = json_loads(json, 0, &json_error);
 	if(!root) {
 		strcpy(api_err -> errstr, json_error.text);
-
 		return 0;
 	}
 
@@ -342,6 +342,8 @@ int parse_json(const char *const json, btcerr_t *const api_err) {
 	btcdbg(__FILE__, __LINE__, "buy %f", btcrates.buy);
 	btcdbg(__FILE__, __LINE__, "sell %f", btcrates.sell);
 	#endif
+
+	json_decref(root);
 
 	return 1;
 }

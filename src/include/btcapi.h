@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013 Marco Scannadinari
+	Copyright (C) 2013 Marco Scannadinari.
 
 	This file is part of btcwatch.
 
@@ -32,6 +32,7 @@ typedef struct {
 } currcy_t;
 
 // struct containing current exchange information
+
 typedef struct {
 	float buy;
 	currcy_t currcy;
@@ -43,15 +44,20 @@ typedef struct {
 extern rates_t btcrates;
 
 // poplates the global btcrates struct
+
 int fill_rates(const char *const currency, btcerr_t *const api_err);
 
 // uses libcURL to access a Bitcoin API, calls write_data, then returns a JSON string
+
 char *get_json(const char *currency, btcerr_t *const api_err);
 
+
 // uses jansson to parse the JSON string and returns a rates_t containing exchange information
+
 int parse_json(const char *const json, btcerr_t *const api_err);
 
 // libcURL callback function that copies the buffer to a local string
+
 size_t write_data(
 	char *buffer,
 	size_t size,

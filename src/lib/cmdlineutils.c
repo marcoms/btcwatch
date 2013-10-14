@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013 Marco Scannadinari
+	Copyright (C) 2013 Marco Scannadinari.
 
 	This file is part of btcwatch.
 
@@ -43,7 +43,7 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 		"  -s             --sell                 print sell price\n"
 		"  -v             --verbose              increase verbosity\n"
 		"\n"
-		"Report bugs to <marco@scannadinari.co.uk>\n"
+		"Report bugs to marco@scannadinari.co.uk\n"
 		"btcwatch home page: <https://github.com/marcoms/btcwatch/>"
 	);
 
@@ -51,13 +51,13 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 }
 
 void resetb(void) {
-	freopen(NULL, "a", stdout);
-	fwide(stdout, -1);
+	freopen(NULL, "a", stdout);  // reopen stdout
+	fwide(stdout, -1);  // set stdout to be byte-oriented
 }
 
 void resetw(void) {
-	freopen(NULL, "a", stdout);
-	fwide(stdout, 1);
+	freopen(NULL, "a", stdout);  // ^
+	fwide(stdout, 1);  // set stdout to be wide-oriented
 }
 
 noreturn void version(const char *const version) {
@@ -67,10 +67,12 @@ noreturn void version(const char *const version) {
 
 	printf("btcwatch %s\n", version);
 	puts(
-		"Copyright (C) 2007 Free Software Foundation, Inc.\n"
+		"Copyright (C) Marco Scannadinari.\n"
 		"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 		"This is free software: you are free to change and redistribute it.\n"
-		"There is NO WARRANTY, to the extent permitted by law."
+		"There is NO WARRANTY, to the extent permitted by law.\n"
+		"\n"
+		"Written by Marco Scannadinari."
 	);
 	
 

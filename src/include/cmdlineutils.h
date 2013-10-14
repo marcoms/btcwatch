@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013 Marco Scannadinari
+	Copyright (C) 2013 Marco Scannadinari.
 
 	This file is part of btcwatch.
 

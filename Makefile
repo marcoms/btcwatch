@@ -8,7 +8,7 @@ RESET="\033[0m"
 INDENT=@echo -n "  "
 NEWL=@echo
 
-BTCWATCH_VERSION=0.0.2
+BTCWATCH_VERSION=0.0.3
 
 ifdef $(CC)
 	MCC=$(CC)
@@ -183,5 +183,7 @@ distclean: clean
 	$(foreach i, $(wildcard config.*), $(INDENT) ${\n} rm -rf $(i) ${\n})
 	$(INDENT)
 	rm -rf autom4te.cache
+	$(INDENT)
+	rm -rf prefix.txt
 	$(NEWL)
 
