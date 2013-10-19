@@ -17,8 +17,12 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define IGNORE(x) (void) (x)  // removes unused parameter/variable warnings
+
+#if DEBUG
 #include <stdarg.h>
 #include <stdio.h>
+#endif
 
 #include "../include/btcdbg.h"
 
@@ -28,6 +32,7 @@ void btcdbg(
 	const char *const format,
 	...
 ) {
+	#if DEBUG
 	va_list args;
 
 	va_start(args, format);
@@ -38,4 +43,9 @@ void btcdbg(
 	putchar('\n');
 
 	va_end(args);
+	#else
+	IGNORE(file);
+	IGNORE(line);
+	IGNORE(format);
+	#endif
 }

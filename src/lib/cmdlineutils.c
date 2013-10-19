@@ -25,23 +25,23 @@
 #include "../include/btcdbg.h"
 
 noreturn void help(const char *const prog_name, const char *const optstring) {
-	#if DEBUG
 	btcdbg(__FILE__, __LINE__, "help()");
-	#endif
 
 	printf("Usage: %s -[%s]\n", prog_name, optstring);
 	puts(
 		"Get Bitcoin trade information\n"
 		"\n"
 		"Options:\n"
-		"  -?, -h         --help                 print this help\n"
-		"  -V             --version              print version number\n"
 		"  -a             --all                  equivalent to -pbs\n"
 		"  -b             --buy                  print buy price\n"
 		"  -c CURRENCY    --currency=CURRENCY    set conversion currency\n"
+		"  -n AMOUNT      --amount=AMOUNT        sets the amount of Bitcoin to convert\n"
 		"  -p             --ping                 check for a successful JSON response\n"
 		"  -s             --sell                 print sell price\n"
 		"  -v             --verbose              increase verbosity\n"
+		"\n"
+		"  -?, -h         --help                 print this help\n"
+		"  -V             --version              print version number\n"
 		"\n"
 		"Report bugs to marco@scannadinari.co.uk\n"
 		"btcwatch home page: <https://github.com/marcoms/btcwatch/>"
@@ -51,19 +51,21 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 }
 
 void resetb(void) {
+	btcdbg(__FILE__, __LINE__, "resetb()");
+
 	freopen(NULL, "a", stdout);  // reopen stdout
 	fwide(stdout, -1);  // set stdout to be byte-oriented
 }
 
 void resetw(void) {
+	btcdbg(__FILE__, __LINE__, "resetw()");
+
 	freopen(NULL, "a", stdout);  // ^
 	fwide(stdout, 1);  // set stdout to be wide-oriented
 }
 
 noreturn void version(const char *const version) {
-	#if DEBUG
 	btcdbg(__FILE__, __LINE__, "version()");
-	#endif
 
 	printf("btcwatch %s\n", version);
 	puts(
@@ -75,8 +77,7 @@ noreturn void version(const char *const version) {
 		"Written by Marco Scannadinari."
 	);
 	
-
-	#if DEBUG
+	#if DEBUG  // else CC, CFLAGS wouldn't be defined
 	btcdbg(__FILE__, __LINE__, "compiled with %s %s on %s %s", CC, CFLAGS, __TIME__, __DATE__);
 	#endif
 

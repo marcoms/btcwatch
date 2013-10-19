@@ -60,7 +60,7 @@ Variables are initialised, not declared then assigned.
 Happy hacking!
 */
 
-#define OPTSTRING "?Vbac:hpsv"
+#define OPTSTRING "?Vbac:hn:psv"
 
 #include <assert.h>
 #include <ctype.h>
@@ -76,7 +76,7 @@ Happy hacking!
 #include "include/btcerr.h"
 
 /*
-btcapi.c
+btcapi.c:
 
 rates_t btcrates = {
 	.got = false
@@ -84,12 +84,11 @@ rates_t btcrates = {
 */
 
 int main(int argc, char **argv) {
-	#if DEBUG
 	btcdbg(__FILE__, __LINE__, "main()");
-	#endif
 
 	btcerr_t api_err;	// error data structure
 	int longopt_i;		// index for referencing long_options[] - needed by getopt_long()
+	double n;		// number of BTC to convert
 	int opt;  		// current option
 	char *pn;  		// pointer to argv[0]
 	bool verbose;		// print verbose output?
@@ -132,6 +131,13 @@ int main(int argc, char **argv) {
 		},
 
 		{
+			.name = "amount",
+			.has_arg = required_argument,
+			.flag = NULL,
+			.val = 'n'
+		},
+
+		{
 			.name = "ping",
 			.has_arg = no_argument,
 			.flag = NULL,
@@ -154,6 +160,7 @@ int main(int argc, char **argv) {
 	};
 
 	api_err.err = false;
+	n = 1.0;
 	pn = argv[0];
 	verbose = false;
 
@@ -168,25 +175,19 @@ int main(int argc, char **argv) {
 	)) != -1) {
 		switch(opt) {
 			case '?': case 'h':  // print this help
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 'h'");
-				#endif
 
 				help(pn, OPTSTRING);
 				break;
 
 			case 'V':  // print version number
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 'V'");
-				#endif
 
 				version(BTCWATCH_VERSION);
 				break;
 
 			case 'a':  // equivelant to -pbs
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 'a'");
-				#endif
 
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
@@ -200,10 +201,10 @@ int main(int argc, char **argv) {
 							L"buy: %S %f %s\n"
 							"sell: %S %f %s\n",
 							btcrates.currcy.sign,
-							btcrates.buy,
+							btcrates.buy * n,
 							btcrates.currcy.name,
 							btcrates.currcy.sign,
-							btcrates.sell,
+							btcrates.sell * n,
 							btcrates.currcy.name
 						);
 						
@@ -214,8 +215,8 @@ int main(int argc, char **argv) {
 						printf(
 							"%f\n"
 							"%f\n",
-							btcrates.buy,
-							btcrates.sell
+							btcrates.buy * n,
+							btcrates.sell * n
 						);
 
 					}
@@ -227,9 +228,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'b':  // print buy price
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 'b'");
-				#endif
 
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
@@ -240,14 +239,14 @@ int main(int argc, char **argv) {
 						wprintf(
 							L"buy: %S %f %s\n",
 							btcrates.currcy.sign,
-							btcrates.buy,
+							btcrates.buy * n,
 							btcrates.currcy.name
 						);
 
 						resetb();
 
 					} else {
-						printf("%f\n", btcrates.buy);
+						printf("%f\n", btcrates.buy * n);
 					}
 
 				} else {
@@ -258,26 +257,21 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'c':  // set conversion currency
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 'c'");
-				#endif
-
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "old currcy: \"%s\"", currcy);
-				#endif
 
 				strcpy(currcy, optarg);
 
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "new currcy: \"%s\"", currcy);
-				#endif
 
 				break;
 
+			case 'n':
+				n = atof(optarg);
+				break;
+
 			case 'p':  // check for a successful JSON response
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 'p'");
-				#endif
 
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
@@ -295,9 +289,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':  // print sell price
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 's'");
-				#endif
 
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
@@ -308,14 +300,14 @@ int main(int argc, char **argv) {
 						wprintf(
 							L"sell: %S %f %s\n",
 							btcrates.currcy.sign,
-							btcrates.sell,
+							btcrates.sell * n,
 							btcrates.currcy.name
 						);
 
 						resetb();
 
 					} else {
-						printf("%f\n", btcrates.sell);
+						printf("%f\n", btcrates.sell * n);
 					}
 				} else {
 					btcerr(pn, "%s", api_err.errstr);
@@ -325,13 +317,9 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':  // increase verbosity
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "got option 'v'");
-				#endif
 
-				#if DEBUG
 				btcdbg(__FILE__, __LINE__, "verbose = true");
-				#endif
 
 				verbose = true;
 				break;
@@ -368,8 +356,6 @@ int main(int argc, char **argv) {
 			exit(EXIT_FAILURE);
 		}
 	}
-
-	fwide(stdout, -1);
 
 	return 0;
 }
