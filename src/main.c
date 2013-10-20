@@ -283,7 +283,7 @@ int main(int argc, char **argv) {
 					puts("success");
 				} else {
 					btcerr(pn, "%s", api_err.errstr);
-					return 0;
+					exit(EXIT_FAILURE);
 				}
 
 				break;
@@ -357,5 +357,5 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
