@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <wchar.h>
 
+#include "../include/config.h"
 #include "../include/cmdlineutils.h"
 #include "../include/btcdbg.h"
 
@@ -64,10 +65,10 @@ void resetw(void) {
 	fwide(stdout, 1);  // set stdout to be wide-oriented
 }
 
-noreturn void version(const char *const version) {
+noreturn void version(void) {
 	btcdbg(__FILE__, __LINE__, "version()");
 
-	printf("btcwatch %s\n", version);
+	printf("%s\n", PACKAGE_STRING);
 	puts(
 		"Copyright (C) Marco Scannadinari.\n"
 		"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
@@ -77,8 +78,8 @@ noreturn void version(const char *const version) {
 		"Written by Marco Scannadinari."
 	);
 	
-	#if DEBUG  // else CC, CFLAGS wouldn't be defined
-	btcdbg(__FILE__, __LINE__, "compiled with %s %s on %s %s", CC, CFLAGS, __TIME__, __DATE__);
+	#if DEBUG  // else CC wouldn't be defined
+	btcdbg(__FILE__, __LINE__, "compiled with %s on %s %s", CC, __TIME__, __DATE__);
 	#endif
 
 	exit(EXIT_SUCCESS);

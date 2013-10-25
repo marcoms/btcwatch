@@ -1,4 +1,4 @@
-AC_INIT([btcwatch], [0.0.2], [marco@scannadinari.co.uk])
+AC_INIT([btcwatch], [0.0.3], [marco@scannadinari.co.uk])
 
 define([errnf], [echo "  ./configure: error: cannot find $1"; exit 1])
 
@@ -38,8 +38,11 @@ AC_CHECK_LIB([jansson], [json_loads], [], [errnf([libjansson])])
 AC_OUTPUT
 
 echo
-echo "SUMMARY"
+echo
 echo "    prefix:   $prefix"
 echo
+echo
+
+cp confdefs.h src/include/config.h
 
 echo $prefix > prefix.txt

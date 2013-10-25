@@ -32,6 +32,6 @@ void resetb(void);
 void resetw(void);
 
 // prints version number
-noreturn void version(const char *const version);
+noreturn void version(void);
 
 #endif

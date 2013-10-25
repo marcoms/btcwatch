@@ -20,12 +20,11 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "../include/btcdbg.h"
 #include "../include/btcerr.h"
 
 void btcerr(const char *const prog_name, const char *const format, ...) {
-	#if DEBUG
-	debug(__FILE__, __LINE__, "error()");
-	#endif
+	btcdbg(__FILE__, __LINE__, "error()");
 
 	va_list args;
 

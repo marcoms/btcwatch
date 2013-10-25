@@ -60,14 +60,17 @@ Variables are initialised, not declared then assigned.
 Happy hacking!
 */
 
-#define OPTSTRING "?Vbac:hn:psv"
+#define OPTSTRING "?CSVbac:hn:psv"
 
 #include <assert.h>
 #include <ctype.h>
 #include <locale.h>
+#include <pwd.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <getopt.h>
 
 #include "include/btcapi.h"
@@ -86,12 +89,17 @@ rates_t btcrates = {
 int main(int argc, char **argv) {
 	btcdbg(__FILE__, __LINE__, "main()");
 
-	btcerr_t api_err;	// error data structure
-	int longopt_i;		// index for referencing long_options[] - needed by getopt_long()
-	double n;		// number of BTC to convert
-	int opt;  		// current option
-	char *pn;  		// pointer to argv[0]
-	bool verbose;		// print verbose output?
+	btcerr_t api_err;		// error data structureq
+	FILE *handle;			// .btcstore handle
+	char *homedir;			// path to ~/
+	int longopt_i;			// index for referencing long_options[]
+	double n;			// number of BTC to convert
+	int opt;  			// current option
+	char btcpath[64];			// path to ~/.btcwatch
+	char btcpathwf[64];		// path including ".btcstore"
+	struct passwd *userinfo;	// info from /etc/passwd
+	char *pn;  			// pointer to argv[0]
+	bool verbose;			// print verbose output?
 
 	char currcy[3 + 1] = "USD";
 	const struct option long_options[17] = {
@@ -100,6 +108,20 @@ int main(int argc, char **argv) {
 			.has_arg = no_argument,
 			.flag = NULL,
 			.val = 'h'
+		},
+
+		{
+			.name = "compare",
+			.has_arg = no_argument,
+			.flag = NULL,
+			.val = 'C'
+		},
+
+		{
+			.name = "store",
+			.has_arg = no_argument,
+			.flag = NULL,
+			.val = 'S'
 		},
 
 		{
@@ -160,6 +182,7 @@ int main(int argc, char **argv) {
 	};
 
 	api_err.err = false;
+	homedir = NULL;
 	n = 1.0;
 	pn = argv[0];
 	verbose = false;
@@ -173,22 +196,62 @@ int main(int argc, char **argv) {
 		long_options,
 		&longopt_i
 	)) != -1) {
+		btcdbg(__FILE__, __LINE__, "got option '%c'", opt);
+
 		switch(opt) {
 			case '?': case 'h':  // print this help
-				btcdbg(__FILE__, __LINE__, "got option 'h'");
-
 				help(pn, OPTSTRING);
 				break;
 
-			case 'V':  // print version number
-				btcdbg(__FILE__, __LINE__, "got option 'V'");
+			case 'C':
+				break;
 
-				version(BTCWATCH_VERSION);
+			case 'S':
+				// gets user information from /etc/passwd and extracts home directory from it
+
+				userinfo = getpwuid(getuid());
+				homedir = userinfo -> pw_dir;
+
+				btcdbg(__FILE__, __LINE__, "~: %s", homedir);
+				
+				strcpy(btcpath, homedir);
+				strcat(btcpath, "/.btcwatch");  // ~/.btcwatch
+
+				btcdbg(__FILE__, __LINE__, ".btcwatch path: %s", btcpath);
+
+				strcpy(btcpathwf, btcpath);
+				strcat(btcpathwf, "/btcstore");  // ~/.btcwatch/btcstore
+
+				btcdbg(__FILE__, __LINE__, "btcstore path: %s", btcpathwf);
+				btcdbg(__FILE__, __LINE__, "creating %s...", btcpath);
+
+				mkdir(btcpath, S_IRWXU);
+
+				btcdbg(__FILE__, __LINE__, "creating %s...", btcpathwf);
+
+				handle = fopen(btcpathwf, "w");
+
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+
+				fprintf(
+					handle,
+					"%f\n"
+					"%f\n",
+					btcrates.buy * n,
+					btcrates.sell * n
+				);
+
+				btcdbg(__FILE__, __LINE__, "closing %s...", btcpathwf);
+
+				fclose(handle);
+
+				break;
+
+			case 'V':  // print version number
+				version();
 				break;
 
 			case 'a':  // equivelant to -pbs
-				btcdbg(__FILE__, __LINE__, "got option 'a'");
-
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
 				if(!api_err.err) {
@@ -228,8 +291,6 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'b':  // print buy price
-				btcdbg(__FILE__, __LINE__, "got option 'b'");
-
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
 				if(!api_err.err) {
@@ -257,7 +318,6 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'c':  // set conversion currency
-				btcdbg(__FILE__, __LINE__, "got option 'c'");
 				btcdbg(__FILE__, __LINE__, "old currcy: \"%s\"", currcy);
 
 				strcpy(currcy, optarg);
@@ -271,8 +331,6 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'p':  // check for a successful JSON response
-				btcdbg(__FILE__, __LINE__, "got option 'p'");
-
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
 				if(!api_err.err) {
@@ -289,8 +347,6 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':  // print sell price
-				btcdbg(__FILE__, __LINE__, "got option 's'");
-
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
 				if(!api_err.err) {
@@ -317,8 +373,6 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':  // increase verbosity
-				btcdbg(__FILE__, __LINE__, "got option 'v'");
-
 				btcdbg(__FILE__, __LINE__, "verbose = true");
 
 				verbose = true;

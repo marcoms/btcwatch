@@ -3,12 +3,21 @@ define \n
 
 endef
 
-BOLD="\033[1m"
-RESET="\033[0m"
-INDENT=@echo -n "  "
-NEWL=@echo
+define TITLE
+@echo -e ${BOLD}$@${RESET}
+endef
 
-BTCWATCH_VERSION=0.0.3
+define NEWL
+@echo
+endef
+
+define BOLD
+"\033[1m"
+endef
+
+define RESET
+"\033[0m"
+endef
 
 ifdef $(CC)
 	MCC=$(CC)
@@ -19,7 +28,7 @@ endif
 MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DDEBUG=0 -D_GNU_SOURCE
 MCFLAGS+=$(CFLAGS)
 
-MCFLAGS_DEBUG=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g -DCC="\"$(MCC)\"" -DCFLAGS="\"-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g\"" -DDEBUG=1 -D_GNU_SOURCE
+MCFLAGS_DEBUG=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g -DCC="\"$(MCC)\"" -DDEBUG=1 -D_GNU_SOURCE
 
 PREFIX=$(shell cat prefix.txt)
 
@@ -27,7 +36,7 @@ PREFIX=$(shell cat prefix.txt)
 SRC=$(addprefix src/, main main_debug)
 
 # contents of lib/ dir
-LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg btcerr)
+LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg btcdbg_debug btcerr btcerr_debug)
 
 # all Makefile-generated files without {suf,pre}fixes
 ALL=$(SRC) $(LIB)
@@ -38,152 +47,149 @@ ALLC=$(addsuffix .c, $(ALL))
 ALLO=$(addsuffix .o, $(ALL))
 
 # all Makefile-generated files with .a extension and "lib" prefix
-ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg btcerr msg)))
+ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg  btcdbg_debug btcerr btcerr_debug)))
 
 CURLLIBS=$(shell pkg-config libcurl --libs)
 JANSSONLIBS=$(shell pkg-config jansson --libs)
 CURLFLAGS=$(shell pkg-config libcurl --cflags)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags)
 
-all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a src/lib/libmsg.a
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	$(MCC) -obtcwatch $< -Lsrc/lib/ -lbtcapi -lcmdlineutils -lmsg $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
-	$(NEWL)
+all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a src/lib/libbtcdbg.a src/lib/libbtcerr.a
+	${TITLE}
+	$(MCC) -obtcwatch $< -Lsrc/lib -lbtcapi -lcmdlineutils -lbtcdbg -lbtcerr $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
+	${NEWL}
 
-debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a src/lib/libmsg.a
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	$(MCC) -obtcwatch-debug $< -Lsrc/lib/ -lbtcapi_debug -lcmdlineutils_debug -lmsg $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
-	$(NEWL)
+debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a src/lib/libbtcdbg_debug.a src/lib/libbtcerr_debug.a
+	${TITLE}
+	$(MCC) -obtcwatch-debug $< -Lsrc/lib -lbtcapi_debug -lcmdlineutils_debug -lbtcdbg_debug -lbtcerr_debug $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
+	${NEWL}
 
 src/main.o: src/main.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	$(MCC) -o$@ $< -c $(MCFLAGS) -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
-	$(NEWL)
+	${TITLE}
+	$(MCC) -o$@ $< -c $(MCFLAGS)
+	${NEWL}
 
 src/main_debug.o: src/main.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG) -DBTCWATCH_VERSION="\"$(BTCWATCH_VERSION)\""
-	$(NEWL)
+	${TITLE}
+	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG)
+	${NEWL}
 
 src/lib/btcapi.o: src/lib/btcapi.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	$(MCC) -o$@ $< -c $(MCFLAGS)
-	$(NEWL)
+	${NEWL}
 
 src/lib/libbtcapi.a: src/lib/btcapi.o
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	ar rc $@ $<
-	$(INDENT)
 	ranlib $@
-	$(NEWL)
+	${NEWL}
 
 src/lib/btcapi_debug.o: src/lib/btcapi.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG)
-	$(NEWL)
+	${NEWL}
 
 src/lib/libbtcapi_debug.a: src/lib/btcapi_debug.o
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	ar rc $@ $<
-	$(INDENT)
 	ranlib $@
-	$(NEWL)
+	${NEWL}
 
 src/lib/cmdlineutils.o: src/lib/cmdlineutils.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	$(MCC) -o$@ $< -c $(MCFLAGS)
-	$(NEWL)
+	${NEWL}
 
 src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	ar rc $@ $<
-	$(INDENT)
 	ranlib $@
-	$(NEWL)
+	${NEWL}
 
 src/lib/cmdlineutils_debug.o: src/lib/cmdlineutils.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	$(MCC) -o $@ $< -c $(MCFLAGS_DEBUG)
-	$(NEWL)
+	${NEWL}
 
 src/lib/libcmdlineutils_debug.a: src/lib/cmdlineutils_debug.o
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	ar rc $@ $<
-	$(INDENT)
 	ranlib $@
-	$(NEWL)
+	${NEWL}
 
 src/lib/btcerr.o: src/lib/btcerr.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	$(MCC) -o$@ $< -c $(MCFLAGS)
-	$(NEWL)
+	${TITLE}
+	$(MCC) -o$@ $< -c -L$(MCFLAGS)
+	${NEWL}
+
+src/lib/btcerr_debug.o: src/lib/btcerr.c
+	${TITLE}
+	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG)
+	${NEWL}
+
+src/lib/libbtcerr.a: src/lib/btcerr.o
+	${TITLE}
+	ar rcs $@ $<
+	${NEWL}
+
+src/lib/libbtcerr_debug.a: src/lib/btcerr_debug.o
+	${TITLE}
+	ar rcs $@ $<
+	${NEWL}
 
 src/lib/btcdbg.o: src/lib/btcdbg.c
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	$(MCC) -o$@ $< -c $(MCFLAGS)
-	$(NEWL)
+	${NEWL}
 
-src/lib/libmsg.a: src/lib/btcdbg.o src/lib/btcerr.o
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
-	ar rc $@ $^
-	$(INDENT)
-	ranlib $@
-	$(NEWL)
+src/lib/btcdbg_debug.o: src/lib/btcdbg.c
+	${TITLE}
+	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG)
+	${NEWL}
+
+src/lib/libbtcdbg.a: src/lib/btcdbg.o
+	${TITLE}
+	ar rcs $@ $<
+	${NEWL}
+
+src/lib/libbtcdbg_debug.a: src/lib/btcdbg_debug.o
+	${TITLE}
+	ar rcs $@ $<
+	${NEWL}
 
 install: all
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	mkdir -p $(PREFIX)/bin/
-	$(INDENT)
 	install -m777 btcwatch* $(PREFIX)/bin/
-	$(NEWL)
+	${NEWL}
 
 install-strip: install
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	strip -s $(PREFIX)/bin/btcwatch
-	$(NEWL)
+	${NEWL}
 
 uninstall:
-	@echo -e $(BOLD)$@$(RESET)
-	$(INDENT)
+	${TITLE}
 	rm -rf $(PREFIX)/bin/btcwatch
 	$(INDENT)
 	rm -rf $(PREFIX)/bin/btcwatch-debug
-	$(NEWL)
+	${NEWL}
 
 clean:
-	@echo -e $(BOLD)$@$(RESET)
-	$(foreach i, $(ALL), $(INDENT) ${\n} rm -rf $(i) ${\n})  @# this works somehow
-	$(foreach i, $(ALLA), $(INDENT) ${\n} rm -rf $(i) ${\n})
-	$(foreach i, $(ALLO), $(INDENT) ${\n} rm -rf $(i) ${\n})
-	$(INDENT)
+	${TITLE}
+	$(foreach i, $(ALL), ${\n} rm -rf $(i) ${\n})
+	$(foreach i, $(ALLA), ${\n} rm -rf $(i) ${\n})
+	$(foreach i, $(ALLO), ${\n} rm -rf $(i) ${\n})
 	rm -rf btcwatch
-	$(INDENT)
 	rm -rf btcwatch-debug
-	$(NEWL)
+	${NEWL}
 
 distclean: clean
-	@echo -e $(BOLD)$@$(RESET)
+	${TITLE}
 	$(foreach i, $(wildcard config.*), $(INDENT) ${\n} rm -rf $(i) ${\n})
-	$(INDENT)
 	rm -rf autom4te.cache
-	$(INDENT)
+	rm -rf src/include/config.h
 	rm -rf prefix.txt
-	$(NEWL)
+	${NEWL}
 
