@@ -20,11 +20,6 @@
 #ifndef BTCDBG_H
 #define BTCDBG_H
 
-void btcdbg(
-	const char *const file,
-	const int line,
-	const char *const format,
-	...
-);
+void btcdbg(const char *const fmt, ...);
 
 #endif

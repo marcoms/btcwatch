@@ -12,13 +12,13 @@ AC_CHECK_FILE([src/include/], [], [errnf([src/include/])])
 AC_CHECK_FILE([src/lib/], [], [errnf([src/lib/])])
 
 AC_CHECK_FILE([src/include/btcapi.h], [], [errnf([src/include/btcapi.h])])
-AC_CHECK_FILE([src/include/cmdlineutils.h], [], [errnf([src/include/cmdlineutils.h])])
+AC_CHECK_FILE([src/include/btcutil.h], [], [errnf([src/include/btcutil.h])])
 AC_CHECK_FILE([src/include/btcerr.h], [], [errnf([src/include/btcerr.h])])
 AC_CHECK_FILE([src/include/btcdbg.h], [], [errnf([src/include/btcdbg.h])])
 
 AC_CHECK_FILE([src/main.c], [], [errnf([src/main.c])])
 AC_CHECK_FILE([src/lib/btcapi.c], [], [errnf([src/lib/btcapi.c])])
-AC_CHECK_FILE([src/lib/cmdlineutils.c], [], [errnf([src/lib/cmdlineutils.c])])
+AC_CHECK_FILE([src/lib/btcutil.c], [], [errnf([src/lib/btcutil.c])])
 
 AC_CHECK_HEADER([assert.h], [], [errnf([assert.h])])
 AC_CHECK_HEADER([ctype.h], [], [errnf([ctype.h])])

@@ -64,17 +64,19 @@ Happy hacking!
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
+#include <inttypes.h>
 #include <locale.h>
-#include <pwd.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#include <time.h>
 #include <getopt.h>
 
 #include "include/btcapi.h"
-#include "include/cmdlineutils.h"
+#include "include/btcutil.h"
+#include "include/config.h"
 #include "include/btcdbg.h"
 #include "include/btcerr.h"
 
@@ -87,21 +89,25 @@ rates_t btcrates = {
 */
 
 int main(int argc, char **argv) {
-	btcdbg(__FILE__, __LINE__, "main()");
+	btcdbg("main()");
 
-	btcerr_t api_err;		// error data structureq
+	btcerr_t api_err;		// error data structure
+	char btcpath[64];		// path to ~/.btcwatch
+	char btcpathwf[64];		// path including ".btcstore"
+	time_t btcstore_time;		// time btcstore was modified
+	uint32_t btcstore_time_tmp;	// for reading with scanf()
+	rates_t btcstore;		// rates found in ~/.btcwatch/btcstore
+	char currcy[3 + 1];		// currency to convert to
+	bool found_path;		// found ~/, ~/.btcwatch, etc?
 	FILE *handle;			// .btcstore handle
-	char *homedir;			// path to ~/
 	int longopt_i;			// index for referencing long_options[]
 	double n;			// number of BTC to convert
-	int opt;  			// current option
-	char btcpath[64];			// path to ~/.btcwatch
-	char btcpathwf[64];		// path including ".btcstore"
-	struct passwd *userinfo;	// info from /etc/passwd
+	char *newlp;			// pointer to newline
+	int opt;  			// current option in getopt() loop
 	char *pn;  			// pointer to argv[0]
+	char timestr[32];		// string returned by ctime
 	bool verbose;			// print verbose output?
 
-	char currcy[3 + 1] = "USD";
 	const struct option long_options[17] = {
 		{
 			.name = "help",
@@ -182,10 +188,12 @@ int main(int argc, char **argv) {
 	};
 
 	api_err.err = false;
-	homedir = NULL;
+	found_path = false;
 	n = 1.0;
 	pn = argv[0];
 	verbose = false;
+
+	strcpy(currcy, "USD");
 
 	setlocale(LC_ALL, "");  // sets the locale to the system's default
 
@@ -196,7 +204,7 @@ int main(int argc, char **argv) {
 		long_options,
 		&longopt_i
 	)) != -1) {
-		btcdbg(__FILE__, __LINE__, "got option '%c'", opt);
+		btcdbg("got option '%c'", opt);
 
 		switch(opt) {
 			case '?': case 'h':  // print this help
@@ -204,44 +212,122 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'C':
+				if(!found_path) {
+					find_path(btcpath, btcpathwf);
+					found_path = true;
+				}
+
+				// checks if ~/.btcwatch exists If not, then definitely no price was stored
+
+				btcdbg("checking %s...", btcpath);
+				mkdir(btcpath, S_IRWXU);
+				if(errno != EEXIST) {
+					btcerr(pn, "No price stored - rerun btcwatch with -S");
+					exit(EXIT_FAILURE);
+				}
+
+				// checks if ~/.btcwatch/btcstore exists. If not
+
+				btcdbg("opening %s...", btcpathwf);
+				if((handle = fopen(btcpathwf, "r")) == NULL) {
+					btcerr(pn, "%s - rerun btcwatch with -S", strerror(errno));
+					exit(EXIT_FAILURE);
+				}
+
+				fscanf(handle, "%s", btcstore.currcy.name);
+
+				if(!btcrates.got || strcmp(btcrates.currcy.name, btcstore.currcy.name) != 0) fill_rates(btcstore.currcy.name, &api_err);
+
+				if(!api_err.err) {
+					fscanf(handle, "%lf", &btcstore.buy);
+					fscanf(handle, "%lf", &btcstore.sell);
+					fscanf(handle, "%" SCNu32, &btcstore_time_tmp);
+
+					btcstore_time = btcstore_time_tmp;
+					strcpy(timestr, ctime(&btcstore_time));
+
+					newlp = strchr(timestr, '\n');
+					*newlp = '\0';
+
+					btcdbg("rates bdiff: %f", btcrates.buy - btcstore.buy);
+					btcdbg("rates sdiff: %f", btcrates.sell - btcstore.sell);
+
+					if(btcrates.buy == btcstore.buy) {
+						puts("No change.");
+						break;
+					}
+
+					if(verbose) {
+						resetw();
+						wprintf(
+							L"buy: %s by %S %f %s\n"
+							"sell: %s by %S %f %s\n"
+							"(since %s)\n",
+							((btcrates.buy > btcstore.buy) ? "UP" : "DOWN"),
+							btcrates.currcy.sign,
+							(btcrates.buy - btcstore.buy),
+							btcrates.currcy.name,
+							((btcrates.sell > btcstore.sell) ? "UP" : "DOWN"),
+							btcrates.currcy.sign,
+							(btcrates.sell - btcstore.sell),
+							btcrates.currcy.name,
+							timestr
+						);
+						resetb();
+					} else {
+						printf(
+							"%s by %f\n"
+							"%s by %f\n",
+							((btcrates.buy > btcstore.buy) ? "UP" : "DOWN"),
+							(btcrates.buy - btcstore.buy),
+							((btcrates.sell > btcstore.sell) ? "UP" : "DOWN"),
+							(btcrates.sell - btcstore.sell)
+						);
+					}
+				} else {
+					btcerr(pn, "%s", api_err.errstr);
+					exit(EXIT_FAILURE);
+				}
+
+				btcdbg("closing %s...", btcpathwf);
+
 				break;
 
 			case 'S':
 				// gets user information from /etc/passwd and extracts home directory from it
 
-				userinfo = getpwuid(getuid());
-				homedir = userinfo -> pw_dir;
+				if(!found_path) {
+					find_path(btcpath, btcpathwf);
+					found_path = true;
+				}
 
-				btcdbg(__FILE__, __LINE__, "~: %s", homedir);
-				
-				strcpy(btcpath, homedir);
-				strcat(btcpath, "/.btcwatch");  // ~/.btcwatch
+				btcdbg("possibly creating %s...", btcpath);
+				if(mkdir(btcpath, S_IRWXU) == -1) btcdbg("mkdir(): %s", strerror(errno));
 
-				btcdbg(__FILE__, __LINE__, ".btcwatch path: %s", btcpath);
-
-				strcpy(btcpathwf, btcpath);
-				strcat(btcpathwf, "/btcstore");  // ~/.btcwatch/btcstore
-
-				btcdbg(__FILE__, __LINE__, "btcstore path: %s", btcpathwf);
-				btcdbg(__FILE__, __LINE__, "creating %s...", btcpath);
-
-				mkdir(btcpath, S_IRWXU);
-
-				btcdbg(__FILE__, __LINE__, "creating %s...", btcpathwf);
+				btcdbg("creating/opening %s...", btcpathwf);
 
 				handle = fopen(btcpathwf, "w");
 
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 
-				fprintf(
-					handle,
-					"%f\n"
-					"%f\n",
-					btcrates.buy * n,
-					btcrates.sell * n
-				);
+				if(!api_err.err) {
+					fprintf(
+						handle,
+						"%s\n"
+						"%f\n"
+						"%f\n"
+						"%" PRIu32 "\n",
+						btcrates.currcy.name,
+						btcrates.buy,
+						btcrates.sell,
+						(uint32_t) time(NULL)
+					);
+				} else {
+					btcerr(pn, "%s", api_err.errstr);
+					exit(EXIT_FAILURE);
+				}
 
-				btcdbg(__FILE__, __LINE__, "closing %s...", btcpathwf);
+				btcdbg("closing %s...", btcpathwf);
 
 				fclose(handle);
 
@@ -259,7 +345,6 @@ int main(int argc, char **argv) {
 						puts("result: success");
 
 						resetw();
-
 						wprintf(
 							L"buy: %S %f %s\n"
 							"sell: %S %f %s\n",
@@ -270,7 +355,6 @@ int main(int argc, char **argv) {
 							btcrates.sell * n,
 							btcrates.currcy.name
 						);
-						
 						resetb();
 
 					} else {
@@ -296,14 +380,12 @@ int main(int argc, char **argv) {
 				if(!api_err.err) {
 					if(verbose) {
 						resetw();
-
 						wprintf(
 							L"buy: %S %f %s\n",
 							btcrates.currcy.sign,
 							btcrates.buy * n,
 							btcrates.currcy.name
 						);
-
 						resetb();
 
 					} else {
@@ -318,11 +400,11 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'c':  // set conversion currency
-				btcdbg(__FILE__, __LINE__, "old currcy: \"%s\"", currcy);
+				btcdbg("old currcy: \"%s\"", currcy);
 
 				strcpy(currcy, optarg);
 
-				btcdbg(__FILE__, __LINE__, "new currcy: \"%s\"", currcy);
+				btcdbg("new currcy: \"%s\"", currcy);
 
 				break;
 
@@ -352,14 +434,12 @@ int main(int argc, char **argv) {
 				if(!api_err.err) {
 					if(verbose) {
 						resetw();
-
 						wprintf(
 							L"sell: %S %f %s\n",
 							btcrates.currcy.sign,
 							btcrates.sell * n,
 							btcrates.currcy.name
 						);
-
 						resetb();
 
 					} else {
@@ -373,7 +453,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':  // increase verbosity
-				btcdbg(__FILE__, __LINE__, "verbose = true");
+				btcdbg("verbose: true");
 
 				verbose = true;
 				break;
@@ -391,7 +471,6 @@ int main(int argc, char **argv) {
 			puts("result: success");
 
 			resetw();
-
 			wprintf(
 				L"buy: %S %f %s\n"
 				"sell: %S %f %s\n",
@@ -402,7 +481,6 @@ int main(int argc, char **argv) {
 				btcrates.sell,
 				btcrates.currcy.name
 			);
-
 			resetb();
 
 		} else {

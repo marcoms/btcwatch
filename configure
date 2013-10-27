@@ -2941,25 +2941,25 @@ else
   echo "  ./configure: error: cannot find src/include/btcapi.h"; exit 1
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/cmdlineutils.h" >&5
-$as_echo_n "checking for src/include/cmdlineutils.h... " >&6; }
-if ${ac_cv_file_src_include_cmdlineutils_h+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/btcutil.h" >&5
+$as_echo_n "checking for src/include/btcutil.h... " >&6; }
+if ${ac_cv_file_src_include_btcutil_h+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "src/include/cmdlineutils.h"; then
-  ac_cv_file_src_include_cmdlineutils_h=yes
+if test -r "src/include/btcutil.h"; then
+  ac_cv_file_src_include_btcutil_h=yes
 else
-  ac_cv_file_src_include_cmdlineutils_h=no
+  ac_cv_file_src_include_btcutil_h=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_cmdlineutils_h" >&5
-$as_echo "$ac_cv_file_src_include_cmdlineutils_h" >&6; }
-if test "x$ac_cv_file_src_include_cmdlineutils_h" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_include_btcutil_h" >&5
+$as_echo "$ac_cv_file_src_include_btcutil_h" >&6; }
+if test "x$ac_cv_file_src_include_btcutil_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/include/cmdlineutils.h"; exit 1
+  echo "  ./configure: error: cannot find src/include/btcutil.h"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/btcerr.h" >&5
@@ -3047,25 +3047,25 @@ else
   echo "  ./configure: error: cannot find src/lib/btcapi.c"; exit 1
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/cmdlineutils.c" >&5
-$as_echo_n "checking for src/lib/cmdlineutils.c... " >&6; }
-if ${ac_cv_file_src_lib_cmdlineutils_c+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/btcutil.c" >&5
+$as_echo_n "checking for src/lib/btcutil.c... " >&6; }
+if ${ac_cv_file_src_lib_btcutil_c+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "src/lib/cmdlineutils.c"; then
-  ac_cv_file_src_lib_cmdlineutils_c=yes
+if test -r "src/lib/btcutil.c"; then
+  ac_cv_file_src_lib_btcutil_c=yes
 else
-  ac_cv_file_src_lib_cmdlineutils_c=no
+  ac_cv_file_src_lib_btcutil_c=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_lib_cmdlineutils_c" >&5
-$as_echo "$ac_cv_file_src_lib_cmdlineutils_c" >&6; }
-if test "x$ac_cv_file_src_lib_cmdlineutils_c" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_src_lib_btcutil_c" >&5
+$as_echo "$ac_cv_file_src_lib_btcutil_c" >&6; }
+if test "x$ac_cv_file_src_lib_btcutil_c" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/lib/cmdlineutils.c"; exit 1
+  echo "  ./configure: error: cannot find src/lib/btcutil.c"; exit 1
 fi
 
 
@@ -4427,4 +4427,3 @@ echo
 cp confdefs.h src/include/config.h
 
 echo $prefix > prefix.txt
-echo 0.0.3 > version.txt

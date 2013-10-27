@@ -36,7 +36,7 @@ PREFIX=$(shell cat prefix.txt)
 SRC=$(addprefix src/, main main_debug)
 
 # contents of lib/ dir
-LIB=$(addprefix	src/lib/, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg btcdbg_debug btcerr btcerr_debug)
+LIB=$(addprefix	src/lib/, btcapi btcapi_debug btcutil btcutil_debug btcdbg btcdbg_debug btcerr btcerr_debug)
 
 # all Makefile-generated files without {suf,pre}fixes
 ALL=$(SRC) $(LIB)
@@ -47,21 +47,21 @@ ALLC=$(addsuffix .c, $(ALL))
 ALLO=$(addsuffix .o, $(ALL))
 
 # all Makefile-generated files with .a extension and "lib" prefix
-ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug cmdlineutils cmdlineutils_debug btcdbg  btcdbg_debug btcerr btcerr_debug)))
+ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug btcutil btcutil_debug btcdbg  btcdbg_debug btcerr btcerr_debug)))
 
 CURLLIBS=$(shell pkg-config libcurl --libs)
 JANSSONLIBS=$(shell pkg-config jansson --libs)
 CURLFLAGS=$(shell pkg-config libcurl --cflags)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags)
 
-all: src/main.o src/lib/libbtcapi.a src/lib/libcmdlineutils.a src/lib/libbtcdbg.a src/lib/libbtcerr.a
+all: src/main.o src/lib/libbtcapi.a src/lib/libbtcutil.a src/lib/libbtcdbg.a src/lib/libbtcerr.a
 	${TITLE}
-	$(MCC) -obtcwatch $< -Lsrc/lib -lbtcapi -lcmdlineutils -lbtcdbg -lbtcerr $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch $< -Lsrc/lib -lbtcapi -lbtcutil -lbtcdbg -lbtcerr $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
 	${NEWL}
 
-debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libcmdlineutils_debug.a src/lib/libbtcdbg_debug.a src/lib/libbtcerr_debug.a
+debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libbtcutil_debug.a src/lib/libbtcdbg_debug.a src/lib/libbtcerr_debug.a
 	${TITLE}
-	$(MCC) -obtcwatch-debug $< -Lsrc/lib -lbtcapi_debug -lcmdlineutils_debug -lbtcdbg_debug -lbtcerr_debug $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch-debug $< -Lsrc/lib -lbtcapi_debug -lbtcutil_debug -lbtcdbg_debug -lbtcerr_debug $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
 	${NEWL}
 
 src/main.o: src/main.c
@@ -96,23 +96,23 @@ src/lib/libbtcapi_debug.a: src/lib/btcapi_debug.o
 	ranlib $@
 	${NEWL}
 
-src/lib/cmdlineutils.o: src/lib/cmdlineutils.c
+src/lib/btcutil.o: src/lib/btcutil.c
 	${TITLE}
 	$(MCC) -o$@ $< -c $(MCFLAGS)
 	${NEWL}
 
-src/lib/libcmdlineutils.a: src/lib/cmdlineutils.o
+src/lib/libbtcutil.a: src/lib/btcutil.o
 	${TITLE}
 	ar rc $@ $<
 	ranlib $@
 	${NEWL}
 
-src/lib/cmdlineutils_debug.o: src/lib/cmdlineutils.c
+src/lib/btcutil_debug.o: src/lib/btcutil.c
 	${TITLE}
 	$(MCC) -o $@ $< -c $(MCFLAGS_DEBUG)
 	${NEWL}
 
-src/lib/libcmdlineutils_debug.a: src/lib/cmdlineutils_debug.o
+src/lib/libbtcutil_debug.a: src/lib/btcutil_debug.o
 	${TITLE}
 	ar rc $@ $<
 	ranlib $@

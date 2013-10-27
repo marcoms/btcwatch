@@ -22,6 +22,9 @@
 
 #define noreturn _Noreturn
 
+// finds absolute path to ~/.btcwatch and ~/.btcwatch/btcstore
+void find_path(char *path, char *pathwf);
+
 // prints usage info and options
 noreturn void help(const char *const prog_name, const char *const optstring);
 

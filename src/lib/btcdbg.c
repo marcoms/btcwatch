@@ -17,35 +17,28 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define BOLD "\033[1m"
+#define RESET "\033[0m"
+
 #define IGNORE(x) (void) (x)  // removes unused parameter/variable warnings
 
-#if DEBUG
 #include <stdarg.h>
 #include <stdio.h>
-#endif
 
 #include "../include/btcdbg.h"
 
-void btcdbg(
-	const char *const file,
-	const int line,
-	const char *const format,
-	...
-) {
-	#if DEBUG
+void btcdbg(const char *const fmt, ...) {
+	#if (DEBUG)
 	va_list args;
 
-	va_start(args, format);
+	va_start(args, fmt);
 
-	printf("DEBUG: %s:%d: ", file, line);
-	vprintf(format, args);
-
-	putchar('\n');
+	fputs(BOLD "DEBUG: ", stdout);
+	vprintf(fmt, args);
+	puts(RESET);
 
 	va_end(args);
 	#else
-	IGNORE(file);
-	IGNORE(line);
-	IGNORE(format);
+	IGNORE(fmt);
 	#endif
 }

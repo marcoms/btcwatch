@@ -17,22 +17,43 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <pwd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 #include <wchar.h>
 
 #include "../include/config.h"
-#include "../include/cmdlineutils.h"
+#include "../include/btcutil.h"
 #include "../include/btcdbg.h"
 
+void find_path(char *path, char *pathwf) {
+	btcdbg("find_path()");
+
+	struct passwd *userinfo;
+
+	userinfo = getpwuid(getuid());
+	strcpy(path, userinfo -> pw_dir);
+	strcat(path, "/.btcwatch");
+	strcpy(pathwf, path);
+	strcat(pathwf, "/btcstore");
+
+	btcdbg("~/: %s", userinfo -> pw_dir);
+	btcdbg("~/.btcwatch: %s", path);
+	btcdbg("~/.btcwatch/btcstore: %s", pathwf);
+}
+
 noreturn void help(const char *const prog_name, const char *const optstring) {
-	btcdbg(__FILE__, __LINE__, "help()");
+	btcdbg("help()");
 
 	printf("Usage: %s -[%s]\n", prog_name, optstring);
 	puts(
 		"Get Bitcoin trade information\n"
 		"\n"
 		"Options:\n"
+		"  -C             --compare              comare current price with stored price\n"
+		"  -S             --store                store current price\n"
 		"  -a             --all                  equivalent to -pbs\n"
 		"  -b             --buy                  print buy price\n"
 		"  -c CURRENCY    --currency=CURRENCY    set conversion currency\n"
@@ -41,7 +62,7 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 		"  -s             --sell                 print sell price\n"
 		"  -v             --verbose              increase verbosity\n"
 		"\n"
-		"  -?, -h         --help                 print this help\n"
+		"  -h, -?         --help                 print this help\n"
 		"  -V             --version              print version number\n"
 		"\n"
 		"Report bugs to marco@scannadinari.co.uk\n"
@@ -52,21 +73,21 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 }
 
 void resetb(void) {
-	btcdbg(__FILE__, __LINE__, "resetb()");
+	btcdbg("resetb()");
 
 	freopen(NULL, "a", stdout);  // reopen stdout
 	fwide(stdout, -1);  // set stdout to be byte-oriented
 }
 
 void resetw(void) {
-	btcdbg(__FILE__, __LINE__, "resetw()");
+	btcdbg("resetw()");
 
 	freopen(NULL, "a", stdout);  // ^
 	fwide(stdout, 1);  // set stdout to be wide-oriented
 }
 
 noreturn void version(void) {
-	btcdbg(__FILE__, __LINE__, "version()");
+	btcdbg("version()");
 
 	printf("%s\n", PACKAGE_STRING);
 	puts(
@@ -79,7 +100,7 @@ noreturn void version(void) {
 	);
 	
 	#if DEBUG  // else CC wouldn't be defined
-	btcdbg(__FILE__, __LINE__, "compiled with %s on %s %s", CC, __TIME__, __DATE__);
+	btcdbg("compiled with %s on %s %s", CC, __TIME__, __DATE__);
 	#endif
 
 	exit(EXIT_SUCCESS);

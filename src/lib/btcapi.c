@@ -37,7 +37,7 @@ rates_t btcrates = {
 };
 
 int fill_rates(const char *const currcy, btcerr_t *const api_err) {
-	btcdbg(__FILE__, __LINE__, "fill_rates()");
+	btcdbg("fill_rates()");
 
 	char *json = get_json(currcy, api_err);
 	if(api_err -> err) {
@@ -54,9 +54,7 @@ int fill_rates(const char *const currcy, btcerr_t *const api_err) {
 }
 
 char *get_json(const char *const currcy, btcerr_t *const api_err) {
-	
-	btcdbg(__FILE__, __LINE__, "get_json()");
-	
+	btcdbg("get_json()");
 
 	char api_url[] = "https://data.mtgox.com/api/2/BTCxxx/money/ticker_fast";
 	currcy_t currencies[] = {
@@ -180,17 +178,17 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		},
 	};
 
-	char mod_currcy[3 + 1];
-	strcpy(mod_currcy, currcy);
-
 	char *json;
+	char mod_currcy[3 + 1];
 	CURL *handle;
 	CURLcode result;
 	bool valid_currcy;
 
+	strcpy(mod_currcy, currcy);
+
 	json = malloc(sizeof (char) * 1600);
 	if(json == NULL) {
-		btcdbg(__FILE__, __LINE__, "can't allocate memory");
+		btcdbg("can't allocate memory");
 		abort();
 	}
 
@@ -206,14 +204,12 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
-	
-	btcdbg(__FILE__, __LINE__, "currcy \"%s\" strlen: %d", currcy, strlen(currcy));
-	
+	btcdbg("currcy \"%s\" strlen: %d", currcy, strlen(currcy));
 
 	// length check
 
 	if(strlen(currcy) != 3) {
-		btcdbg(__FILE__, __LINE__, "bad currency length");
+		btcdbg("bad currency length");
 
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "bad currency length");
@@ -221,7 +217,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		return NULL;
 	}
 
-	// case correction
+	// uppercases the currency string
 
 	for(
 		uint_fast8_t i = 0;
@@ -229,7 +225,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		++i
 	) mod_currcy[i] = toupper(mod_currcy[i]);
 
-	btcdbg(__FILE__, __LINE__, "mod_currcy \"%s\" strlen: %d", mod_currcy, strlen(mod_currcy));
+	btcdbg("mod_currcy \"%s\" strlen: %d", mod_currcy, strlen(mod_currcy));
 
 	// validation
 
@@ -241,7 +237,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		if(strcmp(mod_currcy, currencies[i].name) == 0) {
 			valid_currcy = true;
 
-			btcdbg(__FILE__, __LINE__, "valid currency");
+			btcdbg("valid currency");
 
 			strcpy(btcrates.currcy.name, currencies[i].name);
 			wcscpy(btcrates.currcy.sign, currencies[i].sign);
@@ -251,9 +247,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	}
 
 	if(!valid_currcy) {
-
-		btcdbg(__FILE__, __LINE__, "!valid_currcy");
-
+		btcdbg("!valid_currcy");
 
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "invalid currcy");
@@ -261,7 +255,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		return NULL;
 	}
 
-	btcdbg(__FILE__, __LINE__, "url old: %s", api_url);
+	btcdbg("url old: %s", api_url);
 
 	for(
 		uint_fast8_t i = API_URL_CURRCY_POS, j = 0;
@@ -269,12 +263,10 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		++i, ++j
 	) api_url[i] = mod_currcy[j];
 
-	btcdbg(__FILE__, __LINE__, "url new: %s", api_url);
+	btcdbg("url new: %s", api_url);
 
 	curl_easy_setopt(handle, CURLOPT_URL, api_url);
-
 	curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data);  // sets the function to call
-
 	curl_easy_setopt(handle, CURLOPT_WRITEDATA, json);  // sets the data to be given to the function
 
 	result = curl_easy_perform(handle);  // performs the request, stores result
@@ -285,9 +277,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		return NULL;
 	}
 
-	
-	btcdbg(__FILE__, __LINE__, "json {\n%s\n}", json);
-	
+	btcdbg("json {\n%s\n}", json);
 
 	curl_easy_cleanup(handle);
 	curl_global_cleanup();
@@ -296,7 +286,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 }
 
 int parse_json(const char *const json, btcerr_t *const api_err) {
-	btcdbg(__FILE__, __LINE__, "parse_json()");
+	btcdbg("parse_json()");
 
 	json_t *buy;
 	json_t *data;
@@ -320,8 +310,8 @@ int parse_json(const char *const json, btcerr_t *const api_err) {
 	btcrates.buy = atof(json_string_value(json_object_get(buy, "value")));
 	btcrates.sell = atof(json_string_value(json_object_get(sell, "value")));
 
-	btcdbg(__FILE__, __LINE__, "buy %f", btcrates.buy);
-	btcdbg(__FILE__, __LINE__, "sell %f", btcrates.sell);
+	btcdbg("buy %f", btcrates.buy);
+	btcdbg("sell %f", btcrates.sell);
 
 	json_decref(root);
 
@@ -334,9 +324,7 @@ size_t write_data(
 	size_t nmemb,
 	void *userdata
 ) {
-	
-	btcdbg(__FILE__, __LINE__, "write_data()");
-	
+	btcdbg("write_data()");
 
 	strcpy(userdata, buffer);
 
