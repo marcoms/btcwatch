@@ -73,10 +73,10 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 }
 
 void resetb(void) {
-	btcdbg("resetb()");
-
 	freopen(NULL, "a", stdout);  // reopen stdout
 	fwide(stdout, -1);  // set stdout to be byte-oriented
+
+	btcdbg("resetb()");  // this goes at the end in order to be printed on a byte-oriented stream (assuming that the stream was wide-oriented before resetb()'s call)
 }
 
 void resetw(void) {

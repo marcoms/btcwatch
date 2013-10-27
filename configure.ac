@@ -39,7 +39,7 @@ AC_OUTPUT
 
 echo
 echo
-echo "    prefix:   $prefix"
+echo "    prefix: $prefix"
 echo
 echo
 
