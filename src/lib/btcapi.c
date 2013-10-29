@@ -58,121 +58,121 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	char api_url[] = "https://data.mtgox.com/api/2/BTCxxx/money/ticker_fast";
 	currcy_t currencies[] = {
-		{
-			// australia
+		// australia
 
+		{
 			.name = "AUD",
 			.sign = L"$",
 		},
 
-		{
-			// canada
+		// canada
 
+		{
 			.name = "CAD",
 			.sign = L"$",
 		},
 
-		{
-			// switzerland
+		// switzerland
 
+		{
 			.name = "CHF",
 			.sign = L"Fr."
 		},
 
-		{
-			// china
+		// china
 
+		{
 			.name = "CNY",
 			.sign = L"¥"
 		},
 
-		{
-			// czech republic
+		// czech republic
 
+		{
 			.name = "CZK",
 			.sign = L"Kč."
 		},
 
-		{
-			// denmark
+		// denmark
 
+		{
 			.name = "DKK",
 			.sign = L"kr."
 		},
 
-		{
-			// italy
+		// italy
 
+		{
 			.name = "EUR",
 			.sign = L"€"
 		},
 
-		{
-			// great britain
+		// great britain
 
+		{
 			.name = "GBP",
 			.sign = L"£"
 		},
 
-		{
-			// hong kong
+		// hong kong
 
+		{
 			.name = "HKD",
 			.sign = L"$"
 		},
 
-		{
-			// japan
+		// japan
 
+		{
 			.name = "JPY",
 			.sign = L"¥"
 		},
 
-		{
-			// norway
+		// norway
 
+		{
 			.name = "NOK",
 			.sign = L"kr."
 		},
 
-		{
-			// poland
+		// poland
 
+		{
 			.name = "PLN",
 			.sign = L"zł."
 		},
 
-		{
-			// russia
+		// russia
 
+		{
 			.name = "RUB",
 			.sign = L"p."
 		},
 
-		{
-			// sweden
+		// sweden
 
+		{
 			.name = "SEK",
 			.sign = L"kr."
 		},
 
-		{
-			// singapore
+		// singapore
 
+		{
 			.name = "SGD",
 			.sign = L"$"
 		},
 
-		{
-			// thailand
+		// thailand
 
+		{
 			.name = "THB",
 			.sign = L"฿"
 		},
 
-		{
-			// united states
+		// united states
 
+		{
 			.name = "USD",
 			.sign = L"$"
 		},
@@ -196,7 +196,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	if(!handle) {
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "unable to initialise libcurl session");
-
 		return NULL;
 	}
 
@@ -210,10 +209,8 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	if(strlen(currcy) != 3) {
 		btcdbg("bad currency length");
-
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "bad currency length");
-
 		return NULL;
 	}
 
@@ -236,33 +233,26 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	) {
 		if(strcmp(mod_currcy, currencies[i].name) == 0) {
 			valid_currcy = true;
-
 			btcdbg("valid currency");
-
 			strcpy(btcrates.currcy.name, currencies[i].name);
 			wcscpy(btcrates.currcy.sign, currencies[i].sign);
-
 			break;
 		}
 	}
 
 	if(!valid_currcy) {
 		btcdbg("!valid_currcy");
-
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "invalid currcy");
-
 		return NULL;
 	}
 
 	btcdbg("url old: %s", api_url);
-
 	for(
 		uint_fast8_t i = API_URL_CURRCY_POS, j = 0;
 		i < (API_URL_CURRCY_POS + 3);
 		++i, ++j
 	) api_url[i] = mod_currcy[j];
-
 	btcdbg("url new: %s", api_url);
 
 	curl_easy_setopt(handle, CURLOPT_URL, api_url);
@@ -273,7 +263,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	if(result != CURLE_OK) {
 		api_err -> err = true;
 		strcpy(api_err -> errstr, curl_easy_strerror(result));
-
 		return NULL;
 	}
 
@@ -307,11 +296,8 @@ int parse_json(const char *const json, btcerr_t *const api_err) {
 	btcrates.result = strcmp(json_string_value(json_object_get(root, "result")), "success") ? false : true;
 
 	// stores trade values as float
-	btcrates.buy = atof(json_string_value(json_object_get(buy, "value")));
-	btcrates.sell = atof(json_string_value(json_object_get(sell, "value")));
-
-	btcdbg("buy %f", btcrates.buy);
-	btcdbg("sell %f", btcrates.sell);
+	btcrates.buy = atoi(json_string_value(json_object_get(buy, "value_int")));
+	btcrates.sell = atoi(json_string_value(json_object_get(sell, "value_int")));
 
 	json_decref(root);
 
@@ -325,8 +311,6 @@ size_t write_data(
 	void *userdata
 ) {
 	btcdbg("write_data()");
-
 	strcpy(userdata, buffer);
-
 	return (size * nmemb);
 }

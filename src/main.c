@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
 	char timestr[32];		// string returned by ctime
 	bool verbose;			// print verbose output?
 
-	const struct option long_options[17] = {
+	const struct option long_options[] = {
 		{
 			.name = "help",
 			.has_arg = no_argument,
@@ -237,8 +237,8 @@ int main(int argc, char **argv) {
 				if(!api_err.err) {
 					// gets the time that btcstore was written to
 
-					fscanf(fp, "%lf", &btcstore.buy);
-					fscanf(fp, "%lf", &btcstore.sell);
+					fscanf(fp, "%" SCNu32, &btcstore.buy);
+					fscanf(fp, "%" SCNu32, &btcstore.sell);
 					fscanf(fp, "%" SCNu32, &btcstore_time_tmp);
 					btcstore_time = btcstore_time_tmp;
 					strcpy(timestr, ctime(&btcstore_time));
@@ -254,7 +254,7 @@ int main(int argc, char **argv) {
 						} else {
 							resetw();
 							wprintf(
-								L"buy: %s by %S %f %s (%f -> %f)\n",
+								L"buy: %s by %S %" PRIu32 " %s (%" PRIu32 " -> %" PRIu32 ")\n",
 								((btcrates.buy > btcstore.buy) ? "UP" : "DOWN"),
 								btcrates.currcy.sign,
 								(btcrates.buy - btcstore.buy),
@@ -269,7 +269,7 @@ int main(int argc, char **argv) {
 						} else {
 							resetw();
 							wprintf(
-								L"sell: %s by %S %f %s (%f -> %f)\n",
+								L"sell: %s by %S %" PRIu32 " %s (%" PRIu32 " -> %" PRIu32 ")\n",
 								((btcrates.sell > btcstore.sell) ? "UP" : "DOWN"),
 								btcrates.currcy.sign,
 								(btcrates.sell - btcstore.sell),
@@ -287,7 +287,7 @@ int main(int argc, char **argv) {
 							puts("(no change)");
 						} else {
 							printf(
-								"%s by %f\n",
+								"%s by %" PRIu32 "\n",
 								((btcrates.buy > btcstore.buy) ? "UP" : "DOWN"),
 								(btcrates.buy - btcstore.buy)
 							);
@@ -297,7 +297,7 @@ int main(int argc, char **argv) {
 							puts("(no change)");
 						} else {
 							printf(
-								"%s by %f\n",
+								"%s by %" PRIu32 "\n",
 								((btcrates.sell > btcstore.sell) ? "UP" : "DOWN"),
 								(btcrates.sell - btcstore.sell)
 							);
@@ -329,8 +329,8 @@ int main(int argc, char **argv) {
 					fprintf(
 						fp,
 						"%s\n"
-						"%f\n"
-						"%f\n"
+						"%" PRIu32 "\n"
+						"%" PRIu32 "\n"
 						"%" PRIu32 "\n",
 						btcrates.currcy.name,
 						btcrates.buy,
@@ -358,8 +358,8 @@ int main(int argc, char **argv) {
 						puts("result: success");
 						resetw();
 						wprintf(
-							L"buy: %S %f %s\n"
-							"sell: %S %f %s\n",
+							L"buy: %S %" PRIu32 " %s\n"
+							"sell: %S %" PRIu32 " %s\n",
 							btcrates.currcy.sign,
 							btcrates.buy * n,
 							btcrates.currcy.name,
@@ -369,7 +369,7 @@ int main(int argc, char **argv) {
 						);
 						resetb();
 					} else {
-						puts("Success");
+						puts("success");
 						printf(
 							"%f\n"
 							"%f\n",
@@ -390,7 +390,7 @@ int main(int argc, char **argv) {
 					if(verbose) {
 						resetw();
 						wprintf(
-							L"buy: %S %f %s\n",
+							L"buy: %S %" PRIu32 " %s\n",
 							btcrates.currcy.sign,
 							btcrates.buy * n,
 							btcrates.currcy.name
@@ -437,7 +437,7 @@ int main(int argc, char **argv) {
 					if(verbose) {
 						resetw();
 						wprintf(
-							L"sell: %S %f %s\n",
+							L"sell: %S %" PRIu32 " %s\n",
 							btcrates.currcy.sign,
 							btcrates.sell * n,
 							btcrates.currcy.name
@@ -470,8 +470,8 @@ int main(int argc, char **argv) {
 			puts("result: success");
 			resetw();
 			wprintf(
-				L"buy: %S %f %s\n"
-				"sell: %S %f %s\n",
+				L"buy: %S %" PRIu32 " %s\n"
+				"sell: %S %" PRIu32 " %s\n",
 				btcrates.currcy.sign,
 				btcrates.buy,
 				btcrates.currcy.name,

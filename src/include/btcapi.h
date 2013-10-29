@@ -34,11 +34,11 @@ typedef struct {
 // struct containing current exchange information
 
 typedef struct {
-	double buy;
+	uint32_t buy;
 	currcy_t currcy;
 	bool got;
 	bool result;
-	double sell;
+	uint32_t sell;
 } rates_t;
 
 extern rates_t btcrates;
