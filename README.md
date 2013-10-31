@@ -9,8 +9,8 @@ btcwatch is a program that will allow its users to view the current exchange rat
 Dependencies
 ------------
 
-libcurl
-jansson
+* libcurl
+* jansson
 
 Installing
 ----------
