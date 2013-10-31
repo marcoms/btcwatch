@@ -47,11 +47,11 @@ void find_path(char *path, char *pathwf) {
 noreturn void help(const char *const prog_name, const char *const optstring) {
 	btcdbg("help()");
 
-	printf("Usage: %s -[%s]\n", prog_name, optstring);
+	printf("Usage: %s [OPTION]\n", prog_name, optstring);
 	puts(
-		"Get Bitcoin trade information\n"
+		"Get and monitor Bitcoin trade information\n"
 		"\n"
-		"Options:\n"
+		"Options:       Long options:\n"
 		"  -C             --compare              comare current price with stored price\n"
 		"  -S             --store                store current price\n"
 		"  -a             --all                  equivalent to -pbs\n"

@@ -36,21 +36,25 @@ rates_t btcrates = {
 	.got = false
 };
 
-int fill_rates(const char *const currcy, btcerr_t *const api_err) {
+bool fill_rates(const char *const currcy, btcerr_t *const api_err) {
 	btcdbg("fill_rates()");
 
-	char *json = get_json(currcy, api_err);
+	char *json;
+
+	json = get_json(currcy, api_err);
 	if(api_err -> err) {
-		return 0;
+		free(json);
+		return false;
 	}
 
-	if(!parse_json(json, api_err)) {
+	parse_json(json, api_err);
+	if(api_err -> err) {
 		free(json);
-		return 0;
+		return false;
 	}
 
 	free(json);
-	return 1;
+	return true;
 }
 
 char *get_json(const char *const currcy, btcerr_t *const api_err) {
@@ -58,123 +62,140 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	char api_url[] = "https://data.mtgox.com/api/2/BTCxxx/money/ticker_fast";
 	currcy_t currencies[] = {
-		{
-			// australia
+		// australia
 
+		{
 			.name = "AUD",
 			.sign = L"$",
+			.sf = (1e5)
 		},
 
-		{
-			// canada
+		// canada
 
+		{
 			.name = "CAD",
 			.sign = L"$",
+			.sf = (1e5)
 		},
 
-		{
-			// switzerland
+		// switzerland
 
+		{
 			.name = "CHF",
-			.sign = L"Fr."
+			.sign = L"Fr.",
+			.sf = (1e5)
 		},
 
-		{
-			// china
+		// china
 
+		{
 			.name = "CNY",
-			.sign = L"¥"
+			.sign = L"¥",
+			.sf = (1e5)
 		},
 
-		{
-			// czech republic
+		// czech republic
 
+		{
 			.name = "CZK",
-			.sign = L"Kč."
+			.sign = L"Kč.",
+			.sf = (1e5)
 		},
 
-		{
-			// denmark
+		// denmark
 
+		{
 			.name = "DKK",
-			.sign = L"kr."
+			.sign = L"kr.",
+			.sf = (1e5)
 		},
 
-		{
-			// italy
+		// italy
 
+		{
 			.name = "EUR",
-			.sign = L"€"
+			.sign = L"€",
+			.sf = (1e5)
 		},
 
-		{
-			// great britain
+		// great britain
 
+		{
 			.name = "GBP",
-			.sign = L"£"
+			.sign = L"£",
+			.sf = (1e5)
 		},
 
-		{
-			// hong kong
+		// hong kong
 
+		{
 			.name = "HKD",
-			.sign = L"$"
+			.sign = L"$",
+			.sf = (1e5)
 		},
 
-		{
-			// japan
+		// japan
 
+		{
 			.name = "JPY",
-			.sign = L"¥"
+			.sign = L"¥",
+			.sf = (1e3)
 		},
 
-		{
-			// norway
+		// norway
 
+		{
 			.name = "NOK",
-			.sign = L"kr."
+			.sign = L"kr.",
+			.sf = (1e5)
 		},
 
-		{
-			// poland
+		// poland
 
+		{
 			.name = "PLN",
-			.sign = L"zł."
+			.sign = L"zł.",
+			.sf = (1e5)
 		},
 
-		{
-			// russia
+		// russia
 
+		{
 			.name = "RUB",
-			.sign = L"p."
+			.sign = L"p.",
+			.sf = (1e5)
 		},
 
-		{
-			// sweden
+		// sweden
 
+		{
 			.name = "SEK",
-			.sign = L"kr."
+			.sign = L"kr.",
+			.sf = (1e3)
 		},
 
-		{
-			// singapore
+		// singapore
 
+		{
 			.name = "SGD",
-			.sign = L"$"
+			.sign = L"$",
+			.sf = (1e5)
 		},
 
-		{
-			// thailand
+		// thailand
 
+		{
 			.name = "THB",
-			.sign = L"฿"
+			.sign = L"฿",
+			.sf = (1e5)
 		},
 
-		{
-			// united states
+		// united states
 
+		{
 			.name = "USD",
-			.sign = L"$"
+			.sign = L"$",
+			.sf = (1e5)
 		},
 	};
 
@@ -196,7 +217,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	if(!handle) {
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "unable to initialise libcurl session");
-
 		return NULL;
 	}
 
@@ -210,10 +230,8 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	if(strlen(currcy) != 3) {
 		btcdbg("bad currency length");
-
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "bad currency length");
-
 		return NULL;
 	}
 
@@ -236,33 +254,27 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	) {
 		if(strcmp(mod_currcy, currencies[i].name) == 0) {
 			valid_currcy = true;
-
 			btcdbg("valid currency");
-
 			strcpy(btcrates.currcy.name, currencies[i].name);
 			wcscpy(btcrates.currcy.sign, currencies[i].sign);
-
+			btcrates.currcy.sf = currencies[i].sf;
 			break;
 		}
 	}
 
 	if(!valid_currcy) {
 		btcdbg("!valid_currcy");
-
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "invalid currcy");
-
 		return NULL;
 	}
 
 	btcdbg("url old: %s", api_url);
-
 	for(
 		uint_fast8_t i = API_URL_CURRCY_POS, j = 0;
 		i < (API_URL_CURRCY_POS + 3);
 		++i, ++j
 	) api_url[i] = mod_currcy[j];
-
 	btcdbg("url new: %s", api_url);
 
 	curl_easy_setopt(handle, CURLOPT_URL, api_url);
@@ -273,7 +285,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	if(result != CURLE_OK) {
 		api_err -> err = true;
 		strcpy(api_err -> errstr, curl_easy_strerror(result));
-
 		return NULL;
 	}
 
@@ -285,7 +296,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	return json;
 }
 
-int parse_json(const char *const json, btcerr_t *const api_err) {
+bool parse_json(const char *const json, btcerr_t *const api_err) {
 	btcdbg("parse_json()");
 
 	json_t *buy;
@@ -296,37 +307,34 @@ int parse_json(const char *const json, btcerr_t *const api_err) {
 
 	root = json_loads(json, 0, &json_error);
 	if(!root) {
+		api_err -> err = true;
 		strcpy(api_err -> errstr, json_error.text);
-		return 0;
+		return false;
 	}
 
 	data = json_object_get(root, "data");
 	buy = json_object_get(data, "buy");
 	sell = json_object_get(data, "sell");
 
-	btcrates.result = strcmp(json_string_value(json_object_get(root, "result")), "success") ? false : true;
+	btcrates.result = (strcmp(json_string_value(json_object_get(root, "result")), "success")) ? false : true;
 
-	// stores trade values as float
-	btcrates.buy = atof(json_string_value(json_object_get(buy, "value")));
-	btcrates.sell = atof(json_string_value(json_object_get(sell, "value")));
-
-	btcdbg("buy %f", btcrates.buy);
-	btcdbg("sell %f", btcrates.sell);
+	// stores trade values as int and float
+	btcrates.buy = atoi(json_string_value(json_object_get(buy, "value_int")));
+	btcrates.buyf = ((double) btcrates.buy / btcrates.currcy.sf);
+	btcrates.sell = atoi(json_string_value(json_object_get(sell, "value_int")));
+	btcrates.sellf = ((double) btcrates.sell / btcrates.currcy.sf);
 
 	json_decref(root);
-
-	return 1;
+	return true;
 }
 
 size_t write_data(
-	char *buffer,
-	size_t size,
-	size_t nmemb,
-	void *userdata
+	const char *const buffer,
+	const size_t size,
+	const size_t nmemb,
+	const void *const userdata
 ) {
 	btcdbg("write_data()");
-
-	strcpy(userdata, buffer);
-
+	strcpy((char *) userdata, buffer);
 	return (size * nmemb);
 }
