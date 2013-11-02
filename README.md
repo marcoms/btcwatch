@@ -100,12 +100,12 @@ You can also store the current price of Bitcoin with `-S`, and compare it later 
 
 	$ btcwatch -S  # stores current price
 	
-	# 5 minutes...
+	# (after a reasonable amount of time)
 	
 	$ btcwatch -vC
 	buy: UP $ 100 (100.000000 -> 200.000000)
 	sell: UP $ 100 (100.000000 -> 200.000000)
-	(Since Mon Jan 1 12:00:00 1970)
+	(Since Thu Jan 1 00:00:00 1970)
 	
 	# profit!
 	
