@@ -24,12 +24,12 @@
 #include <stdlib.h>
 #include <wchar.h>
 
-#include "btcerr.h"
+#include "btcutil.h"
 
 typedef struct {
 	char name[3 + 1];
 	wchar_t sign[3 + 1];
-	double sf;
+	uint32_t sf;
 } currcy_t;
 
 // struct containing current exchange information

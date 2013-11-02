@@ -25,6 +25,10 @@ else
 	MCC=gcc
 endif
 
+AR=ar
+CC=gcc
+RM=rm
+
 MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DDEBUG=0 -D_GNU_SOURCE
 MCFLAGS+=$(CFLAGS)
 
@@ -36,7 +40,7 @@ PREFIX=$(shell cat prefix.txt)
 SRC=$(addprefix src/, main main_debug)
 
 # contents of lib/ dir
-LIB=$(addprefix	src/lib/, btcapi btcapi_debug btcutil btcutil_debug btcdbg btcdbg_debug btcerr btcerr_debug)
+LIB=$(addprefix	src/lib/, btcapi btcapi_debug btcutil btcutil_debug )
 
 # all Makefile-generated files without {suf,pre}fixes
 ALL=$(SRC) $(LIB)
@@ -47,21 +51,21 @@ ALLC=$(addsuffix .c, $(ALL))
 ALLO=$(addsuffix .o, $(ALL))
 
 # all Makefile-generated files with .a extension and "lib" prefix
-ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug btcutil btcutil_debug btcdbg  btcdbg_debug btcerr btcerr_debug)))
+ALLA=$(addprefix src/lib/, $(addsuffix .a, $(addprefix lib, btcapi btcapi_debug btcutil btcutil_debug)))
 
 CURLLIBS=$(shell pkg-config libcurl --libs)
 JANSSONLIBS=$(shell pkg-config jansson --libs)
 CURLFLAGS=$(shell pkg-config libcurl --cflags)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags)
 
-all: src/main.o src/lib/libbtcapi.a src/lib/libbtcutil.a src/lib/libbtcdbg.a src/lib/libbtcerr.a
+all: src/main.o src/lib/libbtcapi.a src/lib/libbtcutil.a
 	${TITLE}
-	$(MCC) -obtcwatch $< -Lsrc/lib -lbtcapi -lbtcutil -lbtcdbg -lbtcerr $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch $< -Lsrc/lib -lbtcapi -lbtcutil $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
 	${NEWL}
 
-debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libbtcutil_debug.a src/lib/libbtcdbg_debug.a src/lib/libbtcerr_debug.a
+debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libbtcutil_debug.a
 	${TITLE}
-	$(MCC) -obtcwatch-debug $< -Lsrc/lib -lbtcapi_debug -lbtcutil_debug -lbtcdbg_debug -lbtcerr_debug $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
+	$(MCC) -obtcwatch-debug $< -Lsrc/lib -lbtcapi_debug -lbtcutil_debug $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
 	${NEWL}
 
 src/main.o: src/main.c
@@ -116,46 +120,6 @@ src/lib/libbtcutil_debug.a: src/lib/btcutil_debug.o
 	${TITLE}
 	ar rc $@ $<
 	ranlib $@
-	${NEWL}
-
-src/lib/btcerr.o: src/lib/btcerr.c
-	${TITLE}
-	$(MCC) -o$@ $< -c -L$(MCFLAGS)
-	${NEWL}
-
-src/lib/btcerr_debug.o: src/lib/btcerr.c
-	${TITLE}
-	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG)
-	${NEWL}
-
-src/lib/libbtcerr.a: src/lib/btcerr.o
-	${TITLE}
-	ar rcs $@ $<
-	${NEWL}
-
-src/lib/libbtcerr_debug.a: src/lib/btcerr_debug.o
-	${TITLE}
-	ar rcs $@ $<
-	${NEWL}
-
-src/lib/btcdbg.o: src/lib/btcdbg.c
-	${TITLE}
-	$(MCC) -o$@ $< -c $(MCFLAGS)
-	${NEWL}
-
-src/lib/btcdbg_debug.o: src/lib/btcdbg.c
-	${TITLE}
-	$(MCC) -o$@ $< -c $(MCFLAGS_DEBUG)
-	${NEWL}
-
-src/lib/libbtcdbg.a: src/lib/btcdbg.o
-	${TITLE}
-	ar rcs $@ $<
-	${NEWL}
-
-src/lib/libbtcdbg_debug.a: src/lib/btcdbg_debug.o
-	${TITLE}
-	ar rcs $@ $<
 	${NEWL}
 
 install: all

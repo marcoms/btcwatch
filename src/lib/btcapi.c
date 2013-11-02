@@ -29,8 +29,7 @@
 #include <string.h>
 
 #include "../include/btcapi.h"
-#include "../include/btcdbg.h"
-#include "../include/btcerr.h"
+#include "../include/btcutil.h"
 
 rates_t btcrates = {
 	.got = false

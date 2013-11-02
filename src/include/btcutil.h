@@ -22,19 +22,39 @@
 
 #define noreturn _Noreturn
 
+#include <stdbool.h>
+
+typedef struct {
+	bool err;
+	char errstr[64];
+} btcerr_t;
+
+// prints debug information in the form "DEBUG: " fmt 
+
+void btcdbg(const char *const fmt, ...);
+
 // finds absolute path to ~/.btcwatch and ~/.btcwatch/btcstore
-void find_path(char *path, char *pathwf);
+
+void find_path(char *const path, char *const pathwf);
 
 // prints usage info and options
-noreturn void help(const char *const prog_name, const char *const optstring);
+
+noreturn void help(const char *const prog_nm);
 
 // sets stdout to be byte-oriented
+
 void resetb(void);
 
 // sets stdout to be wide-oriented
+
 void resetw(void);
 
+// a quicker puts
+
+void qputs(const char *str);
+
 // prints version number
+
 noreturn void version(void);
 
 #endif

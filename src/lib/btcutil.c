@@ -17,7 +17,11 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define BOLD(str) "\033[1m" str "\033[0m"
+#define IGNORE(x) (void) (x)
+
 #include <pwd.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,9 +30,24 @@
 
 #include "../include/config.h"
 #include "../include/btcutil.h"
-#include "../include/btcdbg.h"
 
-void find_path(char *path, char *pathwf) {
+void btcdbg(const char *const fmt, ...) {
+	#if (DEBUG)
+	va_list args;
+
+	va_start(args, fmt);
+
+	qputs(BOLD("DEBUG: "));
+	vprintf(fmt, args);
+	putchar('\n');
+
+	va_end(args);
+	#else
+	IGNORE(fmt);
+	#endif
+}
+
+void find_path(char *const path, char *const pathwf) {
 	btcdbg("find_path()");
 
 	struct passwd *userinfo;
@@ -44,11 +63,25 @@ void find_path(char *path, char *pathwf) {
 	btcdbg("~/.btcwatch/btcstore: %s", pathwf);
 }
 
-noreturn void help(const char *const prog_name, const char *const optstring) {
+noreturn void help(const char *const prog_nm) {
 	btcdbg("help()");
 
-	printf("Usage: %s [OPTION]\n", prog_name, optstring);
-	puts(
+	/*
+	help() uses argv[0] for the program name. Rationale: because of the
+	"Usage:" string, where the user expects to be given an explenation on
+	how to use and invoke the program. For example, if the program is
+	renamed or invoked via a symbolic link, help() will still output a
+	valid "Usage:" string.
+
+	version(), on the other hand, merely displays the program's name,
+	its version number, and licensing information, all of which should
+	remain constant (until the next release).
+	*/
+
+	qputs("Usage: ");
+	qputs(prog_nm);
+	qputs(" [OPTION]\n");
+	qputs(
 		"Get and monitor Bitcoin trade information\n"
 		"\n"
 		"Options:       Long options:\n"
@@ -66,7 +99,7 @@ noreturn void help(const char *const prog_name, const char *const optstring) {
 		"  -V             --version              print version number\n"
 		"\n"
 		"Report bugs to marco@scannadinari.co.uk\n"
-		"btcwatch home page: <https://github.com/marcoms/btcwatch/>"
+		"btcwatch home page: <https://github.com/marcoms/btcwatch/>\n"
 	);
 
 	exit(EXIT_SUCCESS);
@@ -86,17 +119,24 @@ void resetw(void) {
 	fwide(stdout, 1);  // set stdout to be wide-oriented
 }
 
+void qputs(const char *str) {
+	while(*str) {
+		putchar(*str);
+		++str;
+	}
+}
+
 noreturn void version(void) {
 	btcdbg("version()");
 
 	printf("%s\n", PACKAGE_STRING);
-	puts(
+	qputs(
 		"Copyright (C) Marco Scannadinari.\n"
 		"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 		"This is free software: you are free to change and redistribute it.\n"
 		"There is NO WARRANTY, to the extent permitted by law.\n"
 		"\n"
-		"Written by Marco Scannadinari."
+		"Written by Marco Scannadinari.\n"
 	);
 	
 	#if DEBUG  // else CC wouldn't be defined
