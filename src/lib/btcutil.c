@@ -98,8 +98,8 @@ noreturn void help(const char *const prog_nm) {
 		"  -h, -?         --help                 print this help\n"
 		"  -V             --version              print version number\n"
 		"\n"
-		"Report bugs to marco@scannadinari.co.uk\n"
-		"btcwatch home page: <https://github.com/marcoms/btcwatch/>\n"
+		"Report bugs to " PACKAGE_BUGREPORT "\n"
+		"btcwatch home page: " PACKAGE_URL "\n"
 	);
 
 	exit(EXIT_SUCCESS);

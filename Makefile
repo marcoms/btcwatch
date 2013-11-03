@@ -3,35 +3,21 @@ define \n
 
 endef
 
-define TITLE
-@echo -e ${BOLD}$@${RESET}
-endef
-
 define NEWL
 @echo
-endef
-
-define BOLD
-"\033[1m"
 endef
 
 define RESET
 "\033[0m"
 endef
 
-ifdef $(CC)
-	MCC=$(CC)
-else
-	MCC=gcc
-endif
-
 AR=ar
 CC=gcc
 RM=rm
 
-MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DDEBUG=0 -D_GNU_SOURCE
-MCFLAGS+=$(CFLAGS)
+LDFLAGS=-Lsrc/lib -lbtcapi -lbtcutil $(JANSSONLIBS) $(CURLLIBS)
 
+CFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DDEBUG=0 -D_GNU_SOURCE $(JANSSONFLAGS) $(CURLFLAGS)
 MCFLAGS_DEBUG=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g -DCC="\"$(MCC)\"" -DDEBUG=1 -D_GNU_SOURCE
 
 PREFIX=$(shell cat prefix.txt)
@@ -40,7 +26,7 @@ PREFIX=$(shell cat prefix.txt)
 SRC=$(addprefix src/, main main_debug)
 
 # contents of lib/ dir
-LIB=$(addprefix	src/lib/, btcapi btcapi_debug btcutil btcutil_debug )
+LIB=$(addprefix src/lib/, btcapi btcapi_debug btcutil btcutil_debug)
 
 # all Makefile-generated files without {suf,pre}fixes
 ALL=$(SRC) $(LIB)
@@ -58,20 +44,16 @@ JANSSONLIBS=$(shell pkg-config jansson --libs)
 CURLFLAGS=$(shell pkg-config libcurl --cflags)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags)
 
-all: src/main.o src/lib/libbtcapi.a src/lib/libbtcutil.a
-	${TITLE}
-	$(MCC) -obtcwatch $< -Lsrc/lib -lbtcapi -lbtcutil $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
-	${NEWL}
+all: btcwatch
+
+# basicallly make as much as you can implicit for some reason
+
+btcwatch: src/main.o src/lib/libbtcapi.a src/lib/libbtcutil.a
 
 debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libbtcutil_debug.a
-	${TITLE}
 	$(MCC) -obtcwatch-debug $< -Lsrc/lib -lbtcapi_debug -lbtcutil_debug $(CURLLIBS) $(CURLFLAGS) $(JANSSONLIBS) $(JANSSONFLAGS)
-	${NEWL}
 
-src/main.o: src/main.c
-	${TITLE}
-	$(MCC) -o$@ $< -c $(MCFLAGS)
-	${NEWL}
+src/main: src/main.o src/lib/libbtcapi.a src/lib/libbtcutil.a
 
 src/main_debug.o: src/main.c
 	${TITLE}
@@ -79,9 +61,6 @@ src/main_debug.o: src/main.c
 	${NEWL}
 
 src/lib/btcapi.o: src/lib/btcapi.c
-	${TITLE}
-	$(MCC) -o$@ $< -c $(MCFLAGS)
-	${NEWL}
 
 src/lib/libbtcapi.a: src/lib/btcapi.o
 	${TITLE}
@@ -101,9 +80,6 @@ src/lib/libbtcapi_debug.a: src/lib/btcapi_debug.o
 	${NEWL}
 
 src/lib/btcutil.o: src/lib/btcutil.c
-	${TITLE}
-	$(MCC) -o$@ $< -c $(MCFLAGS)
-	${NEWL}
 
 src/lib/libbtcutil.a: src/lib/btcutil.o
 	${TITLE}

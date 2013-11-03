@@ -579,11 +579,11 @@ MAKEFLAGS=
 
 # Identity of this package.
 PACKAGE_NAME='btcwatch'
-PACKAGE_TARNAME='btcwatch'
+PACKAGE_TARNAME='btcwatch-0.0.3'
 PACKAGE_VERSION='0.0.3'
 PACKAGE_STRING='btcwatch 0.0.3'
 PACKAGE_BUGREPORT='marco@scannadinari.co.uk'
-PACKAGE_URL=''
+PACKAGE_URL='<https://github.com/marcoms/btcwatch>'
 
 # Factoring default headers for most tests.
 ac_includes_default="\
@@ -1272,7 +1272,7 @@ Fine tuning of the installation directories:
   --infodir=DIR           info documentation [DATAROOTDIR/info]
   --localedir=DIR         locale-dependent data [DATAROOTDIR/locale]
   --mandir=DIR            man documentation [DATAROOTDIR/man]
-  --docdir=DIR            documentation root [DATAROOTDIR/doc/btcwatch]
+  --docdir=DIR            documentation root [DATAROOTDIR/doc/btcwatch-0.0.3]
   --htmldir=DIR           html documentation [DOCDIR]
   --dvidir=DIR            dvi documentation [DOCDIR]
   --pdfdir=DIR            pdf documentation [DOCDIR]
@@ -1303,6 +1303,7 @@ Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
 
 Report bugs to <marco@scannadinari.co.uk>.
+btcwatch home page: <<https://github.com/marcoms/btcwatch>>.
 _ACEOF
 ac_status=$?
 fi
@@ -2832,7 +2833,7 @@ $as_echo "$ac_cv_file__" >&6; }
 if test "x$ac_cv_file__" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find /"; exit 1
+  echo "  configure: error: cannot find /"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ./" >&5
@@ -2853,7 +2854,7 @@ $as_echo "$ac_cv_file___" >&6; }
 if test "x$ac_cv_file___" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find ./"; exit 1
+  echo "  configure: error: cannot find ./"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/" >&5
@@ -2874,7 +2875,7 @@ $as_echo "$ac_cv_file_src_" >&6; }
 if test "x$ac_cv_file_src_" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/"; exit 1
+  echo "  configure: error: cannot find src/"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/" >&5
@@ -2895,7 +2896,7 @@ $as_echo "$ac_cv_file_src_include_" >&6; }
 if test "x$ac_cv_file_src_include_" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/include/"; exit 1
+  echo "  configure: error: cannot find src/include/"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/" >&5
@@ -2916,7 +2917,7 @@ $as_echo "$ac_cv_file_src_lib_" >&6; }
 if test "x$ac_cv_file_src_lib_" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/lib/"; exit 1
+  echo "  configure: error: cannot find src/lib/"; exit 1
 fi
 
 
@@ -2938,7 +2939,7 @@ $as_echo "$ac_cv_file_src_include_btcapi_h" >&6; }
 if test "x$ac_cv_file_src_include_btcapi_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/include/btcapi.h"; exit 1
+  echo "  configure: error: cannot find src/include/btcapi.h"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/include/btcutil.h" >&5
@@ -2959,7 +2960,7 @@ $as_echo "$ac_cv_file_src_include_btcutil_h" >&6; }
 if test "x$ac_cv_file_src_include_btcutil_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/include/btcutil.h"; exit 1
+  echo "  configure: error: cannot find src/include/btcutil.h"; exit 1
 fi
 
 
@@ -2981,7 +2982,7 @@ $as_echo "$ac_cv_file_src_main_c" >&6; }
 if test "x$ac_cv_file_src_main_c" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/main.c"; exit 1
+  echo "  configure: error: cannot find src/main.c"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/btcapi.c" >&5
@@ -3002,7 +3003,7 @@ $as_echo "$ac_cv_file_src_lib_btcapi_c" >&6; }
 if test "x$ac_cv_file_src_lib_btcapi_c" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/lib/btcapi.c"; exit 1
+  echo "  configure: error: cannot find src/lib/btcapi.c"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for src/lib/btcutil.c" >&5
@@ -3023,7 +3024,7 @@ $as_echo "$ac_cv_file_src_lib_btcutil_c" >&6; }
 if test "x$ac_cv_file_src_lib_btcutil_c" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find src/lib/btcutil.c"; exit 1
+  echo "  configure: error: cannot find src/lib/btcutil.c"; exit 1
 fi
 
 
@@ -3429,7 +3430,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "assert.h" "ac_cv_header_assert_h" "$ac_i
 if test "x$ac_cv_header_assert_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find assert.h"; exit 1
+  echo "  configure: error: cannot find assert.h"; exit 1
 fi
 
 
@@ -3437,7 +3438,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "ctype.h" "ac_cv_header_ctype_h" "$ac_inc
 if test "x$ac_cv_header_ctype_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find ctype.h"; exit 1
+  echo "  configure: error: cannot find ctype.h"; exit 1
 fi
 
 
@@ -3445,7 +3446,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_i
 if test "x$ac_cv_header_stdlib_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find stdlib.h"; exit 1
+  echo "  configure: error: cannot find stdlib.h"; exit 1
 fi
 
 
@@ -3453,7 +3454,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_i
 if test "x$ac_cv_header_stdint_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find stdint.h"; exit 1
+  echo "  configure: error: cannot find stdint.h"; exit 1
 fi
 
 
@@ -3461,7 +3462,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdio.h" "ac_cv_header_stdio_h" "$ac_inc
 if test "x$ac_cv_header_stdio_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find stdio.h"; exit 1
+  echo "  configure: error: cannot find stdio.h"; exit 1
 fi
 
 
@@ -3469,7 +3470,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "stdbool.h" "ac_cv_header_stdbool_h" "$ac
 if test "x$ac_cv_header_stdbool_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find stdio.h"; exit 1
+  echo "  configure: error: cannot find stdio.h"; exit 1
 fi
 
 
@@ -3477,7 +3478,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "curl/curl.h" "ac_cv_header_curl_curl_h" 
 if test "x$ac_cv_header_curl_curl_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find curl/curl.h"; exit 1
+  echo "  configure: error: cannot find curl/curl.h"; exit 1
 fi
 
 
@@ -3485,7 +3486,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "getopt.h" "ac_cv_header_getopt_h" "$ac_i
 if test "x$ac_cv_header_getopt_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find getopt.h"; exit 1
+  echo "  configure: error: cannot find getopt.h"; exit 1
 fi
 
 
@@ -3493,7 +3494,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "jansson.h" "ac_cv_header_jansson_h" "$ac
 if test "x$ac_cv_header_jansson_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find jansson.h"; exit 1
+  echo "  configure: error: cannot find jansson.h"; exit 1
 fi
 
 
@@ -3501,7 +3502,7 @@ ac_fn_c_check_header_mongrel "$LINENO" "string.h" "ac_cv_header_string_h" "$ac_i
 if test "x$ac_cv_header_string_h" = xyes; then :
 
 else
-  echo "  ./configure: error: cannot find string.h"; exit 1
+  echo "  configure: error: cannot find string.h"; exit 1
 fi
 
 
@@ -3550,7 +3551,7 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 else
-  echo "  ./configure: error: cannot find libc"; exit 1
+  echo "  configure: error: cannot find libc"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for curl_easy_init in -lcurl" >&5
@@ -3597,7 +3598,7 @@ _ACEOF
   LIBS="-lcurl $LIBS"
 
 else
-  echo "  ./configure: error: cannot find libcurl"; exit 1
+  echo "  configure: error: cannot find libcurl"; exit 1
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for json_loads in -ljansson" >&5
@@ -3644,7 +3645,7 @@ _ACEOF
   LIBS="-ljansson $LIBS"
 
 else
-  echo "  ./configure: error: cannot find libjansson"; exit 1
+  echo "  configure: error: cannot find libjansson"; exit 1
 fi
 
 
@@ -4228,7 +4229,8 @@ Usage: $0 [OPTION]... [TAG]...
   -d, --debug      don't remove temporary files
       --recheck    update $as_me by reconfiguring in the same conditions
 
-Report bugs to <marco@scannadinari.co.uk>."
+Report bugs to <marco@scannadinari.co.uk>.
+btcwatch home page: <<https://github.com/marcoms/btcwatch>>."
 
 _ACEOF
 cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1

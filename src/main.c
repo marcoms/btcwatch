@@ -58,6 +58,7 @@ specified above:
 Happy hacking!
 */
 
+#define _(str) gettext(str)
 #define OPTSTRING "?CSVbac:hn:psv"
 
 #include <assert.h>
@@ -65,6 +66,7 @@ Happy hacking!
 #include <errno.h>
 #include <error.h>
 #include <inttypes.h>
+#include <libintl.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdint.h>

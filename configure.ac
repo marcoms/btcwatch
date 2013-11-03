@@ -1,6 +1,6 @@
-AC_INIT([btcwatch], [0.0.3], [marco@scannadinari.co.uk])
+AC_INIT([btcwatch], [0.0.3], [marco@scannadinari.co.uk], [btcwatch-0.0.3], [<https://github.com/marcoms/btcwatch>])
 
-define([errnf], [echo "  ./configure: error: cannot find $1"; exit 1])
+define([errnf], [echo "  configure: error: cannot find $1"; exit 1])
 
 AC_PROG_CC
 AC_LANG([C])
