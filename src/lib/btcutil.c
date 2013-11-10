@@ -91,6 +91,7 @@ noreturn void help(const char *const prog_nm) {
 		"  -b             --buy                  print buy price\n"
 		"  -c CURRENCY    --currency=CURRENCY    set conversion currency\n"
 		"  -n AMOUNT      --amount=AMOUNT        sets the amount of Bitcoin to convert\n"
+		"  -o             --colour, --color      enables use of colour\n"
 		"  -p             --ping                 check for a successful JSON response\n"
 		"  -s             --sell                 print sell price\n"
 		"  -v             --verbose              increase verbosity\n"
@@ -138,10 +139,6 @@ noreturn void version(void) {
 		"\n"
 		"Written by Marco Scannadinari.\n"
 	);
-	
-	#if DEBUG  // else CC wouldn't be defined
-	btcdbg("compiled with %s on %s %s", CC, __TIME__, __DATE__);
-	#endif
 
 	exit(EXIT_SUCCESS);
 }

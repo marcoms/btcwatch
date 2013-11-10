@@ -59,7 +59,9 @@ Happy hacking!
 */
 
 #define _(str) gettext(str)
-#define OPTSTRING "?CSVbac:hn:psv"
+#define GREEN(str) "\033[32m" str "\033[0m"
+#define RED(str) "\033[31m" str "\033[0m"
+#define OPTSTRING "?CSVbac:hn:opsv"
 
 #include <assert.h>
 #include <ctype.h>
@@ -96,6 +98,7 @@ int main(int argc, char **argv) {
 	time_t btcstore_time;		// time btcstore was modified
 	uint32_t btcstore_time_tmp;	// for reading with scanf()
 	rates_t btcstore;		// rates found in ~/.btcwatch/btcstore
+	bool colour;			// print colour?
 	char currcy[3 + 1];		// currency to convert to
 	bool found_path;		// found ~/, ~/.btcwatch, etc?
 	FILE *fp;			// .btcstore handle
@@ -165,6 +168,13 @@ int main(int argc, char **argv) {
 		},
 
 		{
+			.name = "colour",
+			.has_arg = no_argument,
+			.flag = NULL,
+			.val = 'o'
+		},
+
+		{
 			.name = "ping",
 			.has_arg = no_argument,
 			.flag = NULL,
@@ -187,8 +197,11 @@ int main(int argc, char **argv) {
 	};
 
 	api_err.err = false;
+	colour = false;
 	found_path = false;
+	fp = NULL;
 	n = 1.0;
+	newlp = NULL;
 	pn = argv[0];
 	verbose = false;
 
@@ -232,8 +245,8 @@ int main(int argc, char **argv) {
 				if(!api_err.err) {
 					// gets the time that btcstore was written to
 
-					fscanf(fp, "%" SCNu32, &btcstore.buy);
-					fscanf(fp, "%" SCNu32, &btcstore.sell);
+					fscanf(fp, "%" SCNd32, &btcstore.buy);
+					fscanf(fp, "%" SCNd32, &btcstore.sell);
 					fscanf(fp, "%" SCNu32, &btcstore_time_tmp);
 					btcstore_time = btcstore_time_tmp;
 					strcpy(timestr, ctime(&btcstore_time));
@@ -249,7 +262,7 @@ int main(int argc, char **argv) {
 							resetw();
 							wprintf(
 								L"buy: %s %S %f %s (%f -> %f)\n",
-								((btcrates.buy > btcstore.buy) ? "UP" : "DOWN"),
+								((btcrates.buy > btcstore.buy) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
 								btcrates.currcy.sign,
 								((double) (btcrates.buy - btcstore.buy) / (double) btcrates.currcy.sf),
 								btcrates.currcy.name,
@@ -264,7 +277,7 @@ int main(int argc, char **argv) {
 							resetw();
 							wprintf(
 								L"sell: %s %S %f %s (%f -> %f)\n",
-								((btcrates.sell > btcstore.sell) ? "UP" : "DOWN"),
+								((btcrates.sell > btcstore.sell) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
 								btcrates.currcy.sign,
 								((double) (btcrates.sell - btcstore.sell) / (double) btcrates.currcy.sf),
 								btcrates.currcy.name,
@@ -302,7 +315,6 @@ int main(int argc, char **argv) {
 				}
 
 				btcdbg("closing %s...", btcpathwf);
-
 				break;
 
 			case 'S':
@@ -322,8 +334,8 @@ int main(int argc, char **argv) {
 					fprintf(
 						fp,
 						"%s\n"
-						"%" PRIu32 "\n"
-						"%" PRIu32 "\n"
+						"%" PRId32 "\n"
+						"%" PRId32 "\n"
 						"%" PRIu32 "\n",
 						btcrates.currcy.name,
 						btcrates.buy,
@@ -405,6 +417,10 @@ int main(int argc, char **argv) {
 
 			case 'n':
 				n = atof(optarg);
+				break;
+
+			case 'o':
+				colour = true;
 				break;
 
 			case 'p':  // check for a successful JSON response

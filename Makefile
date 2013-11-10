@@ -2,10 +2,6 @@ AR=ar
 CC=gcc
 RM=rm
 
-LDFLAGS=-Lsrc/lib -lbtcapi -lbtcutil $(JANSSONLIBS) $(CURLLIBS)
-CFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -O2 -DDEBUG=0 -D_GNU_SOURCE $(JANSSONFLAGS) $(CURLFLAGS)
-CFLAGS_DEBUG=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -Og -g -DCC=$(MCC) -DDEBUG=1 -D_GNU_SOURCE $(JANSSONFLAGS) $(CURLFLAGS)
-
 PREFIX=$(shell cat prefix.txt)
 
 OUTBIN= \
@@ -28,27 +24,18 @@ JANSSONLIBS=$(shell pkg-config jansson --libs)
 CURLFLAGS=$(shell pkg-config libcurl --cflags)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags)
 
+LDFLAGS=$(JANSSONLIBS) $(CURLLIBS)
+MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -D_GNU_SOURCE $(JANSSONFLAGS) $(CURLFLAGS)
+MCFLAGS+=$(CFLAGS)
+CFLAGS:=$(MCFLAGS)
+
 btcwatch: src/main
-	cp src/main ./btcwatch
+	cp $^ $@
 
-btcwatch-debug: src/main_debug
-	cp src/main ./btcwatch-debug
-
-src/main: src/main.o src/lib/libbtcapi.a src/lib/libbtcutil.a
-
-src/main_debug: src/main_debug.o src/lib/libbtcapi_debug.a src/lib/libbtcutil_debug.a
-
-lib%.a: %.o
-	$(AR) rcs $@ $^
+src/main: src/main.o src/lib/btcapi.o src/lib/btcutil.o
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $^
-
-lib%_debug.a: %_debug.o
-	$(AR) rcs $@ $^
-
-%_debug.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS_DEBUG) -c -o $@ $^
+	$(CC) $(CFLAGS) -c -o $@ $^
 
 # (un)installation
 

@@ -17,7 +17,11 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if MT_GOX_API
 #define API_URL_CURRCY_POS 32  // position to insert currency
+#elif BTC_E_API
+#define API_URL_CURRCY_POS  28  // ^
+#endif
 
 #include <curl/curl.h>
 #include <ctype.h>
@@ -59,8 +63,14 @@ bool fill_rates(const char *const currcy, btcerr_t *const api_err) {
 char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	btcdbg("get_json()");
 
+	#if MT_GOX_API
 	char api_url[] = "https://data.mtgox.com/api/2/BTCxxx/money/ticker_fast";
+	#elif BTC_E_API
+	char api_url[] = "https://btc-e.com/api/2/btc_xxx/ticker";
+	#endif
+
 	currcy_t currencies[] = {
+		#if MT_GOX_API
 		// australia
 
 		{
@@ -108,8 +118,9 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 			.sign = L"kr.",
 			.sf = (1e5)
 		},
+		#endif
 
-		// italy
+		// eurozone
 
 		{
 			.name = "EUR",
@@ -117,6 +128,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 			.sf = (1e5)
 		},
 
+		#if MT_GOX_API
 		// great britain
 
 		{
@@ -156,15 +168,21 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 			.sign = L"zł.",
 			.sf = (1e5)
 		},
+		#endif
 
 		// russia
 
 		{
+			#if MT_GOX_API
 			.name = "RUB",
+			#elif BTC_E_API
+			.name = "RUR",
+			#endif
 			.sign = L"p.",
 			.sf = (1e5)
 		},
 
+		#if MT_GOX_API
 		// sweden
 
 		{
@@ -188,6 +206,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 			.sign = L"฿",
 			.sf = (1e5)
 		},
+		#endif
 
 		// united states
 
@@ -238,7 +257,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	for(
 		uint_fast8_t i = 0;
-		i < (sizeof mod_currcy[0] * sizeof mod_currcy);
+		i < ((sizeof mod_currcy[0]) * (sizeof mod_currcy));
 		++i
 	) mod_currcy[i] = toupper(mod_currcy[i]);
 
@@ -268,6 +287,16 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		return NULL;
 	}
 
+	#if BTC_E_API
+	// lowercases the currency string
+
+	for(
+		uint_fast8_t i = 0;
+		i < ((sizeof mod_currcy[0]) * (sizeof mod_currcy));
+		++i
+	) mod_currcy[i] = tolower(mod_currcy[i]);
+	#endif
+
 	btcdbg("url old: %s", api_url);
 	for(
 		uint_fast8_t i = API_URL_CURRCY_POS, j = 0;
@@ -287,8 +316,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		return NULL;
 	}
 
-	btcdbg("json {\n%s\n}", json);
-
 	curl_easy_cleanup(handle);
 	curl_global_cleanup();
 
@@ -298,11 +325,19 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 bool parse_json(const char *const json, btcerr_t *const api_err) {
 	btcdbg("parse_json()");
 
+	#if MT_GOX_API
 	json_t *buy;
 	json_t *data;
+	#endif
 	json_error_t json_error;
 	json_t *root;
+	#if MT_GOX_API
 	json_t *sell;
+	#elif BTC_E_API
+	json_t *ticker;
+	#endif
+
+	btcdbg("json {\n%s\n}", json);
 
 	root = json_loads(json, 0, &json_error);
 	if(!root) {
@@ -311,17 +346,63 @@ bool parse_json(const char *const json, btcerr_t *const api_err) {
 		return false;
 	}
 
+	btcdbg("root {\n%s\n}", json_dumps(root, 0));
+
+	#if MT_GOX_API
 	data = json_object_get(root, "data");
+	if(!data) {
+		api_err -> err = true;
+		strcpy(api_err -> errstr, "couldn't get JSON object");
+		return false;
+	}
+	btcdbg("data {\n%s\n}", json_dumps(data, 0));
+	#elif BTC_E_API
+	ticker = json_object_get(root, "ticker");
+	if(!ticker) {
+		api_err -> err = true;
+		strcpy(api_err -> errstr, "couldn't get JSON object");
+		return false;
+	}
+	btcdbg("ticker {\n%s\n}", json_dumps(ticker, 0));
+	#endif
+
+	#if MT_GOX_API
 	buy = json_object_get(data, "buy");
 	sell = json_object_get(data, "sell");
+	if(!buy || !sell) {
+		api_err -> err = true;
+		strcpy(api_err -> errstr, "couldn't get JSON object");
+		return false;
+	}
+
+	btcdbg(
+		"buy {\n%s\n}\n"
+		"sell {\n%s\n}\n",
+		json_dumps(buy, 0),
+		json_dumps(sell, 0)
+	);
 
 	btcrates.result = (strcmp(json_string_value(json_object_get(root, "result")), "success")) ? false : true;
+	#endif
 
 	// stores trade values as int and float
-	btcrates.buy = atoi(json_string_value(json_object_get(buy, "value_int")));
+
+	#if MT_GOX_API
+	btcrates.buy = atof(json_string_value(json_object_get(buy, "value_int")));  // MtGox uses string for their numbers for whatever reason
 	btcrates.buyf = ((double) btcrates.buy / btcrates.currcy.sf);
-	btcrates.sell = atoi(json_string_value(json_object_get(sell, "value_int")));
+	btcrates.sell = atof(json_string_value(json_object_get(sell, "value_int")));
 	btcrates.sellf = ((double) btcrates.sell / btcrates.currcy.sf);
+	#elif BTC_E_API
+	btcrates.buyf = (double) json_number_value(json_object_get(ticker, "buy"));  // no integer value in BTC-e's API so have to calculate it manually
+	btcrates.buy = (int) (btcrates.buyf * btcrates.currcy.sf);
+	btcrates.sellf = (double) json_number_value(json_object_get(ticker, "sell"));
+	btcrates.sell = (int) (btcrates.sellf * btcrates.currcy.sf);
+	#endif
+
+	btcdbg("buyf: %f", btcrates.buyf);
+	btcdbg("buy: %d", btcrates.buy);
+	btcdbg("sellf: %f", btcrates.sellf);
+	btcdbg("sell: %d", btcrates.sell);
 
 	json_decref(root);
 	return true;

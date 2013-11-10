@@ -35,12 +35,12 @@ typedef struct {
 // struct containing current exchange information
 
 typedef struct {
-	uint32_t buy;		// buy value as an integer (more precise)
+	int32_t buy;		// buy value as an integer (more precise)
 	double buyf;		// buy value as a double-precision float
 	currcy_t currcy;	// structure containing currency information
 	bool got;		// obtained?
 	bool result;		// result of the JSON string
-	uint32_t sell;		// sell value as an integer (^)
+	int32_t sell;		// sell value as an integer (^)
 	double sellf;		// sell value as a double-precision float
 } rates_t;
 
