@@ -25,7 +25,7 @@ CURLFLAGS=$(shell pkg-config libcurl --cflags)
 JANSSONFLAGS=$(shell pkg-config jansson --cflags)
 
 LDFLAGS=$(JANSSONLIBS) $(CURLLIBS)
-MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -march=native -D_GNU_SOURCE $(JANSSONFLAGS) $(CURLFLAGS)
+MCFLAGS=-Wall -Wextra -Wpedantic -std=gnu11 -D_GNU_SOURCE $(JANSSONFLAGS) $(CURLFLAGS)
 MCFLAGS+=$(CFLAGS)
 CFLAGS:=$(MCFLAGS)
 
