@@ -130,7 +130,15 @@ void qputs(const char *str) {
 noreturn void version(void) {
 	btcdbg("version()");
 
-	printf("%s\n", PACKAGE_STRING);
+	printf(
+		"%s (%s)\n",
+		PACKAGE_STRING,
+		#if MT_GOX_API
+		"MtGox"
+		#elif BTC_E_API
+		"BTC-E"
+		#endif
+	);
 	qputs(
 		"Copyright (C) Marco Scannadinari.\n"
 		"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"

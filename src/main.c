@@ -110,6 +110,8 @@ int main(int argc, char **argv) {
 	char timestr[32];		// string returned by ctime
 	bool verbose;			// print verbose output?
 
+	// list of options for getopt_long()
+
 	const struct option long_options[] = {
 		{
 			.name = "help",
@@ -217,9 +219,8 @@ int main(int argc, char **argv) {
 		&longopt_i
 	)) != -1) {
 		btcdbg("got option '%c'", opt);
-
 		switch(opt) {
-			case '?': case 'h':  // print this help
+			case '?': case 'h':
 				help(pn);
 				break;
 
@@ -233,7 +234,7 @@ int main(int argc, char **argv) {
 
 				btcdbg("checking %s...", btcpath);
 				mkdir(btcpath, S_IRWXU);
-				if(errno != EEXIST) error(EXIT_FAILURE, 0, "Rerun btcwatch with -S");
+				if(errno != EEXIST) error(EXIT_FAILURE, 0, "rerun btcwatch with -S");
 
 				// checks if ~/.btcwatch/btcstore exists
 
@@ -250,7 +251,7 @@ int main(int argc, char **argv) {
 					fscanf(fp, "%" SCNu32, &btcstore_time_tmp);
 					btcstore_time = btcstore_time_tmp;
 					strcpy(timestr, ctime(&btcstore_time));
-					newlp = strchr(timestr, '\n');
+					newlp = strchr(timestr, '\n');  // finds newline character
 					*newlp = '\0';  // strips newline
 					btcstore.buyf = ((double) btcstore.buy / (double) btcrates.currcy.sf);
 					btcstore.sellf = ((double) btcstore.sell / (double) btcrates.currcy.sf);
@@ -295,7 +296,7 @@ int main(int argc, char **argv) {
 						} else {
 							printf(
 								"%s %f\n",
-								((btcrates.buy > btcstore.buy) ? "UP" : "DOWN"),
+								((btcrates.buy > btcstore.buy) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
 								((double) (btcrates.buy - btcstore.buy) / (double) btcrates.currcy.sf)
 							);
 						}
@@ -305,7 +306,7 @@ int main(int argc, char **argv) {
 						} else {
 							printf(
 								"%s %f\n",
-								((btcrates.sell > btcstore.sell) ? "UP" : "DOWN"),
+								((btcrates.sell > btcstore.sell) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
 								((double) (btcrates.sell - btcstore.sell) / (double) btcrates.currcy.sf)
 							);
 						}
@@ -351,11 +352,11 @@ int main(int argc, char **argv) {
 
 				break;
 
-			case 'V':  // print version number
+			case 'V':
 				version();
 				break;
 
-			case 'a':  // equivelant to -pbs
+			case 'a':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 				if(!api_err.err) {
 					if(verbose) {
@@ -387,7 +388,7 @@ int main(int argc, char **argv) {
 
 				break;
 
-			case 'b':  // print buy price
+			case 'b':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 				if(!api_err.err) {
 					if(verbose) {
@@ -408,7 +409,7 @@ int main(int argc, char **argv) {
 
 				break;
 
-			case 'c':  // set conversion currency
+			case 'c':
 				btcdbg("old currcy: \"%s\"", currcy);
 				strcpy(currcy, optarg);
 				btcdbg("new currcy: \"%s\"", currcy);
@@ -423,7 +424,7 @@ int main(int argc, char **argv) {
 				colour = true;
 				break;
 
-			case 'p':  // check for a successful JSON response
+			case 'p':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 				if(!api_err.err) {
 					if(verbose) {
@@ -437,7 +438,7 @@ int main(int argc, char **argv) {
 
 				break;
 
-			case 's':  // print sell price
+			case 's':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 				if(!api_err.err) {
 					if(verbose) {
@@ -458,7 +459,7 @@ int main(int argc, char **argv) {
 
 				break;
 
-			case 'v':  // increase verbosity
+			case 'v':
 				btcdbg("verbose: true");
 				verbose = true;
 				break;
@@ -470,6 +471,8 @@ int main(int argc, char **argv) {
 	}
 
 	if(argc == 1) {
+		// default behavior with no arguments is to run -a
+
 		fill_rates(currcy, &api_err);
 		if(!api_err.err) {
 			puts("result: success");
