@@ -25,13 +25,15 @@ By default, btcwatch will be installed to /usr/local/. You can spedify a differe
 
 You can either build a standard or debug build, and you have a choice of using either MtGox or BTC-E as a source. An example non-debug build using MtGox:
 
-	$ CFLAGS="-DDEBUG=0 -DMT_GOX_API=1" make
+	$ CFLAGS="-DDEBUG -DMT_GOX_API" make
 
 Macros that have particular effect in building btcwatch:
 
 * `MT_GOX_API` - uses MtGox's API
 * `BTC_E_API` - uses BTC-E's API
 * `DEBUG` - makes btcwatch very verbose for debugging purposes
+
+Both the MT_GOX_API and BTC_E_API macros are incompatible with each other - you cannot use both. 
 
 In addition, optimisation is left to the user. For a fairly optimised build, add `-march=native -O2` to your CFLAGS, and for debugging, use `-march=native -Og -g`.
 
