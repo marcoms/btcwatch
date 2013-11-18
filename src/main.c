@@ -77,7 +77,7 @@ Happy hacking!
 #include <time.h>
 #include <getopt.h>
 
-#include "include/btcapi.h"
+#include "lib/btcapi.h"
 #include "include/btcutil.h"
 #include "include/config.h"
 

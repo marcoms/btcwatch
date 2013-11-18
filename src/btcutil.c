@@ -37,7 +37,7 @@ void btcdbg(const char *const fmt, ...) {
 
 	va_start(args, fmt);
 
-	qputs(BOLD("DEBUG: "));
+	bputs(BOLD("DEBUG: "));
 	vprintf(fmt, args);
 	putchar('\n');
 
@@ -78,10 +78,10 @@ noreturn void help(const char *const prog_nm) {
 	remain constant (until the next release).
 	*/
 
-	qputs("Usage: ");
-	qputs(prog_nm);
-	qputs(" [OPTION]\n");
-	qputs(
+	bputs("Usage: ");
+	bputs(prog_nm);
+	bputs(" [OPTION]\n");
+	bputs(
 		"Get and monitor Bitcoin trade information\n"
 		"\n"
 		"Options:       Long options:\n"
@@ -120,10 +120,6 @@ void resetw(void) {
 	fwide(stdout, 1);  // set stdout to be wide-oriented
 }
 
-void qputs(const char *str) {
-	while(*str) putchar(*(str++));
-}
-
 noreturn void version(void) {
 	btcdbg("version()");
 
@@ -136,7 +132,7 @@ noreturn void version(void) {
 		"BTC-E"
 		#endif
 	);
-	qputs(
+	bputs(
 		"Copyright (C) Marco Scannadinari.\n"
 		"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 		"This is free software: you are free to change and redistribute it.\n"

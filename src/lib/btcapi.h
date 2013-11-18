@@ -22,9 +22,13 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <wchar.h>
 
-#include "btcutil.h"
+typedef struct {
+	bool err;
+	char errstr[64];
+} btcerr_t;
 
 typedef struct {
 	char name[3 + 1];
@@ -53,7 +57,6 @@ bool fill_rates(const char *const currcy, btcerr_t *const api_err);
 // uses libcURL to access a Bitcoin API, calls write_data, then returns a JSON string
 
 char *get_json(const char *currcy, btcerr_t *const api_err);
-
 
 // uses jansson to parse the JSON string and returns a rates_t containing exchange information
 

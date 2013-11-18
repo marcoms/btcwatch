@@ -1,22 +1,9 @@
-AC_INIT([btcwatch], [0.0.3], [marco@scannadinari.co.uk], [btcwatch-0.0.3], [<https://github.com/marcoms/btcwatch>])
+AC_INIT([btcwatch], [0.0.4], [marco@scannadinari.co.uk], [btcwatch-0.0.4], [<https://github.com/marcoms/btcwatch>])
 
-define([errnf], [echo "  configure: error: cannot find $1"; exit 1])
+define([errnf], [echo "  configure: error: $1 not found"; exit 1])
 
 AC_PROG_CC
 AC_LANG([C])
-
-AC_CHECK_FILE([/], [], [errnf([/])])
-AC_CHECK_FILE([./], [], [errnf([./])])
-AC_CHECK_FILE([src/], [], [errnf([src/])])
-AC_CHECK_FILE([src/include/], [], [errnf([src/include/])])
-AC_CHECK_FILE([src/lib/], [], [errnf([src/lib/])])
-
-AC_CHECK_FILE([src/include/btcapi.h], [], [errnf([src/include/btcapi.h])])
-AC_CHECK_FILE([src/include/btcutil.h], [], [errnf([src/include/btcutil.h])])
-
-AC_CHECK_FILE([src/main.c], [], [errnf([src/main.c])])
-AC_CHECK_FILE([src/lib/btcapi.c], [], [errnf([src/lib/btcapi.c])])
-AC_CHECK_FILE([src/lib/btcutil.c], [], [errnf([src/lib/btcutil.c])])
 
 AC_CHECK_HEADER([assert.h], [], [errnf([assert.h])])
 AC_CHECK_HEADER([ctype.h], [], [errnf([ctype.h])])
@@ -29,7 +16,6 @@ AC_CHECK_HEADER([getopt.h], [], [errnf([getopt.h])])
 AC_CHECK_HEADER([jansson.h], [], [errnf([jansson.h])])
 AC_CHECK_HEADER([string.h], [], [errnf([string.h])])
 
-AC_CHECK_LIB([c], [printf], [], [errnf([libc])])
 AC_CHECK_LIB([curl], [curl_easy_init], [], [errnf([libcurl])])
 AC_CHECK_LIB([jansson], [json_loads], [], [errnf([libjansson])])
 

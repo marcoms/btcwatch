@@ -1,33 +1,29 @@
 /*
-	Copyright (C) 2013 Marco Scannadinari.
+	Copyright (C) 2013 Marco Scannadinari
 
 	This file is part of btcwatch.
 
 	btcwatch is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
+	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
 
 	btcwatch is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+	GNU General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
+	You should have received a copy of the GNU General Public License
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CMDLINEUTILS_H
-#define CMDLINEUTILS_H
+#ifndef BTCUTIL_H
+#define BTCUTIL_H
 
 #define noreturn _Noreturn
+#define bputs(str) fputs(str, stdout)
 
 #include <stdbool.h>
-
-typedef struct {
-	bool err;
-	char errstr[64];
-} btcerr_t;
 
 // prints debug information in the form "DEBUG: " fmt 
 
@@ -48,10 +44,6 @@ void resetb(void);
 // sets stdout to be wide-oriented
 
 void resetw(void);
-
-// a quicker puts
-
-void qputs(const char *str);
 
 // prints version number
 

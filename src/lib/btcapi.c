@@ -32,16 +32,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/btcapi.h"
-#include "../include/btcutil.h"
+#include "btcapi.h"
 
 rates_t btcrates = {
 	.got = false
 };
 
 bool fill_rates(const char *const currcy, btcerr_t *const api_err) {
-	btcdbg("fill_rates()");
-
 	char *json;
 
 	json = get_json(currcy, api_err);
@@ -61,16 +58,14 @@ bool fill_rates(const char *const currcy, btcerr_t *const api_err) {
 }
 
 char *get_json(const char *const currcy, btcerr_t *const api_err) {
-	btcdbg("get_json()");
-
-	#if MT_GOX_API
+	#ifdef MT_GOX_API
 	char api_url[] = "https://data.mtgox.com/api/2/BTCxxx/money/ticker_fast";
-	#elif BTC_E_API
+	#elif defined(BTC_E_API)
 	char api_url[] = "https://btc-e.com/api/2/btc_xxx/ticker";
 	#endif
 
 	currcy_t currencies[] = {
-		#if MT_GOX_API
+		#ifdef MT_GOX_API
 		// australia
 
 		{
@@ -128,7 +123,7 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 			.sf = (1e5)
 		},
 
-		#if MT_GOX_API
+		#ifdef MT_GOX_API
 		// great britain
 
 		{
@@ -173,16 +168,16 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		// russia
 
 		{
-			#if MT_GOX_API
+			#ifdef MT_GOX_API
 			.name = "RUB",
-			#elif BTC_E_API
+			#elif defined(BTC_E_API)
 			.name = "RUR",
 			#endif
 			.sign = L"p.",
 			.sf = (1e5)
 		},
 
-		#if MT_GOX_API
+		#ifdef MT_GOX_API
 		// sweden
 
 		{
@@ -227,7 +222,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	json = malloc(sizeof (char) * 1600);
 	if(json == NULL) {
-		btcdbg("can't allocate memory");
 		abort();
 	}
 
@@ -242,12 +236,10 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
-	btcdbg("currcy \"%s\" strlen: %d", currcy, strlen(currcy));
 
 	// length check
 
 	if(strlen(currcy) != 3) {
-		btcdbg("bad currency length");
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "bad currency length");
 		return NULL;
@@ -261,8 +253,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 		++i
 	) mod_currcy[i] = toupper(mod_currcy[i]);
 
-	btcdbg("mod_currcy \"%s\" strlen: %d", mod_currcy, strlen(mod_currcy));
-
 	// validation
 
 	for(
@@ -272,7 +262,6 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	) {
 		if(strcmp(mod_currcy, currencies[i].name) == 0) {
 			valid_currcy = true;
-			btcdbg("valid currency");
 			strcpy(btcrates.currcy.name, currencies[i].name);
 			wcscpy(btcrates.currcy.sign, currencies[i].sign);
 			btcrates.currcy.sf = currencies[i].sf;
@@ -281,13 +270,12 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	}
 
 	if(!valid_currcy) {
-		btcdbg("!valid_currcy");
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "invalid currcy");
 		return NULL;
 	}
 
-	#if BTC_E_API
+	#ifdef BTC_E_API
 	// lowercases the currency string
 
 	for(
@@ -297,13 +285,11 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 	) mod_currcy[i] = tolower(mod_currcy[i]);
 	#endif
 
-	btcdbg("url old: %s", api_url);
 	for(
 		uint_fast8_t i = API_URL_CURRCY_POS, j = 0;
 		i < (API_URL_CURRCY_POS + 3);
 		++i, ++j
 	) api_url[i] = mod_currcy[j];
-	btcdbg("url new: %s", api_url);
 
 	curl_easy_setopt(handle, CURLOPT_URL, api_url);
 	curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data);  // sets the function to call
@@ -323,21 +309,17 @@ char *get_json(const char *const currcy, btcerr_t *const api_err) {
 }
 
 bool parse_json(const char *const json, btcerr_t *const api_err) {
-	btcdbg("parse_json()");
-
-	#if MT_GOX_API
+	#ifdef MT_GOX_API
 	json_t *buy;
 	json_t *data;
 	#endif
 	json_error_t json_error;
 	json_t *root;
-	#if MT_GOX_API
+	#ifdef MT_GOX_API
 	json_t *sell;
-	#elif BTC_E_API
+	#elif defined(BTC_E_API)
 	json_t *ticker;
 	#endif
-
-	btcdbg("json {\n%s\n}", json);
 
 	root = json_loads(json, 0, &json_error);
 	if(!root) {
@@ -346,27 +328,23 @@ bool parse_json(const char *const json, btcerr_t *const api_err) {
 		return false;
 	}
 
-	btcdbg("root {\n%s\n}", json_dumps(root, 0));
-
-	#if MT_GOX_API
+	#ifdef MT_GOX_API
 	data = json_object_get(root, "data");
 	if(!data) {
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "couldn't get JSON object");
 		return false;
 	}
-	btcdbg("data {\n%s\n}", json_dumps(data, 0));
-	#elif BTC_E_API
+	#elif defined(BTC_E_API)
 	ticker = json_object_get(root, "ticker");
 	if(!ticker) {
 		api_err -> err = true;
 		strcpy(api_err -> errstr, "couldn't get JSON object");
 		return false;
 	}
-	btcdbg("ticker {\n%s\n}", json_dumps(ticker, 0));
 	#endif
 
-	#if MT_GOX_API
+	#ifdef MT_GOX_API
 	buy = json_object_get(data, "buy");
 	sell = json_object_get(data, "sell");
 	if(!buy || !sell) {
@@ -375,34 +353,22 @@ bool parse_json(const char *const json, btcerr_t *const api_err) {
 		return false;
 	}
 
-	btcdbg(
-		"buy {\n%s\n}\n"
-		"sell {\n%s\n}\n",
-		json_dumps(buy, 0),
-		json_dumps(sell, 0)
-	);
-
 	btcrates.result = (strcmp(json_string_value(json_object_get(root, "result")), "success")) ? false : true;
 	#endif
 
 	// stores trade values as int and float
 
-	#if MT_GOX_API
+	#ifdef MT_GOX_API
 	btcrates.buy = atof(json_string_value(json_object_get(buy, "value_int")));  // MtGox uses string for their numbers for whatever reason
 	btcrates.buyf = ((double) btcrates.buy / btcrates.currcy.sf);
 	btcrates.sell = atof(json_string_value(json_object_get(sell, "value_int")));
 	btcrates.sellf = ((double) btcrates.sell / btcrates.currcy.sf);
-	#elif BTC_E_API
+	#elif defined(BTC_E_API)
 	btcrates.buyf = (double) json_number_value(json_object_get(ticker, "buy"));  // no integer value in BTC-e's API so have to calculate it manually
 	btcrates.buy = (int) (btcrates.buyf * btcrates.currcy.sf);
 	btcrates.sellf = (double) json_number_value(json_object_get(ticker, "sell"));
 	btcrates.sell = (int) (btcrates.sellf * btcrates.currcy.sf);
 	#endif
-
-	btcdbg("buyf: %f", btcrates.buyf);
-	btcdbg("buy: %d", btcrates.buy);
-	btcdbg("sellf: %f", btcrates.sellf);
-	btcdbg("sell: %d", btcrates.sell);
 
 	json_decref(root);
 	return true;
@@ -414,7 +380,6 @@ size_t write_data(
 	const size_t nmemb,
 	const void *const userdata
 ) {
-	btcdbg("write_data()");
 	strcpy((char *) userdata, buffer);
 	return (size * nmemb);
 }

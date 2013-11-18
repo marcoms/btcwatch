@@ -8,12 +8,11 @@ OUTBIN= \
 	btcwatch \
 	src/main \
 	src/main.o \
-	src/lib/libbtcapi.a \
 	src/lib/btcapi.o \
-	src/lib/libbtcutil.a \
-	src/lib/btcutil.o
+	src/btcutil.o
 
 OUTCONF= \
+	autom4te.cache \
 	prefix.txt \
 	config.log \
 	config.status \
@@ -32,7 +31,7 @@ CFLAGS:=$(MCFLAGS)
 btcwatch: src/main
 	cp $^ $@
 
-src/main: src/main.o src/lib/btcapi.o src/lib/btcutil.o
+src/main: src/main.o src/lib/btcapi.o src/btcutil.o
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -40,15 +39,14 @@ src/main: src/main.o src/lib/btcapi.o src/lib/btcutil.o
 # (un)installation
 
 install:
-	mkdir -p $(PREFIX)/bin/
-	install -m777 btcwatch* $(PREFIX)/bin/
+	mkdir -p $(PREFIX)/bin
+	install -m777 btcwatch $(PREFIX)/bin
 
 install-strip: install
 	strip -s $(PREFIX)/bin/btcwatch
 
 uninstall:
 	rm -rf $(PREFIX)/bin/btcwatch
-	rm -rf $(PREFIX)/bin/btcwatch-debug
 
 # cleaning
 
@@ -57,3 +55,4 @@ clean:
 
 distclean: clean
 	$(RM) -rf $(OUTCONF)
+
