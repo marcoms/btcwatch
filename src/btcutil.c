@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013 Marco Scannadinari
+	Copyright (C) 2013  Marco Scannadinari
 
 	This file is part of btcwatch.
 
@@ -20,10 +20,12 @@
 #define BOLD(str) "\033[1m" str "\033[0m"
 #define IGNORE(x) (void) (x)
 
+#include <error.h>
 #include <pwd.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
@@ -63,8 +65,42 @@ void find_path(char *const path, char *const pathwf) {
 	btcdbg("~/.btcwatch/btcstore: %s", pathwf);
 }
 
-noreturn void help(const char *const prog_nm) {
+noreturn void help(const char *const prog_nm, const char *const topic) {
 	btcdbg("help()");
+
+	char currcies[][3 + 1] = {
+		#ifdef MT_GOX_API
+		"AUD",
+		"CAD",
+		"CHF",
+		"CNY",
+		"CZK",
+		"DKK",
+		#endif
+		"EUR",
+		#ifdef MT_GOX_API
+		"GBP",
+		"HKD",
+		"JPY",
+		"NOK",
+		"PLN",
+		#endif
+		#ifdef MT_GOX_API
+		"RUB",
+		#elif defined(BTC_E_API)
+		"RUR",
+		#endif
+		#ifdef MT_GOX_API
+		"SEK",
+		"SGD",
+		"THB",
+		#endif
+		"USD",
+	};
+
+	char topics[][16] = {
+		"currencies"
+	};
 
 	/*
 	help() uses argv[0] for the program name. Rationale: because of the
@@ -78,31 +114,51 @@ noreturn void help(const char *const prog_nm) {
 	remain constant (until the next release).
 	*/
 
-	bputs("Usage: ");
-	bputs(prog_nm);
-	bputs(" [OPTION]\n");
-	bputs(
-		"Get and monitor Bitcoin trade information\n"
-		"\n"
-		"Options:       Long options:\n"
-		"  -C             --compare              comare current price with stored price\n"
-		"  -S             --store                store current price\n"
-		"  -a             --all                  equivalent to -pbs\n"
-		"  -b             --buy                  print buy price\n"
-		"  -c CURRENCY    --currency=CURRENCY    set conversion currency\n"
-		"  -n AMOUNT      --amount=AMOUNT        sets the amount of Bitcoin to convert\n"
-		"  -o             --colour, --color      enables use of colour\n"
-		"  -p             --ping                 check for a successful JSON response\n"
-		"  -s             --sell                 print sell price\n"
-		"  -v             --verbose              increase verbosity\n"
-		"\n"
-		"  -h, -?         --help                 print this help\n"
-		"  -V             --version              print version number\n"
-		"\n"
-		"Report bugs to " PACKAGE_BUGREPORT "\n"
-		"btcwatch home page: " PACKAGE_URL "\n"
-	);
-
+	if(!topic) {
+		bputs("Usage: "); bputs(prog_nm); bputs(" [OPTION]\n");
+		bputs(
+			"Get and monitor Bitcoin trade information\n"
+			"\n"
+			"Options:       Long options:\n"
+			"  -C             --compare              comare current price with stored price\n"
+			"  -S             --store                store current price\n"
+			"  -a             --all                  equivalent to -pbs\n"
+			"  -b             --buy                  print buy price\n"
+			"  -c CURRENCY    --currency=CURRENCY    set conversion currency\n"
+			"  -n AMOUNT      --amount=AMOUNT        sets the amount of Bitcoin to convert\n"
+			"  -o             --colour, --color      enables use of colour\n"
+			"  -p             --ping                 check for a successful JSON response\n"
+			"  -r             --reverse              convert currency to Bitcoin\n"
+			"  -s             --sell                 print sell price\n"
+			"  -v             --verbose              increase verbosity\n"
+			"\n"
+			"  -? [topic]     --help[=topic]         print this help, or help designated by topic\n"
+			"                                        use --help=topics for available topics\n"
+			"  -V             --version              print version number\n"
+			"\n"
+			"Report bugs to " PACKAGE_BUGREPORT "\n"
+			"btcwatch home page: " PACKAGE_URL "\n"
+		);
+		exit(EXIT_SUCCESS);
+	} else {
+		if(!strcmp(topic, "currencies")) {
+			for(
+				uint_fast8_t i = 0;
+				i < (sizeof currcies / sizeof currcies[0]);
+				++i
+			) puts(currcies[i]);
+			exit(EXIT_SUCCESS);
+		} else if(!strcmp(topic, "topics")) {
+			for(
+				uint_fast8_t i = 0;
+				i < (sizeof topics / sizeof topics[0]);
+				++i
+			) puts(topics[i]);
+			exit(EXIT_SUCCESS);
+		} else {
+			error(EXIT_FAILURE, 0, "no such topic");
+		}
+	}
 	exit(EXIT_SUCCESS);
 }
 

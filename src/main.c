@@ -1,5 +1,7 @@
+// btcwatch - gets and monitors Bitcoin trade information
+
 /*
-	Copyright (C) 2013 Marco Scannadinari
+	Copyright (C) 2013  Marco Scannadinari
 
 	This file is part of btcwatch.
 
@@ -59,9 +61,10 @@ Happy hacking!
 */
 
 #define _(str) gettext(str)
+#define BTC_SIGN L"฿"
 #define GREEN(str) "\033[32m" str "\033[0m"
 #define RED(str) "\033[31m" str "\033[0m"
-#define OPTSTRING "?CSVbac:hn:opsv"
+#define OPTSTRING "?::CSVbac:n:oprsv"
 
 #include <assert.h>
 #include <ctype.h>
@@ -101,23 +104,23 @@ int main(int argc, char **argv) {
 	bool colour;			// print colour?
 	char currcy[3 + 1];		// currency to convert to
 	bool found_path;		// found ~/, ~/.btcwatch, etc?
-	FILE *fp;			// .btcstore handle
+	FILE *fp;			// btcstore handle
 	int longopt_i;			// index for referencing long_options[]
 	double n;			// number of BTC to convert
 	char *newlp;			// pointer to newline
 	int opt;  			// current option in getopt() loop
-	char *pn;  			// pointer to argv[0]
+	char *pn;  			// *p*rogram *n*ame - pointer to argv[0]
+	bool reverse;			// convert currency to Bitcoin?
 	char timestr[32];		// string returned by ctime
 	bool verbose;			// print verbose output?
 
 	// list of options for getopt_long()
-
 	const struct option long_options[] = {
 		{
 			.name = "help",
-			.has_arg = no_argument,
+			.has_arg = optional_argument,
 			.flag = NULL,
-			.val = 'h'
+			.val = '?'
 		},
 
 		{
@@ -184,6 +187,13 @@ int main(int argc, char **argv) {
 		},
 
 		{
+			.name  = "reverse",
+			.has_arg = no_argument,
+			.flag = NULL,
+			.val = 'r'
+		},
+
+		{
 			.name = "sell",
 			.has_arg = no_argument,
 			.flag = NULL,
@@ -205,11 +215,12 @@ int main(int argc, char **argv) {
 	n = 1.0;
 	newlp = NULL;
 	pn = argv[0];
+	reverse = false;
 	verbose = false;
 
 	strcpy(currcy, "USD");
 
-	setlocale(LC_ALL, "");  // sets the locale to the system's default
+	setlocale(LC_ALL, 0);  // sets the locale to the system's default
 
 	while((opt = getopt_long(
 		argc,
@@ -221,10 +232,12 @@ int main(int argc, char **argv) {
 		btcdbg("got option '%c'", opt);
 		switch(opt) {
 			case '?': case 'h':
-				help(pn);
+				help(pn, optarg);
 				break;
 
 			case 'C':
+
+
 				if(!found_path) {
 					find_path(btcpath, btcpathwf);
 					found_path = true;
@@ -234,25 +247,39 @@ int main(int argc, char **argv) {
 
 				btcdbg("checking %s...", btcpath);
 				mkdir(btcpath, S_IRWXU);
+
+				/*
+				erno will be set to EEXIST if the directory
+				exists (expected behaivior), otherwise the user
+				probably removed ~/.btcwatch or hadn't run
+				btcwatch -S.
+				*/
+
 				if(errno != EEXIST) error(EXIT_FAILURE, 0, "rerun btcwatch with -S");
 
 				// checks if ~/.btcwatch/btcstore exists
 
 				btcdbg("opening %s...", btcpathwf);
-				if((fp = fopen(btcpathwf, "r")) == NULL) error(EXIT_FAILURE, errno, "Rerun btcwatch with -S");
+
+				/*
+				If btcstore is not present but ~/.btcwatch is,
+				then the user probably removed it for some
+				reason.
+				*/
+
+				if((fp = fopen(btcpathwf, "r")) == NULL) error(EXIT_FAILURE, errno, "rerun btcwatch with -S");
 
 				fscanf(fp, "%s", btcstore.currcy.name);
 				if(!btcrates.got || strcmp(btcrates.currcy.name, btcstore.currcy.name) != 0) fill_rates(btcstore.currcy.name, &api_err);
 				if(!api_err.err) {
 					// gets the time that btcstore was written to
-
 					fscanf(fp, "%" SCNd32, &btcstore.buy);
 					fscanf(fp, "%" SCNd32, &btcstore.sell);
 					fscanf(fp, "%" SCNu32, &btcstore_time_tmp);
 					btcstore_time = btcstore_time_tmp;
 					strcpy(timestr, ctime(&btcstore_time));
 					newlp = strchr(timestr, '\n');  // finds newline character
-					*newlp = '\0';  // strips newline
+					*newlp = 0;  // strips newline
 					btcstore.buyf = ((double) btcstore.buy / (double) btcrates.currcy.sf);
 					btcstore.sellf = ((double) btcstore.sell / (double) btcrates.currcy.sf);
 
@@ -263,7 +290,15 @@ int main(int argc, char **argv) {
 							resetw();
 							wprintf(
 								L"buy: %s %S %f %s (%f -> %f)\n",
-								((btcrates.buy > btcstore.buy) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
+
+								btcrates.buy > btcstore.buy
+									? colour
+										? GREEN("UP")
+										: "UP"
+									: colour
+										? RED("DOWN")
+										: "DOWN",
+
 								btcrates.currcy.sign,
 								((double) (btcrates.buy - btcstore.buy) / (double) btcrates.currcy.sf),
 								btcrates.currcy.name,
@@ -278,7 +313,15 @@ int main(int argc, char **argv) {
 							resetw();
 							wprintf(
 								L"sell: %s %S %f %s (%f -> %f)\n",
-								((btcrates.sell > btcstore.sell) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
+
+								btcrates.sell > btcstore.sell
+									? colour
+										? GREEN("UP")
+										: "UP"
+									: colour
+										? RED("DOWN")
+										: "DOWN",
+
 								btcrates.currcy.sign,
 								((double) (btcrates.sell - btcstore.sell) / (double) btcrates.currcy.sf),
 								btcrates.currcy.name,
@@ -296,7 +339,15 @@ int main(int argc, char **argv) {
 						} else {
 							printf(
 								"%s %f\n",
-								((btcrates.buy > btcstore.buy) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
+
+								btcrates.buy > btcstore.buy
+									? colour
+										? GREEN("UP")
+										: "UP"
+									: colour
+										? RED("DOWN")
+										: "DOWN",
+
 								((double) (btcrates.buy - btcstore.buy) / (double) btcrates.currcy.sf)
 							);
 						}
@@ -306,7 +357,15 @@ int main(int argc, char **argv) {
 						} else {
 							printf(
 								"%s %f\n",
-								((btcrates.sell > btcstore.sell) ? (colour ? GREEN("UP") : "UP") : (colour ? RED("DOWN") : "DOWN")),
+
+								btcrates.sell > btcstore.sell
+									? colour
+										? GREEN("UP")
+										: "UP"
+									: colour
+										? RED("DOWN")
+										: "DOWN",
+
 								((double) (btcrates.sell - btcstore.sell) / (double) btcrates.currcy.sf)
 							);
 						}
@@ -357,7 +416,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'a':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency 
 				if(!api_err.err) {
 					if(verbose) {
 						puts("result: success");
@@ -365,12 +424,30 @@ int main(int argc, char **argv) {
 						wprintf(
 							L"buy: %S %f %s\n"
 							"sell: %S %f %s\n",
-							btcrates.currcy.sign,
-							((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
-							btcrates.currcy.name,
-							btcrates.currcy.sign,
-							((double) (btcrates.sell * n) / (double) btcrates.currcy.sf),
-							btcrates.currcy.name
+
+							reverse
+								? BTC_SIGN
+								: btcrates.currcy.sign,
+
+							reverse
+								? (n / btcrates.buyf)
+								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
+
+							reverse
+								? "BTC"
+								: btcrates.currcy.name,
+
+							reverse
+								? BTC_SIGN
+								: btcrates.currcy.sign,
+
+							reverse
+								? (n / btcrates.sellf)
+								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf),
+
+							reverse
+								? "BTC"
+								: btcrates.currcy.name
 						);
 						resetb();
 					} else {
@@ -378,8 +455,14 @@ int main(int argc, char **argv) {
 						printf(
 							"%f\n"
 							"%f\n",
-							((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
-							((double) (btcrates.sell * n) / (double) btcrates.currcy.sf)
+
+							reverse
+								? (n / btcrates.buyf)
+								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
+
+							reverse
+								? (n / btcrates.sellf)
+								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf)
 						);
 					}
 				} else {
@@ -395,13 +478,27 @@ int main(int argc, char **argv) {
 						resetw();
 						wprintf(
 							L"buy: %S %f %s\n",
-							btcrates.currcy.sign,
-							((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
-							btcrates.currcy.name
+
+							reverse
+								? BTC_SIGN
+								: btcrates.currcy.sign,
+
+							reverse
+								? (n / btcrates.buyf)
+								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
+
+							reverse
+								? "BTC"
+								: btcrates.currcy.name
 						);
 						resetb();
 					} else {
-						printf("%f\n", ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf));
+						printf(
+							"%f\n",
+
+							reverse
+								? (n / btcrates.buyf)
+								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf));
 					}
 				} else {
 					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
@@ -438,6 +535,10 @@ int main(int argc, char **argv) {
 
 				break;
 
+			case 'r':
+				reverse = true;
+				break;
+
 			case 's':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
 				if(!api_err.err) {
@@ -446,12 +547,22 @@ int main(int argc, char **argv) {
 						wprintf(
 							L"sell: %S %f %s\n",
 							btcrates.currcy.sign,
-							((double) (btcrates.sell * n) / (double) btcrates.currcy.sf),
+
+							reverse
+								? (n / btcrates.sellf)
+								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf),
+
 							btcrates.currcy.name
 						);
 						resetb();
 					} else {
-						printf("%f\n", ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf));
+						printf(
+							"%f\n",
+
+							reverse
+								? (n / btcrates.sellf)
+								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf)
+							);
 					}
 				} else {
 					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
@@ -471,7 +582,7 @@ int main(int argc, char **argv) {
 	}
 
 	if(argc == 1) {
-		// default behavior with no arguments is to run -a
+		// default behavior with no arguments is to print all prices verbosely
 
 		fill_rates(currcy, &api_err);
 		if(!api_err.err) {

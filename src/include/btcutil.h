@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013 Marco Scannadinari
+	Copyright (C) 2013  Marco Scannadinari
 
 	This file is part of btcwatch.
 
@@ -35,7 +35,7 @@ void find_path(char *const path, char *const pathwf);
 
 // prints usage info and options
 
-noreturn void help(const char *const prog_nm);
+noreturn void help(const char *const prog_nm, const char *const topic);
 
 // sets stdout to be byte-oriented
 
