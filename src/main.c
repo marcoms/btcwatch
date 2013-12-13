@@ -220,7 +220,7 @@ int main(int argc, char **argv) {
 
 	strcpy(currcy, "USD");
 
-	setlocale(LC_ALL, 0);  // sets the locale to the system's default
+	setlocale(LC_ALL, "");  // sets the locale to the system's default
 
 	while((opt = getopt_long(
 		argc,
