@@ -48,12 +48,9 @@ bool fill_rates(const char *const currcy, btcerr_t *const api_err) {
 	}
 
 	parse_json(json, api_err);
-	if(api_err -> err) {
-		free(json);
-		return false;
-	}
-
 	free(json);
+
+	if(api_err -> err) return false;
 	return true;
 }
 

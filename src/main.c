@@ -419,7 +419,11 @@ int main(int argc, char **argv) {
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency 
 				if(!api_err.err) {
 					if(verbose) {
-						puts("result: success");
+						bputs("result: "); bputs(
+							colour
+								? GREEN("success")
+								: "success"
+						);
 						resetw();
 						wprintf(
 							L"buy: %S %f %s\n"
@@ -451,7 +455,11 @@ int main(int argc, char **argv) {
 						);
 						resetb();
 					} else {
-						puts("success");
+						puts(
+							colour
+								? GREEN("success")
+								: "success"
+						);
 						printf(
 							"%f\n"
 							"%f\n",
@@ -527,16 +535,20 @@ int main(int argc, char **argv) {
 					if(verbose) {
 						fputs("result: ", stdout);
 					}
-					puts("success");
+					puts(
+						colour
+							? GREEN("success")
+							: "success"
+					);
 				} else {
 					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
-					exit(EXIT_FAILURE);
 				}
 
 				break;
 
 			case 'r':
 				reverse = true;
+				btcdbg("reverse: %d", reverse);
 				break;
 
 			case 's':
@@ -571,8 +583,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':
-				btcdbg("verbose: true");
 				verbose = true;
+				btcdbg("verbose: %d", verbose);
 				break;
 
 			default:
