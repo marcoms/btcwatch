@@ -419,7 +419,7 @@ int main(int argc, char **argv) {
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency 
 				if(!api_err.err) {
 					if(verbose) {
-						bputs("result: "); bputs(
+						bputs("result: "); puts(
 							colour
 								? GREEN("success")
 								: "success"
