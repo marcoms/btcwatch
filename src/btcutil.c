@@ -185,7 +185,7 @@ noreturn void version(void) {
 		#ifdef MT_GOX_API
 		"MtGox"
 		#elif defined(BTC_E_API)
-		"BTC-E"
+		"BTC-e"
 		#endif
 	);
 	bputs(
