@@ -4,7 +4,7 @@ btcwatch
 About
 -----
 
-btcwatch is a program that will allow its users to view the current exchange rate of the popular cryptocurrency Bitcoin in multiple currencies.
+btcwatch views and monitors the current exchange rate of the popular cryptocurrency Bitcoin in multiple currencies.
 
 Dependencies
 ------------
@@ -21,11 +21,11 @@ Installing
 	
 By default, btcwatch will be installed to /usr/local/. You can spedify a different prefix by setting `--prefix`.
 
-### Build btcwatch with `make` ###
+### Build btcwatch ###
 
-You can either build a standard or debug build, and you have a choice of using either MtGox or BTC-E as a source. An example non-debug build using MtGox:
+You can either build a standard or debug build, and you have a choice of using either MtGox or BTC-E as a source. An example non-debug build using MtGox's API:
 
-	$ CFLAGS="-DDEBUG -DMT_GOX_API" make
+	$ CFLAGS="-DMT_GOX_API" make
 
 Macros that have particular effect in building btcwatch:
 
@@ -54,64 +54,81 @@ Using btcwatch is incredibly straightforward. To get buy and sell prices, run bt
 
 	$ btcwatch
 	result: success
-	buy: $ 132.850769 USD
-	sell: $ 133.990005 USD
+	buy: $ 820.900000 USD
+	sell: $ 820.769000 USD
 
 btcwatch will automatically print verbose output (`-v`) when no arguments are provided, with the currency string at the end of the value, and a identifier and currency sign before.
 To only request one item, run btcwatch with one of `-p` (checks for a successful JSON string from MtGox), `-b` (buy price), or `-s` (sell price). The order you specify those options does matter, as that is the order that they will be processed and printed to the screen (this is useful for printing results in multiple currencies), for example:
 
 	$ btcwatch -v -b
-	buy: $ 133.750000 USD
+	buy: $ 821.000000 USD
 
 	$ btcwatch -v -sb
-	sell: $ 133.979996 USD
-	buy: $ 133.750000 USD
+	sell: $ 820.900000 USD
+	buy: $ 821.000000 USD
 
 	$ btcwatch -v -sbp
-	sell: $ 133.979996 USD
-	buy: $ 133.750000 USD
+	sell: $ 820.900000 USD
+	buy: $ 821.999000 USD
 	result: success
 
 Removing the `-v` (verbose) option will remove extra information from output:
 
 	$ btcwatch -sbp
-	133.979996
-	133.750000
+	821.000000
+	821.999000
 	success
 
 To change the currency from USD to something else, use the `-c` (currency) option:
 
 	$ btcwatch -vc gbp -b
-	buy: £ 81.789719 GBP
+	buy: £ 520.010000 GBP
 
 	$ btcwatch -vc jpy -b
-	buy: ¥ 18019.951172 JPY
+	buy: ¥ 86201.000000 JPY
 
 	$ btcwatch -vc eur -b
-	buy: € 98.699997 EUR
+	buy: € 611.400000 EUR
 
 You can use uppercase if you want. The currency string is converted to uppercase by btcwatch anyway:
 
 	$ btcwatch -vc GBP -b
-	buy: £ 81.807930 GBP
+	buy: £ 520.010000 GBP
 
 Specify an amount of Bitcoin to convert with the `-n` option:
 
-	$ btcwatch -vn1.28 -b
-	buy: $ 239.360000 USD
+	$ btcwatch -vn 2.5 -b
+	buy: $ 2120.848875 USD
+
+By default, btcwatch converts from Bitcoin to the user-set currency (default USD), but you can reverse this by specifying `-r`:
+
+	# how much will 1 USD get me?
+
+	$ btcwatch -rvb
+	buy: ฿ 0.001179 BTC
+
+	# how about 1K?
+
+	$ btcwatch -n 1000 -rvb
+	buy: ฿ 1.178773 BTC
 
 You can also store the current price of Bitcoin with `-S`, and compare it later with `-C`:
 
 	# bought some BTC for $100
 
-	$ btcwatch -S  # stores current price
+	$ btcwatch -b
+	100.000000
+
+	# stores current price
+
+	$ btcwatch -S
 	
 	# (after a reasonable amount of time)
 	
 	$ btcwatch -vC
-	buy: UP $ 100 (100.000000 -> 200.000000)
-	sell: UP $ 100 (100.000000 -> 200.000000)
-	(Since Thu Jan 1 00:00:00 1970)
+	buy: UP $ 100.000000 (100.000000 -> 200.000000)
+	sell: UP $ 100.000000 (100.000000 -> 200.000000)
+	(Since Thu Jan 1 00:00:00 2013)
 	
 	# profit!
 	
