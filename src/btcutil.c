@@ -132,7 +132,7 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 			"  -s             --sell                 print sell price\n"
 			"  -v             --verbose              increase verbosity\n"
 			"\n"
-			"  -? [topic]     --help[=topic]         print this help, or help designated by topic\n"
+			"  -h [topic]     --help[=topic]         print this help, or help designated by topic\n"
 			"                                        use --help=topics for available topics\n"
 			"  -V             --version              print version number\n"
 			"\n"

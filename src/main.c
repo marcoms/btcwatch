@@ -64,7 +64,7 @@ Happy hacking!
 #define BTC_SIGN L"฿"
 #define GREEN(str) "\033[32m" str "\033[0m"
 #define RED(str) "\033[31m" str "\033[0m"
-#define OPTSTRING "?::CSVbac:n:oprsv"
+#define OPTSTRING "CSVbac:h::n:oprsv"
 
 #include <assert.h>
 #include <ctype.h>
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
 			.name = "help",
 			.has_arg = optional_argument,
 			.flag = NULL,
-			.val = '?'
+			.val = 'h'
 		},
 
 		{
@@ -205,6 +205,15 @@ int main(int argc, char **argv) {
 			.has_arg = no_argument,
 			.flag = NULL,
 			.val = 'v'
+		},
+
+		// array terminates here - thanks to Adam Rosenfield (http://stackoverflow.com/questions/20668530)
+
+		{
+			0,
+			0,
+			0,
+			0
 		}
 	};
 
@@ -231,13 +240,12 @@ int main(int argc, char **argv) {
 	)) != -1) {
 		btcdbg("got option '%c'", opt);
 		switch(opt) {
-			case '?': case 'h':
+			case '?':  // returned by getopt_long() if opt is not in OPTSTRING
+			case 'h':
 				help(pn, optarg);
 				break;
 
 			case 'C':
-
-
 				if(!found_path) {
 					find_path(btcpath, btcpathwf);
 					found_path = true;
@@ -588,7 +596,7 @@ int main(int argc, char **argv) {
 				break;
 
 			default:
-				exit(EXIT_FAILURE);
+				error(EXIT_FAILURE, 0, "option parsing error");
 				break;
 		}
 	}
