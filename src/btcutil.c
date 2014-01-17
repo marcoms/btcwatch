@@ -28,7 +28,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
-#include <wchar.h>
 
 #include "include/config.h"
 #include "include/btcutil.h"
@@ -98,8 +97,21 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		"USD",
 	};
 
-	char topics[][16] = {
-		"currencies"
+	char topics[][2][32] = {
+		/*{
+			"boolean",
+			"list possible values for boolean"
+		},*/
+
+		{
+			"currencies",
+			"list available currencies"
+		},
+
+		{
+			"topics",
+			"print this list of topics"
+		}
 	};
 
 	/*
@@ -115,29 +127,29 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 	*/
 
 	if(!topic) {
-		bputs("Usage: "); bputs(prog_nm); bputs(" [OPTION]\n");
-		bputs(
+		bputs("Usage: "); bputs(prog_nm); puts(" [OPTION]");
+		puts(
 			"Get and monitor Bitcoin trade information\n"
 			"\n"
 			"Options:       Long options:\n"
-			"  -C             --compare              comare current price with stored price\n"
-			"  -S             --store                store current price\n"
-			"  -a             --all                  equivalent to -pbs\n"
-			"  -b             --buy                  print buy price\n"
-			"  -c CURRENCY    --currency=CURRENCY    set conversion currency\n"
-			"  -n AMOUNT      --amount=AMOUNT        set the amount to convert\n"
-			"  -o             --colour, --color      enable use of colour\n"
-			"  -p             --ping                 check for a successful JSON response\n"
-			"  -r             --reverse              convert currency to Bitcoin\n"
-			"  -s             --sell                 print sell price\n"
-			"  -v             --verbose              increase verbosity\n"
+			"  -C             --compare            comare current price with stored price\n"
+			"  -S             --store              store current price\n"
+			"  -a             --all                equivalent to -pbs\n"
+			"  -b             --buy                print buy price\n"
+			"  -c CURRENCY    --currency=CURRENCY  set conversion currency\n"
+			"  -n AMOUNT      --amount=AMOUNT      set the amount to convert\n"
+			"  -o [boolean]   --colour[=boolean]   enable use of colour\n"
+			"  -p             --ping               check for a successful JSON response\n"
+			"  -r             --reverse            convert currency to Bitcoin\n"
+			"  -s             --sell               print sell price\n"
+			"  -v [boolean]   --verbose[=boolean]  increase verbosity\n"
 			"\n"
-			"  -h [topic]     --help[=topic]         print this help, or help designated by topic\n"
-			"                                        use --help=topics for available topics\n"
-			"  -V             --version              print version number\n"
+			"  -h [topic]     --help[=topic]       print this help, or help designated by topic\n"
+			"                                      use --help=topics for available topics\n"
+			"  -V             --version            print version number\n"
 			"\n"
 			"Report bugs to " PACKAGE_BUGREPORT "\n"
-			"btcwatch home page: " PACKAGE_URL "\n"
+			"btcwatch home page: " PACKAGE_URL
 		);
 		exit(EXIT_SUCCESS);
 	} else {
@@ -153,27 +165,16 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 				uint_fast8_t i = 0;
 				i < (sizeof topics / sizeof topics[0]);
 				++i
-			) puts(topics[i]);
+			) {
+				bputs(topics[i][0]); bputs("\t\t"); puts(topics[i][1]);
+			}
+
 			exit(EXIT_SUCCESS);
 		} else {
 			error(EXIT_FAILURE, 0, "no such topic");
 		}
 	}
 	exit(EXIT_SUCCESS);
-}
-
-void resetb(void) {
-	freopen(NULL, "a", stdout);  // reopen stdout
-	fwide(stdout, -1);  // set stdout to be byte-oriented
-
-	btcdbg("resetb()");  // this goes at the end in order to be printed on a byte-oriented stream (assuming that the stream was wide-oriented before resetb()'s call)
-}
-
-void resetw(void) {
-	btcdbg("resetw()");
-
-	freopen(NULL, "a", stdout);  // ^
-	fwide(stdout, 1);  // set stdout to be wide-oriented
 }
 
 noreturn void version(void) {
