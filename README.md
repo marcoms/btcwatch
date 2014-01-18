@@ -39,7 +39,7 @@ In addition, optimisation is left to the user. For a fairly optimised build, add
 
 ### Install btcwatch ###
 
-Install (as root) either normally, or as a stripped binary (the latter will only strip the normal build):
+Install (as root) either normally, or as a stripped binary:
 
 	# make install
 
@@ -63,53 +63,53 @@ To only request one item, run btcwatch with one of `-p` (checks for a successful
 	$ btcwatch -v -b
 	buy: $ 821.000000 USD
 
-	$ btcwatch -v -sb
+	$ btcwatch -v -s -b
 	sell: $ 820.900000 USD
 	buy: $ 821.000000 USD
 
-	$ btcwatch -v -sbp
+	$ btcwatch -v -s -b -p
 	sell: $ 820.900000 USD
 	buy: $ 821.999000 USD
 	result: success
 
 Removing the `-v` (verbose) option will remove extra information from output:
 
-	$ btcwatch -sbp
+	$ btcwatch -s -b -p
 	821.000000
 	821.999000
 	success
 
 To change the currency from USD to something else, use the `-c` (currency) option:
 
-	$ btcwatch -vc gbp -b
+	$ btcwatch -v -c gbp -b
 	buy: £ 520.010000 GBP
 
-	$ btcwatch -vc jpy -b
+	$ btcwatch -v -c jpy -b
 	buy: ¥ 86201.000000 JPY
 
-	$ btcwatch -vc eur -b
+	$ btcwatch -v -c eur -b
 	buy: € 611.400000 EUR
 
 You can use uppercase if you want. The currency string is converted to uppercase by btcwatch anyway:
 
-	$ btcwatch -vc GBP -b
+	$ btcwatch -v -c GBP -b
 	buy: £ 520.010000 GBP
 
 Specify an amount of Bitcoin to convert with the `-n` option:
 
-	$ btcwatch -vn 2.5 -b
+	$ btcwatch -v -n 2.5 -b
 	buy: $ 2120.848875 USD
 
 By default, btcwatch converts from Bitcoin to the user-set currency (default USD), but you can reverse this by specifying `-r`:
 
 	# how much will 1 USD get me?
 
-	$ btcwatch -rvb
+	$ btcwatch -r -v -b
 	buy: ฿ 0.001179 BTC
 
 	# how about 1K?
 
-	$ btcwatch -n 1000 -rvb
+	$ btcwatch -n 1000 -r -v -b
 	buy: ฿ 1.178773 BTC
 
 You can also store the current price of Bitcoin with `-S`, and compare it later with `-C`:
@@ -125,13 +125,23 @@ You can also store the current price of Bitcoin with `-S`, and compare it later 
 	
 	# (after a reasonable amount of time)
 	
-	$ btcwatch -vC
+	$ btcwatch -v -C
 	buy: UP $ 100.000000 (100.000000 -> 200.000000)
 	sell: UP $ 100.000000 (100.000000 -> 200.000000)
 	(Since Thu Jan 1 00:00:00 2013)
 	
 	# profit!
-	
+
+See what version of btcwatch you are using and what API it uses:
+
+	$ btcwatch -V
+	btcwatch 0.1 (MtGox)
+	Copyright (C) Marco Scannadinari.
+	License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+	This is free software: you are free to change and redistribute it.
+	There is NO WARRANTY, to the extent permitted by law.
+
+	Written by Marco Scannadinari.
 
 Cleaning up
 -----------
