@@ -26,27 +26,15 @@
 #include <stdbool.h>
 
 // prints debug information in the form "DEBUG: " fmt 
-
 void btcdbg(const char *const fmt, ...);
 
 // finds absolute path to ~/.btcwatch and ~/.btcwatch/btcstore
-
 void find_path(char *const path, char *const pathwf);
 
 // prints usage info and options
-
 noreturn void help(const char *const prog_nm, const char *const topic);
 
-// sets stdout to be byte-oriented
-
-void resetb(void);
-
-// sets stdout to be wide-oriented
-
-void resetw(void);
-
 // prints version number
-
 noreturn void version(void);
 
 #endif
