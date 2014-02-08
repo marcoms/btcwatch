@@ -24,6 +24,8 @@ MCFLAGS:=-Wall -Wextra -Wpedantic -std=gnu11 -pipe -D_GNU_SOURCE $(JANSSONFLAGS)
 MCFLAGS+=$(CFLAGS)
 CFLAGS:=$(MCFLAGS)
 
+all: btcwatch
+
 btcwatch: src/main
 	cp $^ $@
 
