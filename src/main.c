@@ -48,7 +48,7 @@
 /*
 btcapi.c:
 
-rates_t btcrates = {
+btc_rates_t btcrates = {
 	.got = false
 };
 */
@@ -56,12 +56,12 @@ rates_t btcrates = {
 int main(int argc, char **argv) {
 	btcdbg("main()");
 
-	btcerr_t api_err;		// error data structure
+	btc_err_t api_err;		// error data structure
 	char btcpath[64];		// path to ~/.btcwatch
 	char btcpathwf[64];		// path including ".btcstore"
 	time_t btcstore_time;		// time btcstore was modified
 	uint32_t btcstore_time_tmp;	// for reading with scanf()
-	rates_t btcstore;		// rates found in ~/.btcwatch/btcstore
+	btc_rates_t btcstore;		// rates found in ~/.btcwatch/btcstore
 	bool colour;			// print colour?
 	char currcy[3 + 1];		// currency to convert to
 	bool found_path;		// found ~/, ~/.btcwatch, etc?
@@ -236,7 +236,7 @@ int main(int argc, char **argv) {
 				if((fp = fopen(btcpathwf, "r")) == NULL) error(EXIT_FAILURE, errno, "rerun btcwatch with -S");
 
 				fscanf(fp, "%s", btcstore.currcy.name);
-				if(!btcrates.got || strcmp(btcrates.currcy.name, btcstore.currcy.name) != 0) fill_rates(btcstore.currcy.name, &api_err);
+				if(!btcrates.got || strcmp(btcrates.currcy.name, btcstore.currcy.name) != 0) btc_fill_rates(btcstore.currcy.name, &api_err);
 				if(!api_err.err) {
 					// gets the time that btcstore was written to
 					fscanf(fp, "%" SCNu32, &btcstore.buy);
@@ -350,7 +350,7 @@ int main(int argc, char **argv) {
 				btcdbg("creating/opening %s...", btcpathwf);
 				fp = fopen(btcpathwf, "w");
 
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
 				if(!api_err.err) {
 					fprintf(
 						fp,
@@ -377,12 +377,12 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'a':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
 				print_rates(&btcrates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 				break;
 
 			case 'b':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
 				print_rates(&btcrates, &api_err, P_BUY, n, verbose, reverse, colour);
 				break;
 
@@ -413,7 +413,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'p':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
 				print_rates(&btcrates, &api_err, P_RESULT, n, verbose, reverse, colour);
 				break;
 
@@ -423,7 +423,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
 				print_rates(&btcrates, &api_err, P_SELL, n, verbose, reverse, colour);
 				break;
 
@@ -450,7 +450,7 @@ int main(int argc, char **argv) {
 	if(argc == 1) {
 		// default behavior with no arguments is to print all prices verbosely
 		verbose = true;
-		fill_rates(currcy, &api_err);
+		btc_fill_rates(currcy, &api_err);
 		print_rates(&btcrates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 	}
 

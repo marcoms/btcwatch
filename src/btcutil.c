@@ -180,7 +180,7 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 	exit(EXIT_SUCCESS);
 }
 
-void print_rates(rates_t *rates, btcerr_t *err, uint_fast8_t to_print, uint_fast32_t n, bool verbose, bool reverse, bool colour) {
+void print_rates(btc_rates_t *rates, btc_err_t *err, uint_fast8_t to_print, uint_fast32_t n, bool verbose, bool reverse, bool colour) {
 	if(!(err -> err)) {
 		if(verbose) {
 			if(to_print & P_RESULT) {

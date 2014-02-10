@@ -44,7 +44,7 @@ void find_path(char *const path, char *const pathwf);
 noreturn void help(const char *const prog_nm, const char *const topic);
 
 // output rates with additional information if needed
-void print_rates(rates_t *rates, btcerr_t *err, uint_fast8_t to_print, uint_fast32_t n, bool verbose, bool reverse, bool colour);
+void print_rates(btc_rates_t *rates, btc_err_t *err, uint_fast8_t to_print, uint_fast32_t n, bool verbose, bool reverse, bool colour);
 
 // prints version number
 noreturn void version(void);
