@@ -19,50 +19,9 @@
 	along with btcwatch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-Welcome to btcwatch's source!
-
-Code is indented with tabs. Tabs were chosen for their reduced impact on file
-sizes, and are much easier to edit and delete.
-
-All comments should be followed with a space or new line, depending if they are
-one-line or multi-line comments, respectively.
-
-One-line comments are C99/C++-style //s. They should not be capitalised. If
-they describe what a particular line of code does, it goes after it:
-
-	printf("Hello, world!\n");  // prints "Hello, world!", and a new line
-
-If comments describe more than one line of code, they are placed above the
-block of code:
-
-	// initialises the string and prints it out
-	char *string = malloc(sizeof (char) * strlen("Hello, world!"));
-	strcpy(string, "Hello, world!");
-	printf("%s\n", string);
-
-Multi-line comments do, of course, use the syntax used in the comment block.
-They should also be capitalised, unlike one-line comments.
-
-A block of code that is already documented previously with a comment, is
-marked with a one-line comment designator and a carat (^), using the rules
-specified above:
-
-	printf("Hello, world!\n");  // ^
-
-	...
-
-	// ^
-	char *string = malloc(sizeof (char) * strlen("Hello, world!"));
-	strcpy(string, "Hello, world!");
-	printf("%s\n", string);
-
-Happy hacking!
-*/
-
 #define _(str) gettext(str)
 #define BTC_SIGN "฿"
-#define BOOL_TRUE "TRUE T True true t YES Y Yes yes y"
+#define STR_TRUE "yes"
 #define GREEN(str) "\033[32m" str "\033[0m"
 #define RED(str) "\033[31m" str "\033[0m"
 #define OPTSTRING "CSVbac:h::n:o::prsv::"
@@ -79,6 +38,7 @@ Happy hacking!
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <unistd.h>
 #include <getopt.h>
 
 #include "lib/libbtcapi/btcapi.h"
@@ -209,7 +169,6 @@ int main(int argc, char **argv) {
 		},
 
 		// array terminates here - thanks to Adam Rosenfield (http://stackoverflow.com/questions/20668530)
-
 		{
 			0,
 			0,
@@ -253,7 +212,6 @@ int main(int argc, char **argv) {
 				}
 
 				// checks if ~/.btcwatch exists
-
 				btcdbg("checking %s...", btcpath);
 				mkdir(btcpath, S_IRWXU);
 
@@ -267,7 +225,6 @@ int main(int argc, char **argv) {
 				if(errno != EEXIST) error(EXIT_FAILURE, 0, "rerun btcwatch with -S");
 
 				// checks if ~/.btcwatch/btcstore exists
-
 				btcdbg("opening %s...", btcpathwf);
 
 				/*
@@ -384,7 +341,6 @@ int main(int argc, char **argv) {
 
 			case 'S':
 				// gets user information from /etc/passwd and extracts home directory from it
-
 				if(!found_path) {
 					find_path(btcpath, btcpathwf);
 					found_path = true;
@@ -421,101 +377,13 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'a':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency 
-				if(!api_err.err) {
-					if(verbose) {
-						bputs("result: "); puts(
-							colour
-								? GREEN("success")
-								: "success"
-						);
-						
-						printf(
-							"buy: %s %f %s\n"
-							"sell: %s %f %s\n",
-
-							reverse
-								? BTC_SIGN
-								: btcrates.currcy.sign,
-
-							reverse
-								? (n / btcrates.buyf)
-								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
-
-							reverse
-								? "BTC"
-								: btcrates.currcy.name,
-
-							reverse
-								? BTC_SIGN
-								: btcrates.currcy.sign,
-
-							reverse
-								? (n / btcrates.sellf)
-								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf),
-
-							reverse
-								? "BTC"
-								: btcrates.currcy.name
-						);
-						
-					} else {
-						puts(
-							colour
-								? GREEN("success")
-								: "success"
-						);
-						printf(
-							"%f\n"
-							"%f\n",
-
-							reverse
-								? (n / btcrates.buyf)
-								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
-
-							reverse
-								? (n / btcrates.sellf)
-								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf)
-						);
-					}
-				} else {
-					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
-				}
-
+				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
+				print_rates(&btcrates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 				break;
 
 			case 'b':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
-				if(!api_err.err) {
-					if(verbose) {
-						printf(
-							"buy: %s %f %s\n",
-
-							reverse
-								? BTC_SIGN
-								: btcrates.currcy.sign,
-
-							reverse
-								? (n / btcrates.buyf)
-								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf),
-
-							reverse
-								? "BTC"
-								: btcrates.currcy.name
-						);
-					} else {
-						printf(
-							"%f\n",
-
-							reverse
-								? (n / btcrates.buyf)
-								: ((double) (btcrates.buy * n) / (double) btcrates.currcy.sf)
-						);
-					}
-				} else {
-					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
-				}
-
+				print_rates(&btcrates, &api_err, P_BUY, n, verbose, reverse, colour);
 				break;
 
 			case 'c':
@@ -531,7 +399,7 @@ int main(int argc, char **argv) {
 
 			case 'o':
 				if(optarg) {
-					if(strstr(BOOL_TRUE, optarg)) {
+					if(!strcmp(STR_TRUE, optarg)) {
 						colour = true;
 					} else {
 						colour = false;
@@ -546,19 +414,7 @@ int main(int argc, char **argv) {
 
 			case 'p':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
-				if(!api_err.err) {
-					if(verbose) {
-						fputs("result: ", stdout);
-					}
-					puts(
-						colour
-							? GREEN("success")
-							: "success"
-					);
-				} else {
-					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
-				}
-
+				print_rates(&btcrates, &api_err, P_RESULT, n, verbose, reverse, colour);
 				break;
 
 			case 'r':
@@ -568,38 +424,12 @@ int main(int argc, char **argv) {
 
 			case 's':
 				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) fill_rates(currcy, &api_err);
-				if(!api_err.err) {
-					if(verbose) {
-						
-						printf(
-							"sell: %s %f %s\n",
-							btcrates.currcy.sign,
-
-							reverse
-								? (n / btcrates.sellf)
-								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf),
-
-							btcrates.currcy.name
-						);
-						
-					} else {
-						printf(
-							"%f\n",
-
-							reverse
-								? (n / btcrates.sellf)
-								: ((double) (btcrates.sell * n) / (double) btcrates.currcy.sf)
-							);
-					}
-				} else {
-					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
-				}
-
+				print_rates(&btcrates, &api_err, P_SELL, n, verbose, reverse, colour);
 				break;
 
 			case 'v':
 				if(optarg) {
-					if(strstr(BOOL_TRUE, optarg)) {
+					if(!strcmp(STR_TRUE, optarg)) {
 						verbose = true;
 					} else {
 						verbose = false;
@@ -612,30 +442,16 @@ int main(int argc, char **argv) {
 				break;
 
 			default:
-				error(EXIT_FAILURE, 0, "option parsing error");
+				error(EXIT_FAILURE, 0, "couldn't parse options");
 				break;
 		}
 	}
 
 	if(argc == 1) {
 		// default behavior with no arguments is to print all prices verbosely
-
+		verbose = true;
 		fill_rates(currcy, &api_err);
-		if(!api_err.err) {
-			puts("result: success");
-			printf(
-				"buy: %s %f %s\n"
-				"sell: %s %f %s\n",
-				btcrates.currcy.sign,
-				btcrates.buyf,
-				btcrates.currcy.name,
-				btcrates.currcy.sign,
-				btcrates.sellf,
-				btcrates.currcy.name
-			);
-		} else {
-			error(EXIT_FAILURE, 0, "%s", api_err.errstr);
-		}
+		print_rates(&btcrates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 	}
 
 	return EXIT_SUCCESS;

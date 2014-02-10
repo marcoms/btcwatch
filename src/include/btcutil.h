@@ -24,6 +24,15 @@
 #define bputs(str) fputs(str, stdout)
 
 #include <stdbool.h>
+#include <stdint.h>
+
+#include "../lib/libbtcapi/btcapi.h"
+
+enum {
+	P_RESULT = 0x01,
+	P_BUY    = 0x02,
+	P_SELL   = 0x04
+};
 
 // prints debug information in the form "DEBUG: " fmt 
 void btcdbg(const char *const fmt, ...);
@@ -33,6 +42,9 @@ void find_path(char *const path, char *const pathwf);
 
 // prints usage info and options
 noreturn void help(const char *const prog_nm, const char *const topic);
+
+// output rates with additional information if needed
+void print_rates(rates_t *rates, btcerr_t *err, uint_fast8_t to_print, uint_fast32_t n, bool verbose, bool reverse, bool colour);
 
 // prints version number
 noreturn void version(void);

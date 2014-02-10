@@ -19,6 +19,9 @@
 
 #define BOLD(str) "\033[1m" str "\033[0m"
 #define IGNORE(x) (void) (x)
+#define GREEN(str) "\033[32m" str "\033[0m"
+#define RED(str) "\033[31m" str "\033[0m"
+#define BTC_SIGN "฿"
 
 #include <error.h>
 #include <pwd.h>
@@ -175,6 +178,87 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		}
 	}
 	exit(EXIT_SUCCESS);
+}
+
+void print_rates(rates_t *rates, btcerr_t *err, uint_fast8_t to_print, uint_fast32_t n, bool verbose, bool reverse, bool colour) {
+	if(!(err -> err)) {
+		if(verbose) {
+			if(to_print & P_RESULT) {
+				bputs("result: "); puts(
+					colour
+						? GREEN("success")
+						: "success"
+				);
+			}
+
+			if(to_print & P_BUY) {
+				printf(
+					"buy: %s %f %s\n",
+
+					reverse
+						? BTC_SIGN
+						: rates -> currcy.sign,
+
+					reverse
+						? (n / rates -> buyf)
+						: ((double) (rates -> buy * n) / (double) rates -> currcy.sf),
+
+					reverse
+						? "BTC"
+						: rates -> currcy.name
+				);
+			}
+
+			if(to_print & P_SELL) {
+				printf(
+					"sell: %s %f %s\n",
+
+					reverse
+						? BTC_SIGN
+						: rates -> currcy.sign,
+
+					reverse
+						? (n / rates -> sellf)
+						: ((double) (rates -> sell * n) / (double) rates -> currcy.sf),
+
+					reverse
+						? "BTC"
+						: rates -> currcy.name
+				);
+			}
+			
+		} else {
+			if(to_print & P_RESULT) {
+				puts(
+					colour
+						? GREEN("success")
+						: "success"
+				);
+			}
+
+			if(to_print & P_BUY) {
+				printf(
+					"%f\n",
+
+					reverse
+						? (n / rates -> buyf)
+						: ((double) (rates -> buy * n) / (double) rates -> currcy.sf)
+				);
+			}
+
+			if(to_print & P_SELL) {
+				printf(
+					"%f\n",
+
+					reverse
+						? (n / rates -> sellf)
+						: ((double) (rates -> sell * n) / (double) rates -> currcy.sf)
+				);
+			}
+		}
+	} else {
+		error(EXIT_FAILURE, 0, "%s", err -> errstr);
+	}
 }
 
 noreturn void version(void) {
