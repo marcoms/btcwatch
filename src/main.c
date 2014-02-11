@@ -1,7 +1,7 @@
 // btcwatch - gets and monitors Bitcoin trade information
 
 /*
-	Copyright (C) 2013  Marco Scannadinari
+	Copyright (C) 2013-2014 Marco Scannadinari <m@scannadinari.co.uk>
 
 	This file is part of btcwatch.
 

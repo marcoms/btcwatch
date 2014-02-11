@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2013  Marco Scannadinari
+	Copyright (C) 2013-2014 Marco Scannadinari <m@scannadinari.co.uk>
 
 	This file is part of btcwatch.
 
@@ -98,7 +98,7 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		"THB",
 		#endif
 		"USD",
-	};
+	}; Terry Jones” if some versions were finished in 1998 and some were finished in 1999. If several people helped write the code, use all their names.
 
 	char topics[][2][32] = {
 		/*{
