@@ -46,8 +46,6 @@
 #include "include/config.h"
 
 int main(int argc, char **argv) {
-	btcdbg("main()");
-
 	btc_err_t api_err;		// error data structure
 	char btcpath[64];		// path to ~/.btcwatch
 	char btcpathwf[64];		// path including ".btcstore"
@@ -229,7 +227,7 @@ int main(int argc, char **argv) {
 				if((fp = fopen(btcpathwf, "r")) == NULL) error(EXIT_FAILURE, errno, "rerun btcwatch with -S");
 
 				fscanf(fp, "%s", btcstore.currcy.name);
-				if(!rates.got || strcmp(rates.currcy.name, btcstore.currcy.name) != 0) api_err = btc_fill_rates(&rates, btcstore.currcy.name);
+				if(!rates.got || strcmp(rates.currcy.name, btcstore.currcy.name)) api_err = btc_fill_rates(&rates, btcstore.currcy.name);
 				if(!api_err.err) {
 					// gets the time that btcstore was written to
 					fscanf(fp, "%" SCNu32, &btcstore.buy);
@@ -341,7 +339,7 @@ int main(int argc, char **argv) {
 				btcdbg("creating/opening %s...", btcpathwf);
 				fp = fopen(btcpathwf, "w");
 
-				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
+				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 				if(!api_err.err) {
 					fprintf(
 						fp,
@@ -368,12 +366,12 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'a':
-				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
+				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
 				print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 				break;
 
 			case 'b':
-				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
+				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 				print_rates(&rates, &api_err, P_BUY, n, verbose, reverse, colour);
 				break;
 
@@ -404,7 +402,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'p':
-				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
+				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 				print_rates(&rates, &api_err, P_RESULT, n, verbose, reverse, colour);
 				break;
 
@@ -414,7 +412,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':
-				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
+				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 				print_rates(&rates, &api_err, P_SELL, n, verbose, reverse, colour);
 				break;
 
