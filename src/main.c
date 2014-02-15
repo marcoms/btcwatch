@@ -45,14 +45,6 @@
 #include "include/btcutil.h"
 #include "include/config.h"
 
-/*
-btcapi.c:
-
-btc_rates_t btcrates = {
-	.got = false
-};
-*/
-
 int main(int argc, char **argv) {
 	btcdbg("main()");
 
@@ -61,6 +53,7 @@ int main(int argc, char **argv) {
 	char btcpathwf[64];		// path including ".btcstore"
 	time_t btcstore_time;		// time btcstore was modified
 	uint32_t btcstore_time_tmp;	// for reading with scanf()
+	btc_rates_t rates;		// price of Bitcoin
 	btc_rates_t btcstore;		// rates found in ~/.btcwatch/btcstore
 	bool colour;			// print colour?
 	char currcy[3 + 1];		// currency to convert to
@@ -70,7 +63,7 @@ int main(int argc, char **argv) {
 	double n;			// number of BTC to convert
 	char *newlp;			// pointer to newline
 	int opt;  			// current option in getopt() loop
-	char *pn;  			// *p*rogram *n*ame - pointer to argv[0]
+	char *pn;  			// program name - pointer to argv[0]
 	bool reverse;			// convert currency to Bitcoin?
 	char timestr[32];		// string returned by ctime
 	bool verbose;			// print verbose output?
@@ -236,7 +229,7 @@ int main(int argc, char **argv) {
 				if((fp = fopen(btcpathwf, "r")) == NULL) error(EXIT_FAILURE, errno, "rerun btcwatch with -S");
 
 				fscanf(fp, "%s", btcstore.currcy.name);
-				if(!btcrates.got || strcmp(btcrates.currcy.name, btcstore.currcy.name) != 0) btc_fill_rates(btcstore.currcy.name, &api_err);
+				if(!rates.got || strcmp(rates.currcy.name, btcstore.currcy.name) != 0) api_err = btc_fill_rates(&rates, btcstore.currcy.name);
 				if(!api_err.err) {
 					// gets the time that btcstore was written to
 					fscanf(fp, "%" SCNu32, &btcstore.buy);
@@ -246,17 +239,17 @@ int main(int argc, char **argv) {
 					strcpy(timestr, ctime(&btcstore_time));
 					newlp = strchr(timestr, '\n');  // finds newline character
 					*newlp = 0;  // strips newline
-					btcstore.buyf = ((double) btcstore.buy / (double) btcrates.currcy.sf);
-					btcstore.sellf = ((double) btcstore.sell / (double) btcrates.currcy.sf);
+					btcstore.buyf = ((double) btcstore.buy / (double) rates.currcy.sf);
+					btcstore.sellf = ((double) btcstore.sell / (double) rates.currcy.sf);
 
 					if(verbose) {
-						if(btcrates.buy == btcstore.buy) {
+						if(rates.buy == btcstore.buy) {
 							puts("buy: (no change)");
 						} else {
 							printf(
 								"buy: %s %s %f %s (%f -> %f)\n",
 
-								btcrates.buy > btcstore.buy
+								rates.buy > btcstore.buy
 									? colour
 										? GREEN("UP")
 										: "UP"
@@ -264,20 +257,20 @@ int main(int argc, char **argv) {
 										? RED("DOWN")
 										: "DOWN",
 
-								btcrates.currcy.sign,
-								((double) (btcrates.buy - btcstore.buy) / (double) btcrates.currcy.sf),
-								btcrates.currcy.name,
+								rates.currcy.sign,
+								((double) (rates.buy - btcstore.buy) / (double) rates.currcy.sf),
+								rates.currcy.name,
 								btcstore.buyf,
-								btcrates.buyf
+								rates.buyf
 							);
 						}
-						if(btcrates.sell == btcstore.sell) {
+						if(rates.sell == btcstore.sell) {
 							puts("sell: (no change)");
 						} else {
 							printf(
 								"sell: %s %s %f %s (%f -> %f)\n",
 
-								btcrates.sell > btcstore.sell
+								rates.sell > btcstore.sell
 									? colour
 										? GREEN("UP")
 										: "UP"
@@ -285,24 +278,22 @@ int main(int argc, char **argv) {
 										? RED("DOWN")
 										: "DOWN",
 
-								btcrates.currcy.sign,
-								((double) (btcrates.sell - btcstore.sell) / (double) btcrates.currcy.sf),
-								btcrates.currcy.name,
+								rates.currcy.sign,
+								((double) (rates.sell - btcstore.sell) / (double) rates.currcy.sf),
+								rates.currcy.name,
 								btcstore.sellf,
-								btcrates.sellf
+								rates.sellf
 							);
 						}
-						fputs("(since ", stdout);
-						fputs(timestr, stdout);
-						puts(")");
+						fputs("(since ", stdout); fputs(timestr, stdout); puts(")");
 					} else {
-						if(btcrates.buy == btcstore.buy) {
+						if(rates.buy == btcstore.buy) {
 							puts("(no change)");
 						} else {
 							printf(
 								"%s %f\n",
 
-								btcrates.buy > btcstore.buy
+								rates.buy > btcstore.buy
 									? colour
 										? GREEN("UP")
 										: "UP"
@@ -310,17 +301,17 @@ int main(int argc, char **argv) {
 										? RED("DOWN")
 										: "DOWN",
 
-								((double) (btcrates.buy - btcstore.buy) / (double) btcrates.currcy.sf)
+								((double) (rates.buy - btcstore.buy) / (double) rates.currcy.sf)
 							);
 						}
 
-						if(btcrates.sell == btcstore.sell) {
+						if(rates.sell == btcstore.sell) {
 							puts("(no change)");
 						} else {
 							printf(
 								"%s %f\n",
 
-								btcrates.sell > btcstore.sell
+								rates.sell > btcstore.sell
 									? colour
 										? GREEN("UP")
 										: "UP"
@@ -328,7 +319,7 @@ int main(int argc, char **argv) {
 										? RED("DOWN")
 										: "DOWN",
 
-								((double) (btcrates.sell - btcstore.sell) / (double) btcrates.currcy.sf)
+								((double) (rates.sell - btcstore.sell) / (double) rates.currcy.sf)
 							);
 						}
 					}
@@ -350,7 +341,7 @@ int main(int argc, char **argv) {
 				btcdbg("creating/opening %s...", btcpathwf);
 				fp = fopen(btcpathwf, "w");
 
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
+				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
 				if(!api_err.err) {
 					fprintf(
 						fp,
@@ -358,9 +349,9 @@ int main(int argc, char **argv) {
 						"%" PRId32 "\n"
 						"%" PRId32 "\n"
 						"%" PRIu32 "\n",
-						btcrates.currcy.name,
-						btcrates.buy,
-						btcrates.sell,
+						rates.currcy.name,
+						rates.buy,
+						rates.sell,
 						(uint32_t) time(NULL)
 					);
 				} else {
@@ -377,13 +368,13 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'a':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
-				print_rates(&btcrates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
+				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
+				print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 				break;
 
 			case 'b':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
-				print_rates(&btcrates, &api_err, P_BUY, n, verbose, reverse, colour);
+				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
+				print_rates(&rates, &api_err, P_BUY, n, verbose, reverse, colour);
 				break;
 
 			case 'c':
@@ -413,8 +404,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'p':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
-				print_rates(&btcrates, &api_err, P_RESULT, n, verbose, reverse, colour);
+				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
+				print_rates(&rates, &api_err, P_RESULT, n, verbose, reverse, colour);
 				break;
 
 			case 'r':
@@ -423,8 +414,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':
-				if(!btcrates.got || strcmp(btcrates.currcy.name, currcy) != 0) btc_fill_rates(currcy, &api_err);
-				print_rates(&btcrates, &api_err, P_SELL, n, verbose, reverse, colour);
+				if(!rates.got || strcmp(rates.currcy.name, currcy) != 0) api_err = btc_fill_rates(&rates, currcy);
+				print_rates(&rates, &api_err, P_SELL, n, verbose, reverse, colour);
 				break;
 
 			case 'v':
@@ -450,8 +441,8 @@ int main(int argc, char **argv) {
 	if(argc == 1) {
 		// default behavior with no arguments is to print all prices verbosely
 		verbose = true;
-		btc_fill_rates(currcy, &api_err);
-		print_rates(&btcrates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
+		api_err = btc_fill_rates(&rates, currcy);
+		print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 	}
 
 	return EXIT_SUCCESS;

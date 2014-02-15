@@ -98,7 +98,7 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		"THB",
 		#endif
 		"USD",
-	}; Terry Jones” if some versions were finished in 1998 and some were finished in 1999. If several people helped write the code, use all their names.
+	};
 
 	char topics[][2][32] = {
 		/*{
@@ -118,11 +118,11 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 	};
 
 	/*
-	help() uses argv[0] for the program name. Rationale: because of the
-	"Usage:" string, where the user expects to be given an explenation on
-	how to use and invoke the program. For example, if the program is
-	renamed or invoked via a symbolic link, help() will still output a
-	valid "Usage:" string.
+	help() uses argv[0] for the program name because of the	"Usage:"
+	string, where the user expects to be given an explenation on how to use
+	and invoke the program. For example, if the program is renamed or
+	invoked via a symbolic link, help() will still output a valid "Usage:"
+	string.
 
 	version(), on the other hand, merely displays the program's name,
 	its version number, and licensing information, all of which should
