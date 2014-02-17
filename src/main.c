@@ -46,25 +46,25 @@
 #include "include/config.h"
 
 int main(int argc, char **argv) {
-	btc_err_t api_err;		// error data structure
-	char btcpath[64];		// path to ~/.btcwatch
-	char btcpathwf[64];		// path including ".btcstore"
-	time_t btcstore_time;		// time btcstore was modified
-	uint32_t btcstore_time_tmp;	// for reading with scanf()
-	btc_rates_t rates;		// price of Bitcoin
-	btc_rates_t btcstore;		// rates found in ~/.btcwatch/btcstore
-	bool colour;			// print colour?
-	char currcy[3 + 1];		// currency to convert to
-	bool found_path;		// found ~/, ~/.btcwatch, etc?
-	FILE *fp;			// btcstore handle
-	int longopt_i;			// index for referencing long_options[]
-	double n;			// number of BTC to convert
-	char *newlp;			// pointer to newline
-	int opt;  			// current option in getopt() loop
-	char *pn;  			// program name - pointer to argv[0]
-	bool reverse;			// convert currency to Bitcoin?
-	char timestr[32];		// string returned by ctime
-	bool verbose;			// print verbose output?
+	btc_err_t api_err;           // error data structure
+	char btcpath[64];            // path to ~/.btcwatch
+	char btcpathwf[64];          // path including ".btcstore"
+	time_t btcstore_time;        // time btcstore was modified
+	uint32_t btcstore_time_tmp;  // for reading with scanf()
+	btc_rates_t rates;           // price of Bitcoin
+	btc_rates_t btcstore;        // rates found in ~/.btcwatch/btcstore
+	bool colour;                 // print colour?
+	char currcy[3 + 1];          // currency to convert to
+	bool found_path;             // found ~/, ~/.btcwatch, etc?
+	FILE *fp;                    // btcstore handle
+	int longopt_i;               // index for referencing long_options[]
+	double n;                    // number of BTC to convert
+	char *newlp;                 // pointer to newline
+	int opt;                     // current option in getopt() loop
+	char *pn;                    // program name - pointer to argv[0]
+	bool reverse;                // convert currency to Bitcoin?
+	char timestr[32];            // string returned by ctime
+	bool verbose;                // print verbose output?
 
 	// list of options for getopt_long()
 	const struct option long_options[] = {
