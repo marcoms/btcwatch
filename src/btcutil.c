@@ -88,8 +88,6 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		}
 	};
 
-	size_t max = 0;
-
 	/*
 	help() uses argv[0] for the program name because of the	"Usage:"
 	string, where the user expects to be given an explenation on how to use
