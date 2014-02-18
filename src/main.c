@@ -189,7 +189,6 @@ int main(int argc, char **argv) {
 		long_options,
 		&longopt_i
 	)) != -1) {
-		btcdbg("got option '%c'", opt);
 		switch(opt) {
 			case '?':  // returned by getopt_long() if opt is not in OPTSTRING
 			case 'h':
@@ -202,9 +201,7 @@ int main(int argc, char **argv) {
 					found_path = true;
 				}
 
-				// checks if ~/.btcwatch exists
-				btcdbg("checking %s...", btcpath);
-				mkdir(btcpath, S_IRWXU);
+				mkdir(btcpath, S_IRWXU);  // checks if ~/.btcwatch exists
 
 				/*
 				erno will be set to EEXIST if the directory
@@ -214,9 +211,6 @@ int main(int argc, char **argv) {
 				*/
 
 				if(errno != EEXIST) error(EXIT_FAILURE, 0, "rerun btcwatch with -S");
-
-				// checks if ~/.btcwatch/btcstore exists
-				btcdbg("opening %s...", btcpathwf);
 
 				/*
 				If btcstore is not present but ~/.btcwatch is,
@@ -325,7 +319,6 @@ int main(int argc, char **argv) {
 					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
 				}
 
-				btcdbg("closing %s...", btcpathwf);
 				break;
 
 			case 'S':
@@ -334,9 +327,7 @@ int main(int argc, char **argv) {
 					find_path(btcpath, btcpathwf);
 					found_path = true;
 				}
-				btcdbg("possibly creating %s...", btcpath);
-				if(mkdir(btcpath, S_IRWXU) == -1) btcdbg("mkdir(): %s", strerror(errno));
-				btcdbg("creating/opening %s...", btcpathwf);
+				if(mkdir(btcpath, S_IRWXU) == -1) error(EXIT_FAILURE, 0, "%s", strerror(errno));
 				fp = fopen(btcpathwf, "w");
 
 				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
@@ -356,9 +347,7 @@ int main(int argc, char **argv) {
 					error(EXIT_FAILURE, 0, "%s", api_err.errstr);
 				}
 
-				btcdbg("closing %s...", btcpathwf);
 				fclose(fp);
-
 				break;
 
 			case 'V':
@@ -376,10 +365,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'c':
-				btcdbg("old currcy: \"%s\"", currcy);
 				strcpy(currcy, optarg);
-				btcdbg("new currcy: \"%s\"", currcy);
-
 				break;
 
 			case 'n':
@@ -397,8 +383,6 @@ int main(int argc, char **argv) {
 					colour = true;
 				}
 
-				btcdbg("colour: %d", colour);
-
 				break;
 
 			case 'p':
@@ -408,7 +392,6 @@ int main(int argc, char **argv) {
 
 			case 'r':
 				reverse = true;
-				btcdbg("reverse: %d", reverse);
 				break;
 
 			case 's':
@@ -427,7 +410,6 @@ int main(int argc, char **argv) {
 					verbose = true;
 				}
 
-				btcdbg("verbose: %d", verbose);
 				break;
 
 			default:

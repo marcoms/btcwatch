@@ -35,25 +35,13 @@
 #include "include/config.h"
 #include "include/btcutil.h"
 
-void btcdbg(const char *const fmt, ...) {
-	#ifdef DEBUG
-	va_list args;
+enum {
+	P_RESULT = 0x01,
+	P_BUY    = 0x02,
+	P_SELL   = 0x04
+};
 
-	va_start(args, fmt);
-
-	bputs(BOLD("DEBUG: "));
-	vprintf(fmt, args);
-	putchar('\n');
-
-	va_end(args);
-	#else
-	IGNORE(fmt);
-	#endif
-}
-
-void find_path(char *const path, char *const pathwf) {
-	btcdbg("find_path()");
-
+void find_paths(char *const path, char *const pathwf) {
 	struct passwd *userinfo;
 
 	userinfo = getpwuid(getuid());
@@ -61,15 +49,9 @@ void find_path(char *const path, char *const pathwf) {
 	strcat(path, "/.btcwatch");
 	strcpy(pathwf, path);
 	strcat(pathwf, "/btcstore");
-
-	btcdbg("~/: %s", userinfo -> pw_dir);
-	btcdbg("~/.btcwatch: %s", path);
-	btcdbg("~/.btcwatch/btcstore: %s", pathwf);
 }
 
 noreturn void help(const char *const prog_nm, const char *const topic) {
-	btcdbg("help()");
-
 	char currcies[][3 + 1] = {
 		#ifdef MT_GOX_API
 		"AUD",
@@ -262,8 +244,6 @@ void print_rates(btc_rates_t *rates, btc_err_t *err, uint_fast8_t to_print, uint
 }
 
 noreturn void version(void) {
-	btcdbg("version()");
-
 	printf(
 		"%s (%s)\n",
 		PACKAGE_STRING,
