@@ -24,7 +24,8 @@
 #define STR_TRUE "yes"
 #define GREEN(str) "\033[32m" str "\033[0m"
 #define RED(str) "\033[31m" str "\033[0m"
-#define OPTSTRING "CSVbac:h::n:o::prsv::"
+#define OPTSTRING "CSVbac:h::k::n:o::prsv::"
+#define DEFAULT_MONITOR_INTERVAL 4  // seconds
 
 #include <assert.h>
 #include <ctype.h>
@@ -56,6 +57,7 @@ int main(int argc, char **argv) {
 	bool colour;                 // print colour?
 	char currcy[3 + 1];          // currency to convert to
 	bool found_path;             // found ~/, ~/.btcwatch, etc?
+	bool forever;                // keep on monitoring rates?
 	FILE *fp;                    // btcstore handle
 	int longopt_i;               // index for referencing long_options[]
 	double n;                    // number of BTC to convert
@@ -115,6 +117,13 @@ int main(int argc, char **argv) {
 			.has_arg = required_argument,
 			.flag = NULL,
 			.val = 'c'
+		},
+
+		{
+			.name = "keep-monitoring",
+			.has_arg = optional_argument,
+			.flag = NULL,
+			.val = 'k'
 		},
 
 		{
@@ -355,17 +364,39 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'a':
-				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
-				print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
+				if(forever) {
+					while(true) {
+						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
+						print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
+						sleep(DEFAULT_MONITOR_INTERVAL);
+					}
+				} else {
+						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
+						print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
+				}
+
 				break;
 
 			case 'b':
-				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
-				print_rates(&rates, &api_err, P_BUY, n, verbose, reverse, colour);
+				if(forever) {
+					while(true) {
+						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
+						print_rates(&rates, &api_err, P_BUY, n, verbose, reverse, colour);
+						sleep(DEFAULT_MONITOR_INTERVAL);
+					}
+				} else {
+					if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
+					print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
+				}
+
 				break;
 
 			case 'c':
 				strcpy(currcy, optarg);
+				break;
+
+			case 'k':
+				forever = true;
 				break;
 
 			case 'n':
@@ -386,8 +417,17 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'p':
-				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
-				print_rates(&rates, &api_err, P_RESULT, n, verbose, reverse, colour);
+				if(forever) {
+					while(true) {
+						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
+						print_rates(&rates, &api_err, P_RESULT, n, verbose, reverse, colour);
+						sleep(DEFAULT_MONITOR_INTERVAL);
+					}
+				} else {
+					if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
+					print_rates(&rates, &api_err, P_RESULT, n, verbose, reverse, colour);
+				}
+
 				break;
 
 			case 'r':
@@ -395,8 +435,17 @@ int main(int argc, char **argv) {
 				break;
 
 			case 's':
-				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
-				print_rates(&rates, &api_err, P_SELL, n, verbose, reverse, colour);
+				if(forever) {
+					while(true) {
+						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
+						print_rates(&rates, &api_err, P_SELL, n, verbose, reverse, colour);
+						sleep(DEFAULT_MONITOR_INTERVAL);
+					}
+				} else {
+					if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
+					print_rates(&rates, &api_err, P_SELL, n, verbose, reverse, colour);
+				}
+
 				break;
 
 			case 'v':

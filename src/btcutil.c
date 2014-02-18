@@ -77,11 +77,6 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 	};
 
 	char topics[][2][32] = {
-		/*{
-			"boolean",
-			"list possible values for boolean"
-		},*/
-
 		{
 			"currencies",
 			"list available currencies"
@@ -92,6 +87,8 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 			"print this list of topics"
 		}
 	};
+
+	size_t max = 0;
 
 	/*
 	help() uses argv[0] for the program name because of the	"Usage:"
@@ -116,6 +113,7 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 			"  -a             --all                equivalent to -pbs\n"
 			"  -b             --buy                print buy price\n"
 			"  -c CURRENCY    --currency=CURRENCY  set conversion currency\n"
+			"  -k             --keep-monitoring    monitors the price of Bitcoin repeatedly\n"
 			"  -n AMOUNT      --amount=AMOUNT      set the amount to convert\n"
 			"  -o [boolean]   --colour[=boolean]   enable use of colour\n"
 			"  -p             --ping               check for a successful JSON response\n"
