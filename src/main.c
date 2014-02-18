@@ -197,7 +197,7 @@ int main(int argc, char **argv) {
 
 			case 'C':
 				if(!found_path) {
-					find_path(btcpath, btcpathwf);
+					find_paths(btcpath, btcpathwf);
 					found_path = true;
 				}
 
@@ -324,7 +324,7 @@ int main(int argc, char **argv) {
 			case 'S':
 				// gets user information from /etc/passwd and extracts home directory from it
 				if(!found_path) {
-					find_path(btcpath, btcpathwf);
+					find_paths(btcpath, btcpathwf);
 					found_path = true;
 				}
 				if(mkdir(btcpath, S_IRWXU) == -1) error(EXIT_FAILURE, 0, "%s", strerror(errno));

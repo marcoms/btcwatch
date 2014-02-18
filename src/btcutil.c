@@ -35,12 +35,6 @@
 #include "include/config.h"
 #include "include/btcutil.h"
 
-enum {
-	P_RESULT = 0x01,
-	P_BUY    = 0x02,
-	P_SELL   = 0x04
-};
-
 void find_paths(char *const path, char *const pathwf) {
 	struct passwd *userinfo;
 

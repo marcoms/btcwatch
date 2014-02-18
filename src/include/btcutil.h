@@ -28,8 +28,14 @@
 
 #include "../lib/libbtcapi/btcapi.h"
 
+enum {
+	P_RESULT = 0x01,
+	P_BUY    = 0x02,
+	P_SELL   = 0x04
+};
+
 // finds absolute path to ~/.btcwatch and ~/.btcwatch/btcstore
-void find_path(char *const path, char *const pathwf);
+void find_paths(char *const path, char *const pathwf);
 
 // prints usage info and options
 noreturn void help(const char *const prog_nm, const char *const topic);
