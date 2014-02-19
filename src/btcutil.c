@@ -106,28 +106,31 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 			"Get and monitor Bitcoin trade information\n"
 			"\n"
 			"Options:       Long options:\n"
-			"  -C             --compare            comare current price with stored price\n"
-			"  -S             --store              store current price\n"
-			"  -a             --all                equivalent to -pbs\n"
-			"  -b             --buy                print buy price\n"
-			"  -c CURRENCY    --currency=CURRENCY  set conversion currency\n"
-			"  -k             --keep-monitoring    monitors the price of Bitcoin repeatedly\n"
-			"  -n AMOUNT      --amount=AMOUNT      set the amount to convert\n"
-			"  -o [boolean]   --colour[=boolean]   enable use of colour\n"
-			"  -p             --ping               check for a successful JSON response\n"
-			"  -r             --reverse            convert currency to Bitcoin\n"
-			"  -s             --sell               print sell price\n"
-			"  -v [boolean]   --verbose[=boolean]  increase verbosity\n"
+			"  -C             --compare                     comare current price with stored price\n"
+			"  -S             --store                       store current price\n"
+			"  -a             --all                         equivalent to -pbs\n"
+			"  -b             --buy                         print buy price\n"
+			"  -c CURRENCY    --currency=CURRENCY           set conversion currency\n"
+			"  -k [INTERVAL]  --keep-monitoring[=INTERVAL]  indefinitely monitor the price,\n"
+			"                                                and wait for INTERVAL seconds each time\n"
+			"  -n AMOUNT      --amount=AMOUNT               set the amount to convert\n"
+			"  -o [BOOLEAN]   --colour[=BOOLEAN]            enable use of colour\n"
+			"  -p             --ping                        check for a successful JSON response\n"
+			"  -r             --reverse                     convert currency to Bitcoin\n"
+			"  -s             --sell                        print sell price\n"
+			"  -v [BOOLEAN]   --verbose[=BOOLEAN]           increase verbosity\n"
 			"\n"
-			"  -h [topic]     --help[=topic]       print this help, or help designated by topic\n"
-			"                                      use --help=topics for available topics\n"
-			"  -V             --version            print version number\n"
+			"\n"
+			"  -h [TOPIC]     --help[=TOPIC]                print this help, or help designated by topic\n"
+			"                                               use --help=topics for available topics\n"
+			"  -V             --version                     print version number\n"
 			"\n"
 			"Report bugs to " PACKAGE_BUGREPORT "\n"
 			"btcwatch home page: " PACKAGE_URL
 		);
 		exit(EXIT_SUCCESS);
 	} else {
+		// TODO: use a string hash function to be able to do this in a switch..case statement
 		if(!strcmp(topic, "currencies")) {
 			for(
 				uint_fast8_t i = 0;

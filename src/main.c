@@ -25,7 +25,7 @@
 #define GREEN(str) "\033[32m" str "\033[0m"
 #define RED(str) "\033[31m" str "\033[0m"
 #define OPTSTRING "CSVbac:h::k::n:o::prsv::"
-#define DEFAULT_MONITOR_INTERVAL 4  // seconds
+#define DEFAULT_MONITOR_INTERVAL 400000
 
 #include <assert.h>
 #include <ctype.h>
@@ -47,26 +47,27 @@
 #include "include/config.h"
 
 int main(int argc, char **argv) {
-	btc_err_t api_err;           // error data structure
-	char btcpath[64];            // path to ~/.btcwatch
-	char btcpathwf[64];          // path including ".btcstore"
-	time_t btcstore_time;        // time btcstore was modified
-	uint32_t btcstore_time_tmp;  // for reading with scanf()
-	btc_rates_t rates;           // price of Bitcoin
-	btc_rates_t btcstore;        // rates found in ~/.btcwatch/btcstore
-	bool colour;                 // print colour?
-	char currcy[3 + 1];          // currency to convert to
-	bool found_path;             // found ~/, ~/.btcwatch, etc?
-	bool forever;                // keep on monitoring rates?
-	FILE *fp;                    // btcstore handle
-	int longopt_i;               // index for referencing long_options[]
-	double n;                    // number of BTC to convert
-	char *newlp;                 // pointer to newline
-	int opt;                     // current option in getopt() loop
-	char *pn;                    // program name - pointer to argv[0]
-	bool reverse;                // convert currency to Bitcoin?
-	char timestr[32];            // string returned by ctime
-	bool verbose;                // print verbose output?
+	btc_err_t      api_err;                                      // error data structure
+	char           btcpath[64];                                  // path to ~/.btcwatch
+	char           btcpathwf[64];                                // path including ".btcstore"
+	time_t         btcstore_time;                                // time btcstore was modified
+	uint32_t       btcstore_time_tmp;                            // for reading with scanf()
+	btc_rates_t    rates;                                        // price of Bitcoin
+	btc_rates_t    btcstore;                                     // rates found in ~/.btcwatch/btcstore
+	bool           colour           = false;                     // print colour?
+	char           currcy[3 + 1]    = "USD";                     // currency to convert to
+	bool           found_path       = false;                     // found ~/, ~/.btcwatch, etc?
+	bool           forever          = false;                     // keep on monitoring rates?
+	FILE          *fp               = NULL;                      // btcstore handle
+	int            longopt_i;                                    // index for referencing long_options[]
+	uint_fast32_t  monitor_interval = DEFAULT_MONITOR_INTERVAL;  // interval between pinging server when -k is used
+	double         n                = 1.0;                       // number of BTC to convert
+	char          *newlp            = NULL;                      // pointer to newline
+	int            opt;                                          // current option in getopt() loop
+	char          *pn               = argv[0];                   // program name - pointer to argv[0]
+	bool           reverse          = false;                     // convert currency to Bitcoin?
+	char           timestr[32];                                  // string returned by ctime
+	bool           verbose          = false;                     // print verbose output?
 
 	// list of options for getopt_long()
 	const struct option long_options[] = {
@@ -178,16 +179,6 @@ int main(int argc, char **argv) {
 	};
 
 	api_err.err = false;
-	colour = false;
-	found_path = false;
-	fp = NULL;
-	n = 1.0;
-	newlp = NULL;
-	pn = argv[0];
-	reverse = false;
-	verbose = false;
-
-	strcpy(currcy, "USD");
 
 	setlocale(LC_ALL, "");  // sets the locale to the system's default
 
@@ -368,7 +359,7 @@ int main(int argc, char **argv) {
 					while(true) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
 						print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
-						sleep(DEFAULT_MONITOR_INTERVAL);
+						usleep(monitor_interval);
 					}
 				} else {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
@@ -382,7 +373,7 @@ int main(int argc, char **argv) {
 					while(true) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 						print_rates(&rates, &api_err, P_BUY, n, verbose, reverse, colour);
-						sleep(DEFAULT_MONITOR_INTERVAL);
+						usleep(monitor_interval);
 					}
 				} else {
 					if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
@@ -397,6 +388,7 @@ int main(int argc, char **argv) {
 
 			case 'k':
 				forever = true;
+				if(optarg) monitor_interval = (float) (atof(optarg) * 1000000);
 				break;
 
 			case 'n':
@@ -421,7 +413,7 @@ int main(int argc, char **argv) {
 					while(true) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 						print_rates(&rates, &api_err, P_RESULT, n, verbose, reverse, colour);
-						sleep(DEFAULT_MONITOR_INTERVAL);
+						usleep(monitor_interval);
 					}
 				} else {
 					if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
@@ -439,7 +431,7 @@ int main(int argc, char **argv) {
 					while(true) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 						print_rates(&rates, &api_err, P_SELL, n, verbose, reverse, colour);
-						sleep(DEFAULT_MONITOR_INTERVAL);
+						sleep(monitor_interval);
 					}
 				} else {
 					if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
