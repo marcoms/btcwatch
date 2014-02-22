@@ -250,7 +250,7 @@ int main(int argc, char **argv) {
 										: "DOWN",
 
 								rates.currcy.sign,
-								((double) (rates.buy - btcstore.buy) / (double) rates.currcy.sf),
+								((double) ((int32_t) rates.buy - (int32_t) btcstore.buy) / rates.currcy.sf),
 								rates.currcy.name,
 								btcstore.buyf,
 								rates.buyf
@@ -271,7 +271,7 @@ int main(int argc, char **argv) {
 										: "DOWN",
 
 								rates.currcy.sign,
-								((double) (rates.sell - btcstore.sell) / (double) rates.currcy.sf),
+								((double) ((int32_t) rates.sell - (int32_t) btcstore.sell) / rates.currcy.sf),
 								rates.currcy.name,
 								btcstore.sellf,
 								rates.sellf
@@ -293,7 +293,7 @@ int main(int argc, char **argv) {
 										? RED("DOWN")
 										: "DOWN",
 
-								((double) (rates.buy - btcstore.buy) / (double) rates.currcy.sf)
+								((double) ((int32_t) rates.buy - (int32_t) btcstore.buy) / rates.currcy.sf)
 							);
 						}
 
@@ -311,7 +311,7 @@ int main(int argc, char **argv) {
 										? RED("DOWN")
 										: "DOWN",
 
-								((double) (rates.sell - btcstore.sell) / (double) rates.currcy.sf)
+								((double) ((int32_t) rates.sell - (int32_t) btcstore.sell) / rates.currcy.sf)
 							);
 						}
 					}
@@ -327,7 +327,9 @@ int main(int argc, char **argv) {
 					find_paths(btcpath, btcpathwf);
 					found_path = true;
 				}
-				if(mkdir(btcpath, S_IRWXU) == -1) error(EXIT_FAILURE, 0, "%s", strerror(errno));
+
+				if(mkdir(btcpath, S_IRWXU) == -1 && errno != EEXIST) error(EXIT_FAILURE, errno, "couldn't create ~/.btcwatch");
+
 				fp = fopen(btcpathwf, "w");
 
 				if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);

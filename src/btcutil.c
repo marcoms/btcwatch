@@ -115,7 +115,7 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 			"  -b             --buy                         print buy price\n"
 			"  -c CURRENCY    --currency=CURRENCY           set conversion currency\n"
 			"  -k [INTERVAL]  --keep-monitoring[=INTERVAL]  indefinitely monitor the price,\n"
-			"                                                and wait for INTERVAL seconds each time\n"
+			"                                                 and wait for INTERVAL seconds each time\n"
 			"  -n AMOUNT      --amount=AMOUNT               set the amount to convert\n"
 			"  -o [BOOLEAN]   --colour[=BOOLEAN]            enable use of colour\n"
 			"  -p             --ping                        check for a successful JSON response\n"

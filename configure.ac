@@ -1,4 +1,4 @@
-AC_INIT([btcwatch], [0.1.3], [marco@scannadinari.co.uk], [btcwatch-0.1.3], [https://github.com/marcoms/btcwatch])
+AC_INIT([btcwatch], [0.1.4], [marco@scannadinari.co.uk], [btcwatch-0.1.4], [https://github.com/marcoms/btcwatch])
 
 define([errnf], [echo "  configure: error: $1 not found"; exit 1])
 
