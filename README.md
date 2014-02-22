@@ -1,10 +1,7 @@
 btcwatch
 ========
 
-About
------
-
-btcwatch views and monitors the current exchange rate of the popular cryptocurrency Bitcoin in multiple currencies.
+btcwatch views and monitors the current exchange rate of the popular cryptocurrency, Bitcoin, in multiple currencies.
 
 Dependencies
 ------------
