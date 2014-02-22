@@ -3213,54 +3213,6 @@ fi
 done
 
 
-ac_fn_c_check_header_mongrel "$LINENO" "assert.h" "ac_cv_header_assert_h" "$ac_includes_default"
-if test "x$ac_cv_header_assert_h" = xyes; then :
-
-else
-  echo "  configure: error: assert.h not found"; exit 1
-fi
-
-
-ac_fn_c_check_header_mongrel "$LINENO" "ctype.h" "ac_cv_header_ctype_h" "$ac_includes_default"
-if test "x$ac_cv_header_ctype_h" = xyes; then :
-
-else
-  echo "  configure: error: ctype.h not found"; exit 1
-fi
-
-
-ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdlib_h" = xyes; then :
-
-else
-  echo "  configure: error: stdlib.h not found"; exit 1
-fi
-
-
-ac_fn_c_check_header_mongrel "$LINENO" "stdint.h" "ac_cv_header_stdint_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdint_h" = xyes; then :
-
-else
-  echo "  configure: error: stdint.h not found"; exit 1
-fi
-
-
-ac_fn_c_check_header_mongrel "$LINENO" "stdio.h" "ac_cv_header_stdio_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdio_h" = xyes; then :
-
-else
-  echo "  configure: error: stdio.h not found"; exit 1
-fi
-
-
-ac_fn_c_check_header_mongrel "$LINENO" "stdbool.h" "ac_cv_header_stdbool_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdbool_h" = xyes; then :
-
-else
-  echo "  configure: error: stdio.h not found"; exit 1
-fi
-
-
 ac_fn_c_check_header_mongrel "$LINENO" "curl/curl.h" "ac_cv_header_curl_curl_h" "$ac_includes_default"
 if test "x$ac_cv_header_curl_curl_h" = xyes; then :
 
@@ -3285,11 +3237,11 @@ else
 fi
 
 
-ac_fn_c_check_header_mongrel "$LINENO" "string.h" "ac_cv_header_string_h" "$ac_includes_default"
-if test "x$ac_cv_header_string_h" = xyes; then :
+ac_fn_c_check_header_mongrel "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
+if test "x$ac_cv_header_unistd_h" = xyes; then :
 
 else
-  echo "  configure: error: string.h not found"; exit 1
+  echo "  configure: error: unistd.h not found"; exit 1
 fi
 
 
