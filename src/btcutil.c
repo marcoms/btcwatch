@@ -35,7 +35,7 @@
 #include "include/config.h"
 #include "include/btcutil.h"
 
-void find_paths(char *const path, char *const pathwf) {
+void find_paths(char *const path, char *const pathwf) {  // pathwf == path with filename
 	struct passwd *userinfo;
 
 	userinfo = getpwuid(getuid());
@@ -46,6 +46,9 @@ void find_paths(char *const path, char *const pathwf) {
 }
 
 noreturn void help(const char *const prog_nm, const char *const topic) {
+	uint_fast8_t maxlen = 0;
+	uint_fast8_t i;
+
 	char currcies[][3 + 1] = {
 		#ifdef MT_GOX_API
 		"AUD",
@@ -133,18 +136,26 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		// TODO: use a string hash function to be able to do this in a switch..case statement
 		if(!strcmp(topic, "currencies")) {
 			for(
-				uint_fast8_t i = 0;
+				i = 0;
 				i < (sizeof currcies / sizeof currcies[0]);
 				++i
 			) puts(currcies[i]);
 			exit(EXIT_SUCCESS);
 		} else if(!strcmp(topic, "topics")) {
 			for(
-				uint_fast8_t i = 0;
+				i = 0;
 				i < (sizeof topics / sizeof topics[0]);
 				++i
 			) {
-				bputs(topics[i][0]); bputs("\t\t"); puts(topics[i][1]);
+				if(strlen(topics[i][0]) > maxlen) maxlen = strlen(topics[i][0]);
+			}
+
+			for(
+				i = 0;
+				i < (sizeof topics / sizeof topics[0]);
+				++i
+			) {
+				printf("%-*s %s\n", maxlen + 2, topics[i][0], topics[i][1]);
 			}
 
 			exit(EXIT_SUCCESS);
