@@ -34,6 +34,7 @@
 
 #include "include/config.h"
 #include "include/btcutil.h"
+#include "lib/libbtcapi/btcapi_currencies.h"
 
 void find_paths(char *const path, char *const pathwf) {  // pathwf == path with filename
 	struct passwd *userinfo;
@@ -48,36 +49,6 @@ void find_paths(char *const path, char *const pathwf) {  // pathwf == path with 
 noreturn void help(const char *const prog_nm, const char *const topic) {
 	uint_fast8_t maxlen = 0;
 	uint_fast8_t i;
-
-	char currcies[][3 + 1] = {
-		#ifdef MT_GOX_API
-		"AUD",
-		"CAD",
-		"CHF",
-		"CNY",
-		"CZK",
-		"DKK",
-		#endif
-		"EUR",
-		#ifdef MT_GOX_API
-		"GBP",
-		"HKD",
-		"JPY",
-		"NOK",
-		"PLN",
-		#endif
-		#ifdef MT_GOX_API
-		"RUB",
-		#elif defined(BTC_E_API)
-		"RUR",
-		#endif
-		#ifdef MT_GOX_API
-		"SEK",
-		"SGD",
-		"THB",
-		#endif
-		"USD",
-	};
 
 	char topics[][2][32] = {
 		{
@@ -137,9 +108,9 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		if(!strcmp(topic, "currencies")) {
 			for(
 				i = 0;
-				i < (sizeof currcies / sizeof currcies[0]);
+				i < (sizeof btc_currencies / sizeof btc_currencies[0]);
 				++i
-			) puts(currcies[i]);
+			) puts(btc_currencies[i].name);
 			exit(EXIT_SUCCESS);
 		} else if(!strcmp(topic, "topics")) {
 			for(

@@ -25,7 +25,7 @@
 #define GREEN(str) "\033[32m" str "\033[0m"
 #define RED(str) "\033[31m" str "\033[0m"
 #define OPTSTRING "CSVbac:h::k::n:o::prsv::"
-#define DEFAULT_MONITOR_INTERVAL 400000
+#define DEFAULT_MONITOR_INTERVAL 400000  // microseconds (4 seconds)
 
 #include <assert.h>
 #include <ctype.h>
