@@ -110,7 +110,7 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 			exit(EXIT_SUCCESS);
 		} else if(!strcmp(topic, "topics")) {
 			for(i = 0; i < (sizeof topics / sizeof topics[0]); ++i) if(strlen(topics[i][0]) > maxlen) maxlen = strlen(topics[i][0]);
-			for(i = 0; i < (sizeof topics / sizeof topics[0]); ++i) {printf("%-*s %s\n", maxlen + 2, topics[i][0], topics[i][1]);
+			for(i = 0; i < (sizeof topics / sizeof topics[0]); ++i) printf("%-*s %s\n", maxlen + 2, topics[i][0], topics[i][1]);
 			exit(EXIT_SUCCESS);
 		} else {
 			error(EXIT_FAILURE, 0, "no such topic");
