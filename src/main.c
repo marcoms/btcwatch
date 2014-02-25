@@ -379,7 +379,7 @@ int main(int argc, char **argv) {
 					}
 				} else {
 					if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
-					print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
+					print_rates(&rates, &api_err, P_BUY, n, verbose, reverse, colour);
 				}
 
 				break;

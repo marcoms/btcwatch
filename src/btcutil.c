@@ -38,9 +38,15 @@
 
 void find_paths(char *const path, char *const pathwf) {  // pathwf == path with filename
 	struct passwd *userinfo;
+	char *home;
 
-	userinfo = getpwuid(getuid());
-	strcpy(path, userinfo -> pw_dir);
+	if((home = getenv("HOME"))) {
+		strcpy(path, home);
+	} else {
+		userinfo = getpwuid(getuid());
+		strcpy(path, userinfo -> pw_dir);
+	}
+
 	strcat(path, "/.btcwatch");
 	strcpy(pathwf, path);
 	strcat(pathwf, "/btcstore");
@@ -104,7 +110,6 @@ noreturn void help(const char *const prog_nm, const char *const topic) {
 		);
 		exit(EXIT_SUCCESS);
 	} else {
-		// TODO: use a string hash function to be able to do this in a switch..case statement
 		if(!strcmp(topic, "currencies")) {
 			for(i = 0; i < (sizeof btc_currencies / sizeof btc_currencies[0]); ++i) puts(btc_currencies[i].name);
 			exit(EXIT_SUCCESS);
