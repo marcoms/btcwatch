@@ -21,11 +21,12 @@
 
 #define _(str) gettext(str)
 #define BTC_SIGN "฿"
+#define EVER ;;
 #define STR_TRUE "yes"
 #define GREEN(str) "\033[32m" str "\033[0m"
 #define RED(str) "\033[31m" str "\033[0m"
 #define OPTSTRING "CSVbac:h::k::n:o::prsv::"
-#define DEFAULT_MONITOR_INTERVAL 400000  // microseconds (4 seconds)
+#define DEFAULT_MONITOR_INTERVAL 4000000  // microseconds (4 seconds)
 
 #include <assert.h>
 #include <ctype.h>
@@ -358,7 +359,7 @@ int main(int argc, char **argv) {
 
 			case 'a':
 				if(forever) {
-					while(true) {
+					for(EVER) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);  // checks if Bitcoin prices are alreaty obtained or if the user has specified a different currency
 						print_rates(&rates, &api_err, P_RESULT | P_BUY | P_SELL, n, verbose, reverse, colour);
 						usleep(monitor_interval);
@@ -372,7 +373,7 @@ int main(int argc, char **argv) {
 
 			case 'b':
 				if(forever) {
-					while(true) {
+					for(EVER) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 						print_rates(&rates, &api_err, P_BUY, n, verbose, reverse, colour);
 						usleep(monitor_interval);
@@ -390,7 +391,7 @@ int main(int argc, char **argv) {
 
 			case 'k':
 				forever = true;
-				if(optarg) monitor_interval = (float) (atof(optarg) * 1000000);
+				if(optarg) monitor_interval = (float) (atof(optarg) * (1e6));
 				break;
 
 			case 'n':
@@ -412,7 +413,7 @@ int main(int argc, char **argv) {
 
 			case 'p':
 				if(forever) {
-					while(true) {
+					for(EVER) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 						print_rates(&rates, &api_err, P_RESULT, n, verbose, reverse, colour);
 						usleep(monitor_interval);
@@ -430,7 +431,7 @@ int main(int argc, char **argv) {
 
 			case 's':
 				if(forever) {
-					while(true) {
+					for(EVER) {
 						if(!rates.got || strcmp(rates.currcy.name, currcy)) api_err = btc_fill_rates(&rates, currcy);
 						print_rates(&rates, &api_err, P_SELL, n, verbose, reverse, colour);
 						sleep(monitor_interval);
