@@ -1,0 +1,3 @@
+[submodule "src/lib/libbtcapi"]
+	path = src/lib/libbtcapi
+	url = https://github.com/marcoms/libbtcapi.git
