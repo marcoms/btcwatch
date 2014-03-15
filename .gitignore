@@ -1,0 +1,9 @@
+*.o
+
+btcwatch
+src/main
+
+config.log
+config.status
+prefix.txt
+src/include/config.h
