@@ -3,6 +3,7 @@
 btcwatch
 src/main
 
+autom4te.cache/
 config.log
 config.status
 prefix.txt
