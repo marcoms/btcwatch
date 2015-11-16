@@ -1,6 +1,8 @@
 btcwatch
 ========
 
+[![Join the chat at https://gitter.im/marcoms/btcwatch](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/marcoms/btcwatch?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 btcwatch views and monitors the current exchange rate of the popular cryptocurrency, Bitcoin, in multiple currencies.
 
 Dependencies
